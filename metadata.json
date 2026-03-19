@@ -39414,5 +39414,17 @@
                 "name": "DarthNorse"
             }
         }
+    },
+    "gocd": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-03-19T19:20:54.181Z",
+            "author": {
+                "id": 45224293,
+                "login": "smadyelse"
+            }
+        }
     }
 }
