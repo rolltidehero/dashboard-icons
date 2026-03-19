@@ -39492,5 +39492,19 @@
                 "login": "lpbas"
             }
         }
+    },
+    "koffan": {
+        "base": "png",
+        "aliases": [],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-03-19T19:21:07.001Z",
+            "author": {
+                "id": 3169264,
+                "login": "StephanMeijer"
+            }
+        }
     }
 }
