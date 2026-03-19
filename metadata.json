@@ -39750,5 +39750,22 @@
                 "login": "wishx"
             }
         }
+    },
+    "monarch-money": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "finance"
+        ],
+        "update": {
+            "timestamp": "2026-03-19T19:21:48.984Z",
+            "author": {
+                "id": 25753452,
+                "login": "stake25"
+            }
+        },
+        "colors": {
+            "light": "monarch-money-light"
+        }
     }
 }
