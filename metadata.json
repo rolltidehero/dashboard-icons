@@ -40122,5 +40122,19 @@
                 "login": "NoixDel"
             }
         }
+    },
+    "qnap-qvr-human": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "monitoring"
+        ],
+        "update": {
+            "timestamp": "2026-03-19T20:17:39.511Z",
+            "author": {
+                "id": 1014067,
+                "login": "silasmariusz"
+            }
+        }
     }
 }
