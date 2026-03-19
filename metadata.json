@@ -40184,5 +40184,17 @@
                 "login": "silasmariusz"
             }
         }
+    },
+    "qnap-virtualization": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-03-19T20:17:51.953Z",
+            "author": {
+                "id": 1014067,
+                "login": "silasmariusz"
+            }
+        }
     }
 }
