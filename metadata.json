@@ -39473,5 +39473,24 @@
                 "login": "take-a-CHANCE"
             }
         }
+    },
+    "clawd": {
+        "base": "png",
+        "aliases": [
+            "claude",
+            "claude code"
+        ],
+        "categories": [
+            "development",
+            "tools",
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-03-19T19:21:04.374Z",
+            "author": {
+                "id": 8230634,
+                "login": "lpbas"
+            }
+        }
     }
 }
