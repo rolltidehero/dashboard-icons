@@ -39974,5 +39974,23 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "keda": {
+        "base": "svg",
+        "aliases": [
+            "keda",
+            "kubernetes"
+        ],
+        "categories": [
+            "cloud",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-03-19T20:17:11.050Z",
+            "author": {
+                "id": 50410476,
+                "login": "deogratias-saidi"
+            }
+        }
     }
 }
