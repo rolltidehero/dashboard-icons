@@ -40086,5 +40086,25 @@
                 "login": "JakeEsBigBrain"
             }
         }
+    },
+    "paper": {
+        "base": "svg",
+        "aliases": [
+            "paper design",
+            "paper-design",
+            "paper app"
+        ],
+        "categories": [
+            "development",
+            "utility",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-03-19T20:17:33.545Z",
+            "author": {
+                "id": 42777277,
+                "login": "ZEUSGMJ"
+            }
+        }
     }
 }
