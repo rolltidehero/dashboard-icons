@@ -39929,5 +39929,17 @@
                 "login": "SorenHJohansen"
             }
         }
+    },
+    "bluemap": {
+        "base": "png",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-03-19T20:17:02.276Z",
+            "author": {
+                "id": 163679378,
+                "login": "Jixaly"
+            }
+        }
     }
 }
