@@ -40273,5 +40273,24 @@
                 "login": "OwenWright8"
             }
         }
+    },
+    "triggarr": {
+        "base": "png",
+        "aliases": [],
+        "categories": [
+            "utility",
+            "tools",
+            "monitoring",
+            "automation",
+            "entertainment",
+            "media"
+        ],
+        "update": {
+            "timestamp": "2026-03-19T20:18:09.226Z",
+            "author": {
+                "id": 150754439,
+                "login": "thejuran"
+            }
+        }
     }
 }
