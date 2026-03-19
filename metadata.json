@@ -39687,5 +39687,20 @@
             "light": "langflow-light",
             "dark": "langflow-dark"
         }
+    },
+    "hd-icons": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-03-19T19:21:38.992Z",
+            "author": {
+                "id": 130508170,
+                "login": "zorro0418"
+            }
+        },
+        "colors": {
+            "light": "hd-icons-light"
+        }
     }
 }
