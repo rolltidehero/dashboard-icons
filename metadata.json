@@ -39426,5 +39426,21 @@
                 "login": "smadyelse"
             }
         }
+    },
+    "pi-coding-agent": {
+        "base": "svg",
+        "aliases": [
+            "pi-mono"
+        ],
+        "categories": [
+            "development"
+        ],
+        "update": {
+            "timestamp": "2026-03-19T19:20:56.785Z",
+            "author": {
+                "id": 4228134,
+                "login": "barry-luijten"
+            }
+        }
     }
 }
