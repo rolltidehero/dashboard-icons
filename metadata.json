@@ -40544,5 +40544,21 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "eu-calendar": {
+        "base": "svg",
+        "aliases": [
+            "office-eu-calendar"
+        ],
+        "categories": [
+            "cloud"
+        ],
+        "update": {
+            "timestamp": "2026-03-30T13:11:21.660Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
