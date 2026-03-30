@@ -40850,5 +40850,19 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "novnc": {
+        "base": "svg",
+        "aliases": [
+            "novnc-remote-desktop"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-03-30T13:12:11.349Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
