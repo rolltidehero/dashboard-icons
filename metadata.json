@@ -40292,5 +40292,19 @@
                 "login": "thejuran"
             }
         }
+    },
+    "whishper": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "media"
+        ],
+        "update": {
+            "timestamp": "2026-03-30T13:10:36.913Z",
+            "author": {
+                "id": "13bq9mvfoyqr1sg",
+                "name": "Zeifa"
+            }
+        }
     }
 }
