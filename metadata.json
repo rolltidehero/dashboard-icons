@@ -40384,5 +40384,20 @@
                 "login": "mzellho"
             }
         }
+    },
+    "spline": {
+        "base": "png",
+        "aliases": [],
+        "categories": [
+            "development",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-03-30T13:10:55.105Z",
+            "author": {
+                "id": 170266286,
+                "login": "RcrSavior"
+            }
+        }
     }
 }
