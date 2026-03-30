@@ -40883,5 +40883,19 @@
         "colors": {
             "dark": "dall-e-dark"
         }
+    },
+    "virtualbox": {
+        "base": "svg",
+        "aliases": [
+            "oracle-virtualbox"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-03-30T13:12:16.261Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
