@@ -40574,5 +40574,19 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "icewarp": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "cloud"
+        ],
+        "update": {
+            "timestamp": "2026-03-30T13:11:26.373Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
