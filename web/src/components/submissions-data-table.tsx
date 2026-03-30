@@ -15,7 +15,7 @@ import {
 } from "@tanstack/react-table"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
-import { ChevronDown, ChevronRight, Filter, Github, ImageIcon, Rocket, Search, SortDesc, X } from "lucide-react"
+import { CheckCircle2, ChevronDown, ChevronRight, Filter, Github, ImageIcon, Rocket, Search, SortDesc, X } from "lucide-react"
 import * as React from "react"
 import { StatusBadge } from "@/components/status-badge"
 import { SubmissionDetails } from "@/components/submission-details"
@@ -61,10 +61,12 @@ interface SubmissionsDataTableProps {
 	onReject: (id: string) => void
 	onTriggerWorkflow?: (id: string) => void
 	onBulkTriggerWorkflow?: (ids: string[]) => void
+	onBulkApprove?: (ids: string[]) => void
 	isApproving?: boolean
 	isRejecting?: boolean
 	isTriggeringWorkflow?: boolean
 	isBulkTriggeringWorkflow?: boolean
+	isBulkApproving?: boolean
 	workflowUrl?: string
 }
 
@@ -84,7 +86,6 @@ const groupAndSortSubmissions = (submissions: Submission[], isAdmin: boolean): S
 	})
 }
 
-
 export function SubmissionsDataTable({
 	data,
 	isAdmin,
@@ -93,10 +94,12 @@ export function SubmissionsDataTable({
 	onReject,
 	onTriggerWorkflow,
 	onBulkTriggerWorkflow,
+	onBulkApprove,
 	isApproving,
 	isRejecting,
 	isTriggeringWorkflow,
 	isBulkTriggeringWorkflow,
+	isBulkApproving,
 	workflowUrl,
 }: SubmissionsDataTableProps) {
 	const isMobile = useIsMobile()
@@ -138,24 +141,26 @@ export function SubmissionsDataTable({
 						{
 							id: "select",
 							header: ({ table }: { table: any }) => {
-								const approvedRows = table.getRowModel().rows.filter((row: any) => row.original.status === "approved")
-								const selectedApprovedCount = approvedRows.filter((row: any) => row.getIsSelected()).length
-								const allApprovedSelected = approvedRows.length > 0 && selectedApprovedCount === approvedRows.length
+								const selectableRows = table
+									.getRowModel()
+									.rows.filter((row: any) => row.original.status === "approved" || row.original.status === "pending")
+								const selectedSelectableCount = selectableRows.filter((row: any) => row.getIsSelected()).length
+								const allSelectableSelected = selectableRows.length > 0 && selectedSelectableCount === selectableRows.length
 
-								return approvedRows.length > 0 ? (
+								return selectableRows.length > 0 ? (
 									<Checkbox
-										checked={allApprovedSelected}
+										checked={allSelectableSelected}
 										onCheckedChange={(value: boolean) => {
-											approvedRows.forEach((row: any) => row.toggleSelected(!!value))
+											selectableRows.forEach((row: any) => row.toggleSelected(!!value))
 										}}
-										aria-label="Select all approved"
+										aria-label="Select all approved and pending"
 										className="translate-y-[2px]"
 									/>
 								) : null
 							},
 							cell: ({ row }: { row: any }) => {
-								const isApproved = row.original.status === "approved"
-								return isApproved ? (
+								const isSelectable = row.original.status === "approved" || row.original.status === "pending"
+								return isSelectable ? (
 									<Checkbox
 										checked={row.getIsSelected()}
 										onCheckedChange={(value: boolean) => row.toggleSelected(!!value)}
@@ -324,7 +329,7 @@ export function SubmissionsDataTable({
 		onColumnFiltersChange: setColumnFilters,
 		onGlobalFilterChange: setGlobalFilter,
 		onRowSelectionChange: setRowSelection,
-		enableRowSelection: (row) => row.original.status === "approved",
+		enableRowSelection: (row) => row.original.status === "approved" || row.original.status === "pending",
 		getRowId: (row) => row.id,
 		state: {
 			sorting,
@@ -354,20 +359,67 @@ export function SubmissionsDataTable({
 		return Object.keys(rowSelection).filter((id) => rowSelection[id])
 	}, [rowSelection])
 
+	const selectedPendingIds = React.useMemo(() => {
+		return selectedSubmissionIds.filter((id) => {
+			const submission = data.find((s) => s.id === id)
+			return submission?.status === "pending"
+		})
+	}, [selectedSubmissionIds, data])
+
+	const selectedApprovedIds = React.useMemo(() => {
+		return selectedSubmissionIds.filter((id) => {
+			const submission = data.find((s) => s.id === id)
+			return submission?.status === "approved"
+		})
+	}, [selectedSubmissionIds, data])
+
 	const approvedSubmissions = React.useMemo(() => {
 		return data.filter((s) => s.status === "approved")
 	}, [data])
 
+	const pendingSubmissions = React.useMemo(() => {
+		return data.filter((s) => s.status === "pending")
+	}, [data])
+
 	const handleBulkTrigger = () => {
-		if (onBulkTriggerWorkflow && selectedSubmissionIds.length > 0) {
-			onBulkTriggerWorkflow(selectedSubmissionIds)
-			setRowSelection({})
+		if (onBulkTriggerWorkflow && selectedApprovedIds.length > 0) {
+			onBulkTriggerWorkflow(selectedApprovedIds)
+			// Only clear approved selections
+			setRowSelection(() => {
+				const next: RowSelectionState = {}
+				for (const id of selectedPendingIds) {
+					next[id] = true
+				}
+				return next
+			})
+		}
+	}
+
+	const handleBulkApprove = () => {
+		if (onBulkApprove && selectedPendingIds.length > 0) {
+			onBulkApprove(selectedPendingIds)
+			// Only clear pending selections
+			setRowSelection(() => {
+				const next: RowSelectionState = {}
+				for (const id of selectedApprovedIds) {
+					next[id] = true
+				}
+				return next
+			})
 		}
 	}
 
 	const handleSelectAllApproved = () => {
-		const newSelection: RowSelectionState = {}
+		const newSelection: RowSelectionState = { ...rowSelection }
 		for (const s of approvedSubmissions) {
+			newSelection[s.id] = true
+		}
+		setRowSelection(newSelection)
+	}
+
+	const handleSelectAllPending = () => {
+		const newSelection: RowSelectionState = { ...rowSelection }
+		for (const s of pendingSubmissions) {
 			newSelection[s.id] = true
 		}
 		setRowSelection(newSelection)
@@ -436,44 +488,81 @@ export function SubmissionsDataTable({
 			{/* Bulk Actions Toolbar */}
 			{isAdmin && selectedSubmissionIds.length > 0 && (
 				<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-2 flex-wrap">
 						<Badge variant="secondary" className="bg-blue-500/20 text-blue-400">
 							{selectedSubmissionIds.length} selected
 						</Badge>
-						<span className="text-sm text-muted-foreground">
-							approved submission{selectedSubmissionIds.length > 1 ? "s" : ""} ready to process
-						</span>
+						{selectedPendingIds.length > 0 && <span className="text-sm text-muted-foreground">{selectedPendingIds.length} pending</span>}
+						{selectedApprovedIds.length > 0 && <span className="text-sm text-muted-foreground">{selectedApprovedIds.length} approved</span>}
 					</div>
 					<div className="flex items-center gap-2">
 						<Button variant="ghost" size="sm" onClick={() => setRowSelection({})} className="flex-1 sm:flex-none">
 							Clear selection
 						</Button>
-						<Button size="sm" onClick={handleBulkTrigger} disabled={isBulkTriggeringWorkflow} className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700">
-							<Github className="w-4 h-4 mr-2" />
-							{isBulkTriggeringWorkflow ? "Triggering..." : `Trigger All (${selectedSubmissionIds.length})`}
-						</Button>
+						{selectedPendingIds.length > 0 && onBulkApprove && (
+							<Button
+								size="sm"
+								onClick={handleBulkApprove}
+								disabled={isBulkApproving}
+								className="flex-1 sm:flex-none bg-green-600 hover:bg-green-700 text-white"
+							>
+								<CheckCircle2 className="w-4 h-4 mr-2" />
+								{isBulkApproving ? "Approving..." : `Approve (${selectedPendingIds.length})`}
+							</Button>
+						)}
+						{selectedApprovedIds.length > 0 && onBulkTriggerWorkflow && (
+							<Button
+								size="sm"
+								onClick={handleBulkTrigger}
+								disabled={isBulkTriggeringWorkflow}
+								className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700"
+							>
+								<Github className="w-4 h-4 mr-2" />
+								{isBulkTriggeringWorkflow ? "Triggering..." : `Trigger All (${selectedApprovedIds.length})`}
+							</Button>
+						)}
 					</div>
 				</div>
 			)}
 
-			{isAdmin && approvedSubmissions.length > 0 && selectedSubmissionIds.length === 0 && (
+			{isAdmin && (approvedSubmissions.length > 0 || pendingSubmissions.length > 0) && selectedSubmissionIds.length === 0 && (
 				<Alert className="border-amber-500/30 bg-amber-500/5">
 					<Rocket className="h-4 w-4 text-amber-500" />
 					<AlertTitle className="text-amber-600 dark:text-amber-400">
-						{approvedSubmissions.length} approved submission{approvedSubmissions.length > 1 ? "s" : ""} ready for GitHub CI
+						{approvedSubmissions.length > 0 && `${approvedSubmissions.length} approved`}
+						{approvedSubmissions.length > 0 && pendingSubmissions.length > 0 && " and "}
+						{pendingSubmissions.length > 0 && `${pendingSubmissions.length} pending`} submission
+						{approvedSubmissions.length + pendingSubmissions.length > 1 ? "s" : ""} available
 					</AlertTitle>
 					<AlertDescription className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
-						<span className="text-sm text-muted-foreground">
-							Select submissions to trigger the GitHub Action workflow and add them to the collection.
-						</span>
-						<Button size="sm" variant="outline" onClick={handleSelectAllApproved} className="w-fit shrink-0 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300">
-							Select all approved
-						</Button>
+						<span className="text-sm text-muted-foreground">Select submissions to approve or trigger the GitHub Action workflow.</span>
+						<div className="flex gap-2">
+							{pendingSubmissions.length > 0 && (
+								<Button
+									size="sm"
+									variant="outline"
+									onClick={handleSelectAllPending}
+									className="w-fit shrink-0 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
+								>
+									Select all pending
+								</Button>
+							)}
+							{approvedSubmissions.length > 0 && (
+								<Button
+									size="sm"
+									variant="outline"
+									onClick={handleSelectAllApproved}
+									className="w-fit shrink-0 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
+								>
+									Select all approved
+								</Button>
+							)}
+						</div>
 					</AlertDescription>
 				</Alert>
 			)}
 
-		{isMobile ? (
+			{isMobile ? (
 				<>
 					{/* Mobile Card List */}
 					<div className="space-y-2">
@@ -489,6 +578,8 @@ export function SubmissionsDataTable({
 									const displayName = getDisplayName(submission, expandedData)
 									const isSelected = !!rowSelection[submission.id]
 									const isApproved = submission.status === "approved"
+									const isPending = submission.status === "pending"
+									const isSelectable = isApproved || isPending
 
 									return (
 										<React.Fragment key={submission.id}>
@@ -497,21 +588,20 @@ export function SubmissionsDataTable({
 													<StatusBadge status={currentStatus} showCollectionStatus />
 													<span className="text-xs text-muted-foreground">
 														{mobileFilteredData.filter((s) => s.status === currentStatus).length}
-														{mobileFilteredData.filter((s) => s.status === currentStatus).length === 1
-															? " submission"
-															: " submissions"}
+														{mobileFilteredData.filter((s) => s.status === currentStatus).length === 1 ? " submission" : " submissions"}
 													</span>
 												</div>
 											)}
-										<div
-											className={cn(
-												"flex items-center gap-3 p-3 rounded-lg border bg-background cursor-pointer active:bg-muted/50 transition-colors",
-												isSelected && "ring-2 ring-primary/50 bg-primary/5",
-												isApproved && !isSelected && "border-l-2 border-l-green-500",
-											)}
-											onClick={() => setMobileDetailSubmission(submission)}
-										>
-												{isAdmin && isApproved && (
+											<div
+												className={cn(
+													"flex items-center gap-3 p-3 rounded-lg border bg-background cursor-pointer active:bg-muted/50 transition-colors",
+													isSelected && "ring-2 ring-primary/50 bg-primary/5",
+													isApproved && !isSelected && "border-l-2 border-l-green-500",
+													isPending && !isSelected && "border-l-2 border-l-yellow-500",
+												)}
+												onClick={() => setMobileDetailSubmission(submission)}
+											>
+												{isAdmin && isSelectable && (
 													<Checkbox
 														checked={isSelected}
 														onCheckedChange={() => toggleMobileSelection(submission.id)}
@@ -541,22 +631,22 @@ export function SubmissionsDataTable({
 														<span className="text-xs text-muted-foreground whitespace-nowrap">{dayjs(submission.updated).fromNow()}</span>
 													</div>
 												</div>
-											<ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
+												<ChevronRight className="h-4 w-4 text-muted-foreground shrink-0" />
 											</div>
 										</React.Fragment>
 									)
 								})
 							})()
 						) : (
-						<div className="py-16 flex flex-col items-center gap-2">
-							<ImageIcon className="h-10 w-10 text-muted-foreground/30" />
-							<p className="text-muted-foreground font-medium">
-								{globalFilter || userFilter ? "No submissions match your search" : "No submissions yet"}
-							</p>
-							{!(globalFilter || userFilter) && (
-								<p className="text-sm text-muted-foreground/70">Submissions will appear here once they are created.</p>
-							)}
-						</div>
+							<div className="py-16 flex flex-col items-center gap-2">
+								<ImageIcon className="h-10 w-10 text-muted-foreground/30" />
+								<p className="text-muted-foreground font-medium">
+									{globalFilter || userFilter ? "No submissions match your search" : "No submissions yet"}
+								</p>
+								{!(globalFilter || userFilter) && (
+									<p className="text-sm text-muted-foreground/70">Submissions will appear here once they are created.</p>
+								)}
+							</div>
 						)}
 					</div>
 
@@ -649,15 +739,24 @@ export function SubmissionsDataTable({
 														</TableCell>
 													</TableRow>
 												)}
-											<TableRow
-												data-state={row.getIsSelected() && "selected"}
-												className={cn(
-													"cursor-pointer hover:bg-muted/50 transition-colors",
-													row.getIsExpanded() && "bg-muted/30",
-													row.original.status === "approved" && "bg-green-500/[0.03] hover:bg-green-500/[0.07]",
-												)}
-												onClick={() => handleRowToggle(row.id, row.getIsExpanded())}
-											>
+												<TableRow
+													data-state={row.getIsSelected() && "selected"}
+													className={cn(
+														"cursor-pointer hover:bg-muted/50 transition-colors",
+														row.getIsExpanded() && "bg-muted/30",
+														row.original.status === "approved" && "bg-green-500/[0.03] hover:bg-green-500/[0.07]",
+														row.original.status === "pending" && row.getIsSelected() && "bg-yellow-500/[0.03]",
+													)}
+													onClick={(e) => {
+														const isSelectable = row.original.status === "approved" || row.original.status === "pending"
+														if ((e.ctrlKey || e.metaKey) && isSelectable && isAdmin) {
+															e.preventDefault()
+															row.toggleSelected(!row.getIsSelected())
+														} else {
+															handleRowToggle(row.id, row.getIsExpanded())
+														}
+													}}
+												>
 													{row.getVisibleCells().map((cell) => (
 														<TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
 													))}
@@ -689,19 +788,19 @@ export function SubmissionsDataTable({
 									})
 								})()
 							) : (
-							<TableRow>
-								<TableCell colSpan={columns.length} className="h-48 text-center">
-									<div className="flex flex-col items-center gap-2">
-										<ImageIcon className="h-10 w-10 text-muted-foreground/30" />
-										<p className="text-muted-foreground font-medium">
-											{globalFilter || userFilter ? "No submissions match your search" : "No submissions yet"}
-										</p>
-										{!(globalFilter || userFilter) && (
-											<p className="text-sm text-muted-foreground/70">Submissions will appear here once they are created.</p>
-										)}
-									</div>
-								</TableCell>
-							</TableRow>
+								<TableRow>
+									<TableCell colSpan={columns.length} className="h-48 text-center">
+										<div className="flex flex-col items-center gap-2">
+											<ImageIcon className="h-10 w-10 text-muted-foreground/30" />
+											<p className="text-muted-foreground font-medium">
+												{globalFilter || userFilter ? "No submissions match your search" : "No submissions yet"}
+											</p>
+											{!(globalFilter || userFilter) && (
+												<p className="text-sm text-muted-foreground/70">Submissions will appear here once they are created.</p>
+											)}
+										</div>
+									</TableCell>
+								</TableRow>
 							)}
 						</TableBody>
 					</Table>

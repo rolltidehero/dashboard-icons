@@ -71,6 +71,48 @@ export function useApproveSubmission() {
 	})
 }
 
+// Bulk approve submissions mutation (chains approvals sequentially)
+export function useBulkApproveSubmissions() {
+	const queryClient = useQueryClient()
+
+	return useMutation({
+		mutationFn: async ({ submissionIds, adminComment }: { submissionIds: string[]; adminComment?: string }) => {
+			const results = []
+			for (const submissionId of submissionIds) {
+				const result = await pb.collection("submissions").update(
+					submissionId,
+					{
+						status: "approved",
+						approved_by: pb.authStore.record?.id || "",
+						admin_comment: adminComment || "",
+					},
+					{
+						requestKey: null,
+					},
+				)
+				results.push(result)
+			}
+			return results
+		},
+		onSuccess: async (_data, variables) => {
+			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
+			await revalidateAllSubmissions()
+
+			toast.success(`${variables.submissionIds.length} submission${variables.submissionIds.length > 1 ? "s" : ""} approved`, {
+				description: "All selected submissions have been approved successfully",
+			})
+		},
+		onError: (error: any) => {
+			console.error("Error bulk approving submissions:", error)
+			if (!error.message?.includes("autocancelled") && !error.name?.includes("AbortError")) {
+				toast.error("Failed to approve submissions", {
+					description: error.message || "An error occurred",
+				})
+			}
+		},
+	})
+}
+
 // Reject submission mutation
 export function useRejectSubmission() {
 	const queryClient = useQueryClient()

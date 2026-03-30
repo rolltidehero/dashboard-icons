@@ -18,6 +18,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import {
 	useApproveSubmission,
 	useAuth,
+	useBulkApproveSubmissions,
 	useBulkTriggerWorkflow,
 	useRejectSubmission,
 	useSubmissions,
@@ -39,6 +40,7 @@ export default function DashboardPage() {
 	const rejectMutation = useRejectSubmission()
 	const workflowMutation = useTriggerWorkflow()
 	const bulkWorkflowMutation = useBulkTriggerWorkflow()
+	const bulkApproveMutation = useBulkApproveSubmissions()
 
 	// Track workflow URL for showing link after trigger
 	const [workflowUrl, setWorkflowUrl] = React.useState<string | undefined>()
@@ -47,6 +49,11 @@ export default function DashboardPage() {
 	const [approveDialogOpen, setApproveDialogOpen] = React.useState(false)
 	const [approvingSubmissionId, setApprovingSubmissionId] = React.useState<string | null>(null)
 	const [approveAdminComment, setApproveAdminComment] = React.useState("")
+
+	// Bulk approval dialog state
+	const [bulkApproveDialogOpen, setBulkApproveDialogOpen] = React.useState(false)
+	const [bulkApprovingIds, setBulkApprovingIds] = React.useState<string[]>([])
+	const [bulkApproveAdminComment, setBulkApproveAdminComment] = React.useState("")
 
 	// Rejection dialog state
 	const [rejectDialogOpen, setRejectDialogOpen] = React.useState(false)
@@ -148,6 +155,36 @@ export default function DashboardPage() {
 		setApproveAdminComment("")
 	}
 
+	const handleBulkApprove = (submissionIds: string[]) => {
+		setBulkApprovingIds(submissionIds)
+		setBulkApproveAdminComment("")
+		setBulkApproveDialogOpen(true)
+	}
+
+	const handleBulkApproveSubmit = () => {
+		if (bulkApprovingIds.length > 0) {
+			bulkApproveMutation.mutate(
+				{
+					submissionIds: bulkApprovingIds,
+					adminComment: bulkApproveAdminComment.trim() || undefined,
+				},
+				{
+					onSuccess: () => {
+						setBulkApproveDialogOpen(false)
+						setBulkApprovingIds([])
+						setBulkApproveAdminComment("")
+					},
+				},
+			)
+		}
+	}
+
+	const handleBulkApproveDialogClose = () => {
+		setBulkApproveDialogOpen(false)
+		setBulkApprovingIds([])
+		setBulkApproveAdminComment("")
+	}
+
 	// Not authenticated
 	if (!authLoading && !isAuthenticated) {
 		return (
@@ -245,25 +282,37 @@ export default function DashboardPage() {
 						{stats.total > 0 && (
 							<div className="flex flex-wrap gap-2">
 								{stats.pending > 0 && (
-									<Badge variant="outline" className="gap-1.5 py-1 px-2.5 text-xs font-medium border-yellow-500/30 text-yellow-700 dark:text-yellow-300 bg-yellow-500/5">
+									<Badge
+										variant="outline"
+										className="gap-1.5 py-1 px-2.5 text-xs font-medium border-yellow-500/30 text-yellow-700 dark:text-yellow-300 bg-yellow-500/5"
+									>
 										<Clock className="h-3 w-3" />
 										{stats.pending} Pending
 									</Badge>
 								)}
 								{stats.approved > 0 && (
-									<Badge variant="outline" className="gap-1.5 py-1 px-2.5 text-xs font-medium border-green-500/30 text-green-700 dark:text-green-300 bg-green-500/5">
+									<Badge
+										variant="outline"
+										className="gap-1.5 py-1 px-2.5 text-xs font-medium border-green-500/30 text-green-700 dark:text-green-300 bg-green-500/5"
+									>
 										<CheckCircle2 className="h-3 w-3" />
 										{stats.approved} Approved
 									</Badge>
 								)}
 								{stats.added > 0 && (
-									<Badge variant="outline" className="gap-1.5 py-1 px-2.5 text-xs font-medium border-blue-500/30 text-blue-700 dark:text-blue-300 bg-blue-500/5">
+									<Badge
+										variant="outline"
+										className="gap-1.5 py-1 px-2.5 text-xs font-medium border-blue-500/30 text-blue-700 dark:text-blue-300 bg-blue-500/5"
+									>
 										<GitPullRequestArrow className="h-3 w-3" />
 										{stats.added} In Collection
 									</Badge>
 								)}
 								{stats.rejected > 0 && (
-									<Badge variant="outline" className="gap-1.5 py-1 px-2.5 text-xs font-medium border-red-500/30 text-red-700 dark:text-red-300 bg-red-500/5">
+									<Badge
+										variant="outline"
+										className="gap-1.5 py-1 px-2.5 text-xs font-medium border-red-500/30 text-red-700 dark:text-red-300 bg-red-500/5"
+									>
 										<XCircle className="h-3 w-3" />
 										{stats.rejected} Rejected
 									</Badge>
@@ -280,10 +329,12 @@ export default function DashboardPage() {
 							onReject={handleReject}
 							onTriggerWorkflow={handleTriggerWorkflow}
 							onBulkTriggerWorkflow={handleBulkTriggerWorkflow}
+							onBulkApprove={handleBulkApprove}
 							isApproving={approveMutation.isPending}
 							isRejecting={rejectMutation.isPending}
 							isTriggeringWorkflow={workflowMutation.isPending}
 							isBulkTriggeringWorkflow={bulkWorkflowMutation.isPending}
+							isBulkApproving={bulkApproveMutation.isPending}
 							workflowUrl={workflowUrl}
 						/>
 					</CardContent>
@@ -314,7 +365,9 @@ export default function DashboardPage() {
 								{approveMutation.isPending ? "Approving..." : "Approve Submission"}
 							</Button>
 							<DrawerClose asChild>
-								<Button variant="outline" disabled={approveMutation.isPending}>Cancel</Button>
+								<Button variant="outline" disabled={approveMutation.isPending}>
+									Cancel
+								</Button>
 							</DrawerClose>
 						</DrawerFooter>
 					</DrawerContent>
@@ -376,7 +429,9 @@ export default function DashboardPage() {
 								{rejectMutation.isPending ? "Rejecting..." : "Reject Submission"}
 							</Button>
 							<DrawerClose asChild>
-								<Button variant="outline" disabled={rejectMutation.isPending}>Cancel</Button>
+								<Button variant="outline" disabled={rejectMutation.isPending}>
+									Cancel
+								</Button>
 							</DrawerClose>
 						</DrawerFooter>
 					</DrawerContent>
@@ -408,6 +463,76 @@ export default function DashboardPage() {
 							</Button>
 							<Button variant="destructive" onClick={handleRejectSubmit} disabled={rejectMutation.isPending}>
 								{rejectMutation.isPending ? "Rejecting..." : "Reject Submission"}
+							</Button>
+						</DialogFooter>
+					</DialogContent>
+				</Dialog>
+			)}
+
+			{isMobile ? (
+				<Drawer open={bulkApproveDialogOpen} onOpenChange={handleBulkApproveDialogClose}>
+					<DrawerContent>
+						<DrawerHeader className="text-left">
+							<DrawerTitle>
+								Approve {bulkApprovingIds.length} Submission{bulkApprovingIds.length > 1 ? "s" : ""}
+							</DrawerTitle>
+							<DrawerDescription>Optional: add a note for the submitters. This will appear in the approval emails.</DrawerDescription>
+						</DrawerHeader>
+						<div className="space-y-4 px-4 pb-2">
+							<div className="space-y-2">
+								<Label htmlFor="bulk-approve-admin-comment">Admin Comment</Label>
+								<Textarea
+									id="bulk-approve-admin-comment"
+									placeholder="Add an optional note for the approval emails..."
+									value={bulkApproveAdminComment}
+									onChange={(e) => setBulkApproveAdminComment(e.target.value)}
+									rows={4}
+								/>
+							</div>
+						</div>
+						<DrawerFooter>
+							<Button onClick={handleBulkApproveSubmit} disabled={bulkApproveMutation.isPending}>
+								{bulkApproveMutation.isPending
+									? "Approving..."
+									: `Approve ${bulkApprovingIds.length} Submission${bulkApprovingIds.length > 1 ? "s" : ""}`}
+							</Button>
+							<DrawerClose asChild>
+								<Button variant="outline" disabled={bulkApproveMutation.isPending}>
+									Cancel
+								</Button>
+							</DrawerClose>
+						</DrawerFooter>
+					</DrawerContent>
+				</Drawer>
+			) : (
+				<Dialog open={bulkApproveDialogOpen} onOpenChange={handleBulkApproveDialogClose}>
+					<DialogContent>
+						<DialogHeader>
+							<DialogTitle>
+								Approve {bulkApprovingIds.length} Submission{bulkApprovingIds.length > 1 ? "s" : ""}
+							</DialogTitle>
+							<DialogDescription>Optional: add a note for the submitters. This will appear in the approval emails.</DialogDescription>
+						</DialogHeader>
+						<div className="space-y-4 py-4">
+							<div className="space-y-2">
+								<Label htmlFor="bulk-approve-admin-comment">Admin Comment</Label>
+								<Textarea
+									id="bulk-approve-admin-comment"
+									placeholder="Add an optional note for the approval emails..."
+									value={bulkApproveAdminComment}
+									onChange={(e) => setBulkApproveAdminComment(e.target.value)}
+									rows={4}
+								/>
+							</div>
+						</div>
+						<DialogFooter>
+							<Button variant="outline" onClick={handleBulkApproveDialogClose} disabled={bulkApproveMutation.isPending}>
+								Cancel
+							</Button>
+							<Button onClick={handleBulkApproveSubmit} disabled={bulkApproveMutation.isPending}>
+								{bulkApproveMutation.isPending
+									? "Approving..."
+									: `Approve ${bulkApprovingIds.length} Submission${bulkApprovingIds.length > 1 ? "s" : ""}`}
 							</Button>
 						</DialogFooter>
 					</DialogContent>
