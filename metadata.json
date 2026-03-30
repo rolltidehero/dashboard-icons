@@ -40511,5 +40511,22 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "eu-spreadsheet": {
+        "base": "svg",
+        "aliases": [
+            "office-eu-spreadsheet",
+            "calc"
+        ],
+        "categories": [
+            "cloud"
+        ],
+        "update": {
+            "timestamp": "2026-03-30T13:11:17.044Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
