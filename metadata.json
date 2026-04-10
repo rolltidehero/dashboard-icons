@@ -27955,20 +27955,23 @@
         }
     },
     "linksys": {
-        "base": "png",
+        "base": "svg",
         "aliases": [
-            "Router"
+            "linksys-device"
         ],
         "categories": [
-            "Networking-Tools",
-            "Smart-Home"
+            "network"
         ],
         "update": {
-            "timestamp": "2025-01-07T17:54:03Z",
+            "timestamp": "2026-04-10T14:21:03.185Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 40307321,
+                "login": "sixsixfive"
             }
+        },
+        "colors": {
+            "light": "linksys-light",
+            "dark": "linksys-dark"
         }
     },
     "scrutiny": {
