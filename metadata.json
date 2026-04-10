@@ -41911,5 +41911,22 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "lineage": {
+        "base": "svg",
+        "aliases": [
+            "lineage-os"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-10T14:21:43.171Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "dark": "lineage-dark"
+        }
     }
 }
