@@ -41539,5 +41539,19 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "avm-repeater-2400": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "network"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:20:37.873Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
