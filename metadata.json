@@ -41778,5 +41778,21 @@
         "colors": {
             "light": "aroz-os-light"
         }
+    },
+    "samsung-tv-plus": {
+        "base": "svg",
+        "aliases": [
+            "samsungtv+"
+        ],
+        "categories": [
+            "media"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:21:19.960Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
