@@ -41739,5 +41739,25 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "prozilla-os": {
+        "base": "svg",
+        "aliases": [
+            "prozilla"
+        ],
+        "categories": [
+            "network"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:21:15.460Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "light": "prozilla-os-light",
+            "dark": "prozilla-os-dark"
+        }
     }
 }
