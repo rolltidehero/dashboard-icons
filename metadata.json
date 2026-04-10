@@ -41880,5 +41880,21 @@
             "light": "ecosia-wordmark-light",
             "dark": "ecosia-wordmark-dark"
         }
+    },
+    "viniplay": {
+        "base": "png",
+        "aliases": [
+            "viniplay-iptv"
+        ],
+        "categories": [
+            "media"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:21:38.157Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
