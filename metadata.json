@@ -41078,5 +41078,19 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "altcha": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "security"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:19:25.746Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
