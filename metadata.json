@@ -41628,5 +41628,30 @@
         "colors": {
             "light": "avm-fritzbox-7590real-light"
         }
+    },
+    "sat-ip": {
+        "base": "svg",
+        "aliases": [
+            "sat>ip",
+            "sat-over-ip"
+        ],
+        "categories": [
+            "network",
+            "media"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:20:53.337Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "dark": "sat-ip-dark"
+        },
+        "wordmark": {
+            "light": "sat-ip-wordmark-light",
+            "dark": "sat-ip-wordmark-dark"
+        }
     }
 }
