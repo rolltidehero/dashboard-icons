@@ -28281,22 +28281,26 @@
     "zyxel-networks": {
         "base": "svg",
         "aliases": [
-            "Network Devices"
+            "zyxel-green",
+            "zyxel-device"
         ],
         "categories": [
-            "Networking-Tools",
-            "Hardware"
+            "network"
         ],
         "update": {
-            "timestamp": "2024-10-20T17:24:03Z",
+            "timestamp": "2026-04-10T14:21:12.523Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 40307321,
+                "login": "sixsixfive"
             }
         },
         "colors": {
-            "dark": "zyxel-networks",
-            "light": "zyxel-networks-light"
+            "light": "zyxel-networks-light",
+            "dark": "zyxel-networks-dark"
+        },
+        "wordmark": {
+            "light": "zyxel-networks-wordmark-light",
+            "dark": "zyxel-networks-wordmark-dark"
         }
     },
     "act": {
