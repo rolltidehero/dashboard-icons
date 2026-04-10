@@ -41351,5 +41351,25 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "filen": {
+        "base": "svg",
+        "aliases": [
+            "filen-cloud-storage"
+        ],
+        "categories": [
+            "cloud",
+            "storage"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:20:08.690Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "light": "filen-light"
+        }
     }
 }
