@@ -41323,5 +41323,19 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "tuta-calendar": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:20:03.291Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
