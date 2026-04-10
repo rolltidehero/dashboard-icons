@@ -40992,5 +40992,17 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "mundraub": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-10T14:17:00.514Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
