@@ -41928,5 +41928,24 @@
         "colors": {
             "dark": "lineage-dark"
         }
+    },
+    "e-os": {
+        "base": "svg",
+        "aliases": [
+            "eos",
+            "e-os-device",
+            "eos-device"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-10T14:21:45.808Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "dark": "e-os-dark"
+        }
     }
 }
