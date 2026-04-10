@@ -41686,5 +41686,22 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "keepass": {
+        "base": "svg",
+        "aliases": [
+            "keepass-password-manager"
+        ],
+        "categories": [
+            "security",
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:21:00.225Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
