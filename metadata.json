@@ -24125,13 +24125,18 @@
     },
     "umbrel": {
         "base": "svg",
-        "aliases": [],
-        "categories": [],
+        "aliases": [
+            "umbrel-os"
+        ],
+        "categories": [
+            "network",
+            "storage"
+        ],
         "update": {
-            "timestamp": "2022-09-09T10:04:03Z",
+            "timestamp": "2026-04-10T14:21:26.806Z",
             "author": {
-                "id": 15933,
-                "name": "fabricionaweb"
+                "id": 40307321,
+                "login": "sixsixfive"
             }
         }
     },
