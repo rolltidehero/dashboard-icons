@@ -41270,5 +41270,21 @@
         "colors": {
             "dark": "svgedit-dark"
         }
+    },
+    "gravit-designer": {
+        "base": "svg",
+        "aliases": [
+            "gravit-designer"
+        ],
+        "categories": [
+            "media"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:19:55.774Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
