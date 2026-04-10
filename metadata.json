@@ -41309,5 +41309,19 @@
             "light": "puter-light",
             "dark": "puter-dark"
         }
+    },
+    "tuta-mail": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "social"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:20:01.004Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
