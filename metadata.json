@@ -26222,14 +26222,22 @@
     },
     "startpage": {
         "base": "svg",
-        "aliases": [],
+        "aliases": [
+            "startpage-search"
+        ],
         "categories": [],
         "update": {
-            "timestamp": "2023-04-13T13:56:18Z",
+            "timestamp": "2026-04-10T14:21:35.601Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 40307321,
+                "login": "sixsixfive"
             }
+        },
+        "colors": {
+            "dark": "startpage-dark"
+        },
+        "wordmark": {
+            "light": "startpage-wordmark-light"
         }
     },
     "thunderbird": {
