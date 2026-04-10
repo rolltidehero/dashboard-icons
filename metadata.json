@@ -41670,5 +41670,21 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "chocolate": {
+        "base": "svg",
+        "aliases": [
+            "chocolate-media-manager"
+        ],
+        "categories": [
+            "media"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:20:57.863Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
