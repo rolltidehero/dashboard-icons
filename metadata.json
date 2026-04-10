@@ -41018,5 +41018,21 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "volkszaehler": {
+        "base": "svg",
+        "aliases": [
+            "smart meter"
+        ],
+        "categories": [
+            "monitoring"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:19:15.419Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
