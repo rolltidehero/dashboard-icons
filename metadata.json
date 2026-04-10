@@ -41004,5 +41004,19 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "finanzen-zero": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "finance"
+        ],
+        "update": {
+            "timestamp": "2026-04-10T14:17:03.033Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
