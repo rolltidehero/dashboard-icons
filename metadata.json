@@ -14121,17 +14121,15 @@
     "music-assistant": {
         "base": "svg",
         "aliases": [],
-        "categories": [],
+        "categories": [
+            "entertainment"
+        ],
         "update": {
-            "timestamp": "2024-10-20T17:24:03Z",
+            "timestamp": "2026-04-13T12:21:25.217Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 185259594,
+                "login": "isanto1306"
             }
-        },
-        "colors": {
-            "dark": "music-assistant",
-            "light": "music-assistant-light"
         }
     },
     "feedlynx": {
