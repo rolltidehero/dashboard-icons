@@ -14285,14 +14285,14 @@
         }
     },
     "jdownloader": {
-        "base": "png",
+        "base": "svg",
         "aliases": [],
         "categories": [],
         "update": {
-            "timestamp": "2025-01-07T17:54:03Z",
+            "timestamp": "2026-04-13T12:21:49.148Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 50268291,
+                "login": "infinit7even"
             }
         }
     },
