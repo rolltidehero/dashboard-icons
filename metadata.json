@@ -42090,5 +42090,19 @@
         "colors": {
             "light": "freecad-light"
         }
+    },
+    "booko": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "entertainment"
+        ],
+        "update": {
+            "timestamp": "2026-04-13T12:21:46.574Z",
+            "author": {
+                "id": 18232,
+                "login": "dkam"
+            }
+        }
     }
 }
