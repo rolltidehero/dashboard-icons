@@ -42612,5 +42612,19 @@
         "colors": {
             "dark": "calyxos-dark"
         }
+    },
+    "surrealdb": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "database"
+        ],
+        "update": {
+            "timestamp": "2026-04-27T14:34:47.880Z",
+            "author": {
+                "id": 111348410,
+                "login": "ChrisA95G"
+            }
+        }
     }
 }
