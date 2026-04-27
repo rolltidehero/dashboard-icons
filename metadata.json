@@ -42212,5 +42212,17 @@
                 "login": "ITGenConnect"
             }
         }
+    },
+    "mapillary": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-27T14:29:34.368Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
