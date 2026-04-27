@@ -42387,5 +42387,22 @@
         "colors": {
             "dark": "libreoffice-colibre-spreadsheet-dark"
         }
+    },
+    "libreoffice-colibre-presentation": {
+        "base": "svg",
+        "aliases": [
+            "odp"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-27T14:34:05.159Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "dark": "libreoffice-colibre-presentation-dark"
+        }
     }
 }
