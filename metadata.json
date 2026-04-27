@@ -42258,5 +42258,17 @@
             "light": "rapid7-light",
             "dark": "rapid7-dark"
         }
+    },
+    "microsoft-dataverse": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-27T14:33:09.847Z",
+            "author": {
+                "id": 277670796,
+                "login": "spitivalleyt3-glitch"
+            }
+        }
     }
 }
