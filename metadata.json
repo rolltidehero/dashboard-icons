@@ -42485,5 +42485,19 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "mobioffice": {
+        "base": "svg",
+        "aliases": [
+            "mobi-office"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-27T14:34:23.078Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
