@@ -42118,5 +42118,20 @@
                 "login": "EddyMercier"
             }
         }
+    },
+    "postmarketos": {
+        "base": "svg",
+        "aliases": [
+            "pmos",
+            "postmarket-os"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-27T14:29:16.939Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
