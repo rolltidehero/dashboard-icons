@@ -42580,5 +42580,20 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "ubports": {
+        "base": "svg",
+        "aliases": [
+            "ubports-robot",
+            "ubuntu-touch"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-27T14:34:41.945Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
