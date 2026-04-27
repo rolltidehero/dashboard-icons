@@ -42224,5 +42224,17 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "zoho": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-27T14:29:36.729Z",
+            "author": {
+                "id": 170592029,
+                "login": "ITGenConnect"
+            }
+        }
     }
 }
