@@ -42153,5 +42153,21 @@
         "colors": {
             "dark": "sailfishos-dark"
         }
+    },
+    "houndarr": {
+        "base": "png",
+        "aliases": [
+            "arr-stack"
+        ],
+        "categories": [
+            "monitoring"
+        ],
+        "update": {
+            "timestamp": "2026-04-27T14:29:24.793Z",
+            "author": {
+                "id": 10246822,
+                "login": "robinvoor"
+            }
+        }
     }
 }
