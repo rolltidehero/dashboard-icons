@@ -42198,5 +42198,19 @@
                 "login": "Veilios"
             }
         }
+    },
+    "toshiba": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-04-27T14:29:32.025Z",
+            "author": {
+                "id": 170592029,
+                "login": "ITGenConnect"
+            }
+        }
     }
 }
