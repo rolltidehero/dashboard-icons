@@ -42455,5 +42455,21 @@
         "colors": {
             "dark": "libreoffice-colibre-text-dark"
         }
+    },
+    "surfshark": {
+        "base": "svg",
+        "aliases": [
+            "surfshark-vpn"
+        ],
+        "categories": [
+            "network"
+        ],
+        "update": {
+            "timestamp": "2026-04-27T14:34:17.161Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
