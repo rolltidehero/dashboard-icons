@@ -42566,5 +42566,19 @@
             "light": "ctrader-wordmark-light",
             "dark": "ctrader-wordmark-dark"
         }
+    },
+    "osmand": {
+        "base": "svg",
+        "aliases": [
+            "osmand-maps"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-04-27T14:34:39.010Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
