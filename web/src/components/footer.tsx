@@ -27,6 +27,17 @@ export function Footer() {
 								<span>Icons</span>
 							</Link>
 						</div>
+						<p className="text-sm text-muted-foreground mt-2">
+							Contact us:{" "}
+							<Link
+								href="mailto:homarr-labs@proton.me"
+								target="_blank"
+								rel="noopener noreferrer"
+								className="text-foreground/80 hover:text-foreground underline-offset-2 hover:underline transition-colors"
+							>
+								homarr-labs@proton.me
+							</Link>
+						</p>
 					</div>
 
 					<div className="flex flex-col gap-3">
