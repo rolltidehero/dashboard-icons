@@ -2,7 +2,7 @@
 
 This guide walks through every step required to integrate a new third-party icon catalogue into Dashboard Icons. The system is built on an **adapter pattern** — each external source is a configuration entry in `src/constants.ts`, backed by a PocketBase collection, an importer script, and a GitHub Actions workflow. The UI, search, sitemap, and metadata layers read from this configuration automatically.
 
-The existing **selfh.st** integration is the reference implementation. Every file mentioned below already has a working example you can follow.
+The existing **selfh.st** and **LobeHub** integrations are the reference implementations. Every file mentioned below already has a working example you can follow.
 
 ---
 
@@ -172,9 +172,12 @@ The importer is a standalone TypeScript script that:
 2. Transforms each entry into an `external_icons` PocketBase record
 3. Upserts (create or update) each record
 
-### Reference: `scripts/import-selfhst.ts`
+### Reference implementations
 
-Use the selfh.st importer as a template. Key patterns:
+- `scripts/import-selfhst.ts` — flat CDN structure, CSV manifest, simple slug-suffix variants
+- `scripts/import-lobehub.ts` — GitHub tree API manifest, frontmatter metadata parsing, variant grouping with `-color` primary, separate light/dark directories
+
+Use the selfh.st importer as a starting template. Key patterns:
 
 ```typescript
 import PocketBase from "pocketbase"
@@ -236,10 +239,29 @@ The `url_templates` field lets you define custom URL patterns per format. Use `{
   png: "https://cdn.jsdelivr.net/gh/org/repo/png/{slug}.png",
   svg_light: "https://cdn.jsdelivr.net/gh/org/repo/svg/{slug}-light.svg",
   svg_dark: "https://cdn.jsdelivr.net/gh/org/repo/svg/{slug}-dark.svg",
+  png_light: "https://cdn.jsdelivr.net/gh/org/repo/png/{slug}-light.png",
+  png_dark: "https://cdn.jsdelivr.net/gh/org/repo/png/{slug}-dark.png",
 }
 ```
 
+**Important:** You must emit explicit templates for every format+theme combination your source supports (e.g. `svg_light`, `png_dark`, `webp_light`). The UI only renders variant cards when the exact template key exists — there is no runtime guessing of themed paths. Different sources use different CDN path conventions (e.g. selfh.st uses `{slug}-dark.png` in a flat directory, LobeHub uses `dark/{slug}.png` in separate directories), so templates must be explicit.
+
 If `url_templates` is empty, the URL resolver falls back to `{cdnBase}/{format}/{slug}.{format}` using the `cdnBase` from your source config.
+
+### Variant merging
+
+If your source has multiple variants of the same icon (e.g. `openai`, `openai-color`, `openai-text`), you should group them by base name and pick one as the primary entry. The LobeHub importer demonstrates this pattern:
+
+- Group slugs by stripping suffixes like `-color`, `-text`, `-avatar`
+- Prefer the `-color` variant as the primary slug (it's shown in the browse grid)
+- Store the other variants as aliases on the primary record (searchable but not separate cards)
+- Clean up old non-primary records on re-import
+
+See `scripts/import-lobehub.ts` `groupSlugs()` for the reference implementation.
+
+### CLI flags
+
+Both import scripts support `--purge` (delete all records for the source) and `--dry-run` (log without writing). Consider adding these to your importer for easier debugging and data management.
 
 ### .gitignore
 
@@ -377,11 +399,11 @@ The `NumberTicker` displays the total icon count (native + all external). On hov
 
 ### Source filter dropdown — `src/components/icon-search.tsx`
 
-The dropdown renders one `DropdownMenuRadioItem` per entry in `EXTERNAL_SOURCE_IDS`, using `EXTERNAL_SOURCES[sourceId].icon` and `.label`. Selecting a source filters the icon grid to only show icons matching that `source` value.
+The dropdown renders one `DropdownMenuRadioItem` per entry in `EXTERNAL_SOURCE_IDS`, using `EXTERNAL_SOURCES[sourceId].icon` and `.label`. Selecting a source filters the icon grid to only show icons matching that `source` value. The filter button itself shows the selected source's icon instead of the generic filter icon.
 
 ### Icon card badges — `src/components/icon-card.tsx`
 
-When an icon has `source !== "native"`, the card overlays a `Badge` in the top-right corner with the source's `icon` and `label` from `EXTERNAL_SOURCES`.
+When an icon has `source !== "native"`, hovering the card reveals a banner above it showing the source icon and "from {label}". The card also uses `getExternalIconThemedPreviewUrl()` to show light/dark themed previews matching the user's current theme (via `next-themes`). Native icons similarly use `iconData.colors.dark`/`.light` for theme-aware previews.
 
 ### Detail page — `src/components/icon-details.tsx`
 
@@ -422,7 +444,7 @@ Iterates over all external icons and generates `<url>` entries with `<image>` ta
 
 ### URL resolution — `src/lib/external-icon-urls.ts`
 
-`resolveExternalIconUrl()` first checks `url_templates[key]` for a custom pattern, then falls back to `{cdnBase}/{format}/{slug}.{format}`. The `cdnBase` is read from `EXTERNAL_SOURCES[icon.source]`.
+`resolveExternalIconUrl()` first checks `url_templates[key]` for an exact match (e.g. `png_dark`), then falls back to `{cdnBase}/{format}/{slug}.{format}`. The `cdnBase` is read from `EXTERNAL_SOURCES[icon.source]`. `getExternalIconThemedPreviewUrl()` selects the best preview URL based on the current theme. The detail page's `renderVariant()` only renders a format+theme card when the exact template key exists in `url_templates` — missing templates are skipped, not guessed.
 
 ### Types — `src/types/icons.ts`
 
@@ -470,6 +492,22 @@ Files that pick up changes **automatically** (no edits needed):
 
 ---
 
+## Lessons from the LobeHub integration
+
+These are pitfalls encountered during the LobeHub integration that future integrators should be aware of:
+
+1. **Explicit templates are mandatory.** Different sources use different CDN conventions. selfh.st puts light/dark in the slug (`icon-dark.png`), LobeHub puts them in the path (`dark/icon.png`). The UI only renders variant cards when the exact template key exists — never rely on runtime URL construction.
+
+2. **Variant merging avoids duplicate cards.** LobeHub has `openai`, `openai-color`, `openai-text` as separate SVGs. Without merging, each appears as a separate card. The `groupSlugs()` pattern picks `-color` as primary and stores the rest as aliases.
+
+3. **`variants.light`/`dark` doesn't mean all formats have themes.** LobeHub has light/dark for PNG/WebP but not SVG. The `variants` flag is format-agnostic, so the UI must check `url_templates` for the specific format+theme key before rendering.
+
+4. **Auth headers must be passed through.** The `fetchBrandMetadata` function initially hardcoded its fetch headers, ignoring the `GITHUB_TOKEN` passed from CI. This caused rate limiting on the GitHub raw content API.
+
+5. **Sitemap and `generateStaticParams` need deduplication.** When multiple sources share a slug (e.g. `openai`), both sitemap and static params must deduplicate by slug to avoid build failures and duplicate URLs.
+
+---
+
 ## Checklist
 
 - [ ] Added source ID to `ExternalSourceId` union in `constants.ts`
@@ -481,8 +519,11 @@ Files that pick up changes **automatically** (no edits needed):
 - [ ] Added `remotePatterns` entry in `next.config.ts`
 - [ ] Added Playwright tests in `tests/external-icons.spec.ts`
 - [ ] Updated `README.md` with source documentation
-- [ ] Verified locally: importer runs, icons appear in browse, detail page renders
-- [ ] Verified: source filter dropdown shows new source with icon
+- [ ] Verified: `url_templates` has explicit keys for every format+theme combination
+- [ ] Verified: variants are merged if applicable (e.g. `-color` as primary)
+- [ ] Verified locally: importer runs with `--dry-run`, icons appear in browse, detail page renders
+- [ ] Verified: source filter dropdown shows new source with its icon
+- [ ] Verified: themed previews work in both light and dark modes
 - [ ] Verified: CMD+K search returns new source icons with badge
 - [ ] Verified: hero hover popover shows new source count
 - [ ] Verified: `pnpm build` generates static pages for all new slugs
