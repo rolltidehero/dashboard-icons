@@ -43794,5 +43794,26 @@
             "light": "proxmox-backup-server-light",
             "dark": "proxmox-backup-server-dark"
         }
+    },
+    "apache-superset": {
+        "base": "svg",
+        "aliases": [
+            "superset"
+        ],
+        "categories": [
+            "monitoring",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:51.097Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "apache-superset-light",
+            "dark": "apache-superset-dark"
+        }
     }
 }
