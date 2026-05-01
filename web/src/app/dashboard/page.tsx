@@ -188,31 +188,23 @@ export default function DashboardPage() {
 
 	const handleRejectSubmit = () => {
 		if (rejectingSubmissionId) {
-			rejectMutation.mutate(
-				{ submissionId: rejectingSubmissionId, adminComment: adminComment.trim() || undefined },
-				{
-					onSuccess: () => {
-						setRejectDialogOpen(false)
-						setRejectingSubmissionId(null)
-						setAdminComment("")
-					},
-				},
-			)
+			const id = rejectingSubmissionId
+			const comment = adminComment.trim() || undefined
+			setRejectDialogOpen(false)
+			setRejectingSubmissionId(null)
+			setAdminComment("")
+			rejectMutation.mutate({ submissionId: id, adminComment: comment })
 		}
 	}
 
 	const handleApproveSubmit = () => {
 		if (approvingSubmissionId) {
-			approveMutation.mutate(
-				{ submissionId: approvingSubmissionId, adminComment: approveAdminComment.trim() || undefined },
-				{
-					onSuccess: () => {
-						setApproveDialogOpen(false)
-						setApprovingSubmissionId(null)
-						setApproveAdminComment("")
-					},
-				},
-			)
+			const id = approvingSubmissionId
+			const comment = approveAdminComment.trim() || undefined
+			setApproveDialogOpen(false)
+			setApprovingSubmissionId(null)
+			setApproveAdminComment("")
+			approveMutation.mutate({ submissionId: id, adminComment: comment })
 		}
 	}
 
@@ -224,16 +216,12 @@ export default function DashboardPage() {
 
 	const handleBulkApproveSubmit = () => {
 		if (bulkApprovingIds.length > 0) {
-			bulkApproveMutation.mutate(
-				{ submissionIds: bulkApprovingIds, adminComment: bulkApproveAdminComment.trim() || undefined },
-				{
-					onSuccess: () => {
-						setBulkApproveDialogOpen(false)
-						setBulkApprovingIds([])
-						setBulkApproveAdminComment("")
-					},
-				},
-			)
+			const ids = [...bulkApprovingIds]
+			const comment = bulkApproveAdminComment.trim() || undefined
+			setBulkApproveDialogOpen(false)
+			setBulkApprovingIds([])
+			setBulkApproveAdminComment("")
+			bulkApproveMutation.mutate({ submissionIds: ids, adminComment: comment })
 		}
 	}
 
