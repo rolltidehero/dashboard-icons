@@ -206,41 +206,46 @@ function getVariants(slug: string, index: AssetIndex) {
 	}
 }
 
-function buildAliasMap(slugs: Set<string>): Map<string, string[]> {
+type BrandGroup = {
+	primary: string
+	aliases: string[]
+}
+
+function groupSlugs(svgSlugs: Set<string>): BrandGroup[] {
 	const groups = new Map<string, string[]>()
-	for (const slug of slugs) {
+	for (const slug of svgSlugs) {
 		const base = getBaseSlug(slug)
 		if (!groups.has(base)) groups.set(base, [])
 		groups.get(base)!.push(slug)
 	}
 
-	const aliases = new Map<string, string[]>()
+	const result: BrandGroup[] = []
 	for (const [base, members] of groups) {
+		const colorSlug = members.find((m) => m.endsWith("-color"))
+		const primary = colorSlug ?? members.find((m) => m === base) ?? members[0]
+		const aliases = members.filter((m) => m !== primary)
 		const synonyms = SYNONYMS[base] ?? []
-		for (const slug of members) {
-			aliases.set(slug, [...members.filter((m) => m !== slug), ...synonyms])
-		}
+		result.push({ primary, aliases: [...aliases, ...synonyms] })
 	}
-	return aliases
+	return result
 }
 
 function toRecord(
-	slug: string,
-	aliases: string[],
+	group: BrandGroup,
 	index: AssetIndex,
-	brandMeta: Map<string, BrandMeta>,
 	slugBrandMap: Map<string, BrandMeta>,
 ) {
+	const { primary: slug, aliases } = group
 	const brand = slugBrandMap.get(slug)
 	const categories = ["ai"]
 	if (brand?.group) categories.push(brand.group.toLowerCase())
 
-	const name = brand?.title ? `${brand.title}${slug.endsWith("-color") ? " Color" : slug.endsWith("-text") ? " Text" : slug.endsWith("-avatar") ? " Avatar" : slug.endsWith("-combine") ? " Combine" : slug !== brand.title.toLowerCase().replace(/\s+/g, "-") ? ` (${slugToName(slug)})` : ""}` : slugToName(slug)
+	const name = brand?.title ?? slugToName(getBaseSlug(slug))
 
 	return {
 		source: SOURCE,
 		slug,
-		name: name.length > 128 ? slugToName(slug) : name,
+		name,
 		aliases,
 		categories,
 		formats: getFormats(slug, index),
@@ -323,7 +328,8 @@ async function main() {
 	console.log(`Parsed metadata for ${brandMeta.size} brands`)
 
 	const slugBrandMap = buildSlugToBrand(index.svgSlugs, brandMeta)
-	const aliasMap = buildAliasMap(index.svgSlugs)
+	const groups = groupSlugs(index.svgSlugs)
+	console.log(`Grouped into ${groups.length} brands (from ${index.svgSlugs.size} slugs)`)
 
 	const existingRecords = await pb.collection("external_icons").getFullList({
 		filter: pb.filter("source = {:source}", { source: SOURCE }),
@@ -334,10 +340,13 @@ async function main() {
 
 	let created = 0
 	let updated = 0
+	let deleted = 0
+	const importedSlugs = new Set<string>()
 
-	for (const slug of index.svgSlugs) {
-		const record = toRecord(slug, aliasMap.get(slug) ?? [], index, brandMeta, slugBrandMap)
-		const existingId = existingBySlug.get(slug)
+	for (const group of groups) {
+		const record = toRecord(group, index, slugBrandMap)
+		importedSlugs.add(group.primary)
+		const existingId = existingBySlug.get(group.primary)
 
 		if (existingId) {
 			await pb.collection("external_icons").update(existingId, record)
@@ -348,7 +357,14 @@ async function main() {
 		}
 	}
 
-	console.log(`LobeHub import complete: ${created} created, ${updated} updated`)
+	for (const [slug, id] of existingBySlug) {
+		if (!importedSlugs.has(slug)) {
+			await pb.collection("external_icons").delete(id)
+			deleted++
+		}
+	}
+
+	console.log(`LobeHub import complete: ${created} created, ${updated} updated, ${deleted} removed (non-primary variants)`)
 }
 
 main().catch((error) => {
