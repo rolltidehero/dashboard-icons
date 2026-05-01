@@ -43002,5 +43002,24 @@
             "light": "nextbike-wordmark-light",
             "dark": "nextbike-wordmark-dark"
         }
+    },
+    "hcl-verse": {
+        "base": "svg",
+        "aliases": [
+            "hcl verse",
+            "verse",
+            "hcl mail",
+            "hcl email"
+        ],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:43.746Z",
+            "author": {
+                "id": 163436602,
+                "login": "agoettl"
+            }
+        }
     }
 }
