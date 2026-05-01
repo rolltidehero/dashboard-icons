@@ -36,10 +36,10 @@ export async function generateMetadata(): Promise<Metadata> {
 		metadataBase: new URL(WEB_URL),
 		title: {
 			default: websiteTitle,
-			template: "%s | Dashboard Icons",
+			template: "%s | Dashboard Icons & Logos",
 		},
 		description: getDescription(totalIcons),
-		keywords: ["dashboard icons", "service icons", "application icons", "tool icons", "web dashboard", "app directory"],
+		keywords: ["dashboard icons", "dashboard logos", "service icons", "service logos", "application icons", "app logos", "tool icons", "web dashboard", "app directory"],
 		robots: {
 			index: true,
 			follow: true,
@@ -55,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
 					url: "/og-image.png",
 					width: 1200,
 					height: 630,
-					alt: "Dashboard Icons - Dashboard icons for self hosted services",
+					alt: "Dashboard Icons - Free icons and logos for self-hosted services",
 					type: "image/png",
 				},
 			],
