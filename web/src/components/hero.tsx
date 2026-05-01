@@ -24,6 +24,7 @@ import { useEffect, useRef, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { DASHBOARD_ICONS_ICON, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { cn } from "@/lib/utils"
 import { AddToSearchBarButton } from "./add-to-search-bar-button"
 import { AuroraText } from "./magicui/aurora-text"
@@ -145,7 +146,17 @@ function ElegantShape({
 	)
 }
 
-export function HeroSection({ totalIcons, stars }: { totalIcons: number; stars: number }) {
+export function HeroSection({
+	totalIcons,
+	nativeCount,
+	sourceCounts,
+	stars,
+}: {
+	totalIcons: number
+	nativeCount: number
+	sourceCounts: Record<string, number>
+	stars: number
+}) {
 	const [searchQuery, setSearchQuery] = useState("")
 
 	return (
@@ -221,7 +232,39 @@ export function HeroSection({ totalIcons, stars }: { totalIcons: number; stars: 
 
 					<p className="text-sm sm:text-base md:text-xl text-muted-foreground leading-relaxed mb-8 font-medium tracking-wide max-w-2xl mx-auto px-4 motion-preset-slide-down motion-duration-500">
 						A collection of{" "}
-						<NumberTicker value={totalIcons} startValue={1000} className="font-bold tracking-tighter text-muted-foreground" /> curated icons
+						<HoverCard openDelay={100} closeDelay={200}>
+							<HoverCardTrigger asChild>
+								<span className="cursor-default underline decoration-dotted underline-offset-4 decoration-muted-foreground/40 hover:decoration-primary transition-colors">
+									<NumberTicker value={totalIcons} startValue={1000} className="font-bold tracking-tighter text-muted-foreground" /> curated
+									icons
+								</span>
+							</HoverCardTrigger>
+							<HoverCardContent className="w-56 p-3" side="bottom">
+								<div className="flex flex-col gap-2">
+									<p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Sources</p>
+									<div className="flex items-center gap-2 text-sm">
+										<img src={DASHBOARD_ICONS_ICON} alt="" width={16} height={16} className="shrink-0" />
+										<span className="flex-1">Dashboard Icons</span>
+										<span className="font-semibold tabular-nums">{nativeCount.toLocaleString()}</span>
+									</div>
+									{Object.entries(sourceCounts).map(([sourceId, count]) => {
+										const config = EXTERNAL_SOURCES[sourceId as ExternalSourceId]
+										if (!config) return null
+										return (
+											<div key={sourceId} className="flex items-center gap-2 text-sm">
+												<img src={config.icon} alt="" width={16} height={16} className="shrink-0" />
+												<span className="flex-1">{config.label}</span>
+												<span className="font-semibold tabular-nums">{count.toLocaleString()}</span>
+											</div>
+										)
+									})}
+									<div className="border-t border-border pt-1.5 flex items-center gap-2 text-sm font-semibold">
+										<span className="flex-1">Total</span>
+										<span className="tabular-nums">{totalIcons.toLocaleString()}</span>
+									</div>
+								</div>
+							</HoverCardContent>
+						</HoverCard>{" "}
 						for services, applications and tools, designed specifically for dashboards and app directories.
 					</p>
 					<div className="flex flex-col gap-4 max-w-3xl mx-auto">

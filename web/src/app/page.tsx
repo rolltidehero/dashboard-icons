@@ -13,13 +13,18 @@ async function getGitHubStars() {
 }
 
 export default async function Home() {
-	const { totalIcons } = await getTotalIcons()
+	const iconStats = await getTotalIcons()
 	const recentIcons = await getRecentlyAddedIcons(20)
 	const stars = await getGitHubStars()
 
 	return (
 		<div className="flex flex-col min-h-screen">
-			<HeroSection totalIcons={totalIcons} stars={stars} />
+			<HeroSection
+				totalIcons={iconStats.totalIcons}
+				nativeCount={iconStats.nativeCount}
+				sourceCounts={iconStats.sourceCounts}
+				stars={stars}
+			/>
 			<RecentlyAddedIcons icons={recentIcons} />
 		</div>
 	)
