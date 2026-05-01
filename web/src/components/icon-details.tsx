@@ -210,7 +210,7 @@ export function IconDetails({
 
 	const getAvailableFormats = (): string[] => {
 		if (isExternalIcon && externalIcon) {
-			return externalIcon.formats.filter((f) => COPY_SUPPORTED_FORMATS.has(f))
+			return (externalIcon.formats ?? []).filter((f) => COPY_SUPPORTED_FORMATS.has(f))
 		}
 		if (isCommunityIcon) {
 			if (assetUrls.length > 0) {

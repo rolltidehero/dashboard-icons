@@ -16,6 +16,9 @@ type ListExternalIconsOptions = {
 function toExternalIconRecord(icon: ExternalIcon): ExternalIconRecord {
 	const sourceConfig = getExternalSource(icon.source)
 	const timestamp = icon.updated_at_source || icon.updated || icon.created || new Date(0).toISOString()
+	const formats = icon.formats ?? []
+	const aliases = icon.aliases ?? []
+	const categories = icon.categories ?? []
 	const colors =
 		icon.variants?.light || icon.variants?.dark
 			? {
@@ -28,11 +31,11 @@ function toExternalIconRecord(icon: ExternalIcon): ExternalIconRecord {
 		source: icon.source,
 		slug: icon.slug,
 		name: icon.name,
-		external: icon,
+		external: { ...icon, formats, aliases, categories },
 		data: {
-			base: icon.formats.includes("svg") ? "svg" : icon.formats.includes("png") ? "png" : "webp",
-			aliases: icon.aliases || [],
-			categories: icon.categories || [],
+			base: formats.includes("svg") ? "svg" : formats.includes("png") ? "png" : "webp",
+			aliases,
+			categories,
 			update: {
 				timestamp,
 				author: {

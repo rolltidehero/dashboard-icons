@@ -29,7 +29,7 @@ type SelfhstConsolidatedRow = [
 
 const SOURCE = "selfhst"
 const ATTRIBUTION = "Icons by selfh.st/icons (CC BY 4.0)"
-const LICENSE = "CC-BY-4.0"
+const LICENSE = "CC BY 4.0"
 const SOURCE_URL = "https://selfh.st/icons/"
 const CDN_BASE = "https://cdn.jsdelivr.net/gh/selfhst/icons"
 
@@ -91,8 +91,6 @@ function toRecord(row: SelfhstIndexRow) {
 		...(isYes(row.SVG) ? ["svg"] : []),
 		...(isYes(row.PNG) ? ["png"] : []),
 		...(isYes(row.WebP) ? ["webp"] : []),
-		"avif",
-		"ico",
 	]
 	const variants = {
 		light: isYes(row.Light),

@@ -14,6 +14,7 @@ export function resolveExternalIconUrl(icon: Pick<ExternalIcon, "source" | "slug
 }
 
 export function getExternalIconPreviewUrl(icon: ExternalIcon): string {
-	const format = icon.formats.includes("svg") ? "svg" : icon.formats.includes("png") ? "png" : icon.formats[0] || "svg"
+	const formats = icon.formats ?? []
+	const format = formats.includes("svg") ? "svg" : formats.includes("png") ? "png" : formats[0] || "svg"
 	return resolveExternalIconUrl(icon, format)
 }

@@ -45,7 +45,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			lastModified: formatDate(new Date(icon.external.updated_at_source || icon.external.updated || icon.external.created || Date.now())),
 			changeFrequency: "yearly" as const,
 			priority: 0.6,
-			images: icon.external.formats.map((format) => resolveExternalIconUrl(icon.external, format)),
+			images: (icon.external.formats ?? [])
+				.filter((f) => f === "svg" || f === "png" || f === "webp")
+				.map((format) => resolveExternalIconUrl(icon.external, format)),
 		})),
 	]
 }
