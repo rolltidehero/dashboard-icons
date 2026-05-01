@@ -107,6 +107,35 @@ src/
 pnpm build
 ```
 
+## Third-party sources: selfh.st
+
+Dashboard Icons can display external icon metadata from [selfh.st/icons](https://selfh.st/icons/) without copying icon files into the native collection. The `external_icons` PocketBase collection stores slugs, names, categories, available formats, variant metadata, jsDelivr URL templates, and license attribution.
+
+External icon files stay on jsDelivr using this pattern:
+
+```txt
+https://cdn.jsdelivr.net/gh/selfhst/icons/<format>/<slug>.<format>
+```
+
+The imported records are public-read only. PocketBase rules are `listRule: ""` and `viewRule: ""`, while create/update/delete are superuser-only. Every external icon card and detail page must display `Icons by selfh.st/icons (CC BY 4.0)`.
+
+If the collection does not exist yet, import `data/sources/selfhst/external_icons.collection.json` in the PocketBase admin UI under Collections before running the importer. The JSON defines the `external_icons` fields, public list/view rules, disabled public writes, and the unique `(source, slug)` index.
+
+To refresh local metadata and import it into PocketBase:
+
+```bash
+mkdir -p data/sources/selfhst
+curl -fsSL https://raw.githubusercontent.com/selfhst/icons/main/index.json -o data/sources/selfhst/index.json
+curl -fsSL https://raw.githubusercontent.com/selfhst/icons/main/index-consolidated.json -o data/sources/selfhst/index-consolidated.json
+curl -fsSL https://raw.githubusercontent.com/selfhst/icons/main/tags.json -o data/sources/selfhst/tags.json
+
+PB_ADMIN=admin@example.com PB_ADMIN_PASS=your-password \
+NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090 \
+pnpm exec tsx scripts/import-selfhst.ts
+```
+
+Production sync runs from `.github/workflows/sync-selfhst.yml` and expects `PB_URL`, `PB_ADMIN`, and `PB_ADMIN_PASS` repository secrets.
+
 ### Deployment
 
 The application is optimized for deployment on Vercel.
