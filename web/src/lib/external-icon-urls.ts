@@ -6,15 +6,10 @@ export function resolveExternalIconUrl(icon: Pick<ExternalIcon, "source" | "slug
 	const template = templates[key]
 	if (template) return template.replace("{slug}", icon.slug)
 
-	const [format, variant] = key.split("_")
-	const suffix = variant ? `-${variant}` : ""
-
-	const baseTemplate = templates[format]
-	if (baseTemplate) return baseTemplate.replace("{slug}", `${icon.slug}${suffix}`)
-
+	const [format] = key.split("_")
 	const sourceConfig = EXTERNAL_SOURCES[icon.source]
 	const cdnBase = sourceConfig?.cdnBase ?? ""
-	return `${cdnBase}/${format}/${icon.slug}${suffix}.${format}`
+	return `${cdnBase}/${format}/${icon.slug}.${format}`
 }
 
 export function getExternalIconPreviewUrl(icon: ExternalIcon): string {
