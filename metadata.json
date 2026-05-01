@@ -43041,5 +43041,23 @@
                 "login": "agoettl"
             }
         }
+    },
+    "gnustep": {
+        "base": "svg",
+        "aliases": [
+            "openstep",
+            "cocoa"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:49.550Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "dark": "gnustep-dark"
+        }
     }
 }
