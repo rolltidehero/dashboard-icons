@@ -43676,5 +43676,26 @@
             "light": "bambu-lab-light",
             "dark": "bambu-lab-dark"
         }
+    },
+    "mermaid": {
+        "base": "svg",
+        "aliases": [
+            "mermaidjs"
+        ],
+        "categories": [
+            "development",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:34.288Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "mermaid-light",
+            "dark": "mermaid-dark"
+        }
     }
 }
