@@ -63,6 +63,7 @@ async function fetchAllExternalIcons(): Promise<ExternalIconRecord[]> {
 	return results.flat()
 }
 
+// Cache key includes PB URL evaluated at module-load time (env vars are fixed at startup in Next.js)
 const fetchAllExternalIconsCached = unstable_cache(fetchAllExternalIcons, ["external-icons-all", getPocketBaseUrl()], {
 	revalidate: EXTERNAL_REVALIDATE_SECONDS,
 	tags: ["external-icons"],

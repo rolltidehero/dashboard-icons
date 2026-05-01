@@ -35,6 +35,8 @@ import { Separator } from "./ui/separator"
 
 type RenderVariantFn = (format: string, iconName: string, theme?: "light" | "dark") => React.ReactNode
 
+const COPY_SUPPORTED_FORMATS = new Set(["svg", "png", "webp"])
+
 type IconVariantsSectionProps = {
 	title: string
 	description: string
@@ -208,8 +210,7 @@ export function IconDetails({
 
 	const getAvailableFormats = (): string[] => {
 		if (isExternalIcon && externalIcon) {
-			const COPY_SUPPORTED = new Set(["svg", "png", "webp"])
-			return externalIcon.formats.filter((f) => COPY_SUPPORTED.has(f))
+			return externalIcon.formats.filter((f) => COPY_SUPPORTED_FORMATS.has(f))
 		}
 		if (isCommunityIcon) {
 			if (assetUrls.length > 0) {
