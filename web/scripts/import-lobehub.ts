@@ -45,9 +45,9 @@ function getBaseSlug(slug: string): string {
 	return slug.replace(/-(color|text|avatar|combine)$/, "")
 }
 
-function buildUrlTemplates(slug: string) {
+function buildUrlTemplates() {
 	return {
-		svg: `${CDN_BASE}/icons/{slug}.svg`.replace("{slug}", slug),
+		svg: `${CDN_BASE}/icons/{slug}.svg`,
 	}
 }
 
@@ -94,11 +94,7 @@ function readLocalManifest(): string[] | null {
 		return extractSlugsFromContents(data as GitHubContentsEntry[])
 	}
 
-	if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object" && "tree" in data[0]) {
-		return extractSlugsFromTree((data as GitHubTreeResponse[])[0].tree)
-	}
-
-	if (typeof data === "object" && "tree" in data) {
+	if (typeof data === "object" && !Array.isArray(data) && "tree" in data) {
 		return extractSlugsFromTree((data as GitHubTreeResponse).tree)
 	}
 
@@ -134,7 +130,7 @@ function toRecord(slug: string, aliases: string[]) {
 		categories: ["ai"],
 		formats: ["svg"],
 		variants: { light: false, dark: false },
-		url_templates: buildUrlTemplates(slug),
+		url_templates: buildUrlTemplates(),
 		license: LICENSE,
 		attribution: ATTRIBUTION,
 		source_url: SOURCE_URL,
