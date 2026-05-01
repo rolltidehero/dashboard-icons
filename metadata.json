@@ -42892,5 +42892,19 @@
             "light": "nrk-logo-light",
             "dark": "nrk-logo-dark"
         }
+    },
+    "open-notebook": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "automation"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:14.961Z",
+            "author": {
+                "id": 111348410,
+                "login": "ChrisA95G"
+            }
+        }
     }
 }
