@@ -1,10 +1,13 @@
-import { unstable_cache } from "next/cache"
+import { cache } from "react"
 import { EXTERNAL_SOURCE_IDS, type ExternalSourceId, getExternalSource } from "@/constants"
-import { createServerPB, getPocketBaseUrl } from "@/lib/pb"
+import { createServerPB } from "@/lib/pb"
 import type { ExternalIcon, ExternalIconRecord, IconRecord, NativeIconRecord } from "@/types/icons"
 import { getIconsArray } from "./api"
 
 const EXTERNAL_REVALIDATE_SECONDS = 21600
+const EXTERNAL_TTL_MS = EXTERNAL_REVALIDATE_SECONDS * 1000
+
+let _memCache: { data: ExternalIconRecord[]; ts: number } | null = null
 
 type ListExternalIconsOptions = {
 	q?: string
@@ -13,7 +16,7 @@ type ListExternalIconsOptions = {
 	perPage?: number
 }
 
-function toExternalIconRecord(icon: ExternalIcon): ExternalIconRecord {
+function toExternalIconRecord(icon: ExternalIcon, { lite = false } = {}): ExternalIconRecord {
 	const sourceConfig = getExternalSource(icon.source)
 	const timestamp = icon.updated_at_source || icon.updated || icon.created || new Date(0).toISOString()
 	const formats = icon.formats ?? []
@@ -27,11 +30,28 @@ function toExternalIconRecord(icon: ExternalIcon): ExternalIconRecord {
 				}
 			: undefined
 
+	const externalData: ExternalIcon = lite
+		? {
+				id: icon.id,
+				source: icon.source,
+				slug: icon.slug,
+				name: icon.name,
+				aliases,
+				categories,
+				formats,
+				variants: icon.variants ?? {},
+				url_templates: {},
+				license: icon.license ?? "",
+				attribution: icon.attribution ?? "",
+				source_url: icon.source_url ?? "",
+			}
+		: { ...icon, formats, aliases, categories }
+
 	return {
 		source: icon.source,
 		slug: icon.slug,
 		name: icon.name,
-		external: { ...icon, formats, aliases, categories },
+		external: externalData,
 		data: {
 			base: formats.includes("svg") ? "svg" : formats.includes("png") ? "png" : "webp",
 			aliases,
@@ -54,11 +74,13 @@ async function fetchExternalIconsForSource(sourceId: ExternalSourceId): Promise<
 	const sourceConfig = getExternalSource(sourceId)
 	const records = await pb.collection("external_icons").getFullList<ExternalIcon>({
 		filter: pb.filter("source = {:source}", { source: sourceConfig.pbFilter }),
+		fields: "id,source,slug,name,aliases,categories,formats,variants,license,attribution,source_url,updated_at_source,created,updated",
+		batch: 500,
 		sort: "name",
 		requestKey: null,
 	})
 
-	return records.map(toExternalIconRecord)
+	return records.map((r) => toExternalIconRecord(r, { lite: true }))
 }
 
 async function fetchAllExternalIcons(): Promise<ExternalIconRecord[]> {
@@ -66,39 +88,31 @@ async function fetchAllExternalIcons(): Promise<ExternalIconRecord[]> {
 	return results.flat()
 }
 
-// Cache key includes PB URL evaluated at module-load time (env vars are fixed at startup in Next.js)
-const fetchAllExternalIconsCached = unstable_cache(fetchAllExternalIcons, ["external-icons-all", getPocketBaseUrl()], {
-	revalidate: EXTERNAL_REVALIDATE_SECONDS,
-	tags: ["external-icons"],
-})
+async function fetchExternalIconsWithTTL(): Promise<ExternalIconRecord[]> {
+	if (_memCache && Date.now() - _memCache.ts < EXTERNAL_TTL_MS) {
+		return _memCache.data
+	}
+	const data = await fetchAllExternalIcons()
+	_memCache = { data, ts: Date.now() }
+	return data
+}
 
-export async function getExternalIcons(): Promise<ExternalIconRecord[]> {
+export const getExternalIcons = cache(async (): Promise<ExternalIconRecord[]> => {
 	try {
-		return await fetchAllExternalIconsCached()
+		return await fetchExternalIconsWithTTL()
 	} catch (error) {
 		console.error("Error fetching external icons:", error)
 		return []
 	}
-}
+})
 
 export async function getExternalIconBySlug(slug: string): Promise<ExternalIconRecord | null> {
 	try {
-		return await unstable_cache(
-			async () => {
-				const pb = createServerPB()
-				const record = await pb
-					.collection("external_icons")
-					.getFirstListItem<ExternalIcon>(pb.filter("slug = {:slug}", { slug }), {
-						requestKey: null,
-					})
-				return toExternalIconRecord(record)
-			},
-			[`external-icon-${slug}-v3`, getPocketBaseUrl()],
-			{
-				revalidate: EXTERNAL_REVALIDATE_SECONDS,
-				tags: ["external-icons", `external-icon-${slug}`],
-			},
-		)()
+		const pb = createServerPB()
+		const record = await pb.collection("external_icons").getFirstListItem<ExternalIcon>(pb.filter("slug = {:slug}", { slug }), {
+			requestKey: null,
+		})
+		return toExternalIconRecord(record)
 	} catch (error) {
 		console.error(`Error fetching external icon ${slug}:`, error)
 		return null

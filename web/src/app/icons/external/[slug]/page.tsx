@@ -1,14 +1,14 @@
 import type { Metadata, ResolvingMetadata } from "next"
 import { notFound } from "next/navigation"
 import { IconDetails } from "@/components/icon-details"
-import { type ExternalSourceId, EXTERNAL_SOURCES, WEB_URL } from "@/constants"
+import { EXTERNAL_SOURCES, type ExternalSourceId, WEB_URL } from "@/constants"
 import { getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
 import { getExternalIconBySlug, getExternalIcons } from "@/lib/external-icons"
 import type { AuthorData } from "@/types/icons"
 
-export const dynamicParams = true
+export const dynamicParams = false
 export const dynamic = "force-static"
-export const revalidate = 21600
+export const revalidate = false
 
 export async function generateStaticParams() {
 	const icons = await getExternalIcons()
@@ -124,12 +124,7 @@ export default async function ExternalIconPage({ params }: { params: Promise<{ s
 					}),
 				}}
 			/>
-			<IconDetails
-				icon={icon.external.slug}
-				iconData={icon.data}
-				authorData={authorData}
-				externalIcon={icon.external}
-			/>
+			<IconDetails icon={icon.external.slug} iconData={icon.data} authorData={authorData} externalIcon={icon.external} />
 		</>
 	)
 }
