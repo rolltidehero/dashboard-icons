@@ -43570,5 +43570,24 @@
             "light": "sonos-light",
             "dark": "sonos-dark"
         }
+    },
+    "postman": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "development",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:19.854Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "postman-light",
+            "dark": "postman-dark"
+        }
     }
 }
