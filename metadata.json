@@ -43729,5 +43729,27 @@
                 "name": "browser-agent-robot"
             }
         }
+    },
+    "paramount-plus": {
+        "base": "svg",
+        "aliases": [
+            "paramount",
+            "paramountplus"
+        ],
+        "categories": [
+            "media",
+            "streaming"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:42.115Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "paramount-plus-light",
+            "dark": "paramount-plus-dark"
+        }
     }
 }
