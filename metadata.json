@@ -43281,5 +43281,19 @@
                 "login": "alkanlab"
             }
         }
+    },
+    "appium": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:33.708Z",
+            "author": {
+                "id": 277670796,
+                "login": "spitivalleyt3-glitch"
+            }
+        }
     }
 }
