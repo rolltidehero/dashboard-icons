@@ -136,6 +136,16 @@ pnpm exec tsx scripts/import-selfhst.ts
 
 Production sync runs from `.github/workflows/sync-selfhst.yml` and expects `PB_URL`, `PB_ADMIN`, and `PB_ADMIN_PASS` repository secrets.
 
+### Production PocketBase (`pb.dashboardicons.com`)
+
+1. **Ship the migration** — Ensure the deployed PocketBase image or host includes `web/backend/pb_migrations/1777632695_created_external_icons.js` next to your other migrations (the repo `web/backend/Dockerfile` copies `./pb_migrations` into the container). Redeploy or restart PocketBase so it runs pending migrations on startup (`pocketbase serve` applies anything new under `pb_migrations/`).
+
+2. **If you cannot use filesystem migrations** — In the PocketBase admin UI, use **Import collections** and import `web/data/sources/selfhst/external_icons.collection.json` so the `external_icons` collection and rules exist before importing rows.
+
+3. **Load data** — After the collection exists, either run **Actions → Sync selfh.st icons → Run workflow** (recommended; uses repo secrets), or run `pnpm exec tsx scripts/import-selfhst.ts` from `web/` with `NEXT_PUBLIC_POCKETBASE_URL` / `PB_URL` set to `https://pb.dashboardicons.com` and valid `PB_ADMIN` / `PB_ADMIN_PASS` superuser credentials.
+
+4. **Secrets** — In the GitHub repository, set `PB_URL` to the public PocketBase base URL, `PB_ADMIN` and `PB_ADMIN_PASS` to a superuser account allowed to upsert `external_icons` records.
+
 ### Deployment
 
 The application is optimized for deployment on Vercel.
