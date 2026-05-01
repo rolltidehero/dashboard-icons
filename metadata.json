@@ -43110,5 +43110,19 @@
             "light": "nuxt-js-wordmark-light",
             "dark": "nuxt-js-wordmark-dark"
         }
+    },
+    "foxit": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:02.804Z",
+            "author": {
+                "id": 170592029,
+                "login": "ITGenConnect"
+            }
+        }
     }
 }
