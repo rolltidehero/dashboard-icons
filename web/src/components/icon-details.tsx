@@ -435,7 +435,8 @@ export function IconDetails({
 		if (isExternalIcon && externalIcon) {
 			const tpl = externalIcon.url_templates ?? {}
 			const key = theme ? `${format}_${theme}` : format
-			if (!tpl[key]) return null
+			const hasTemplates = Object.keys(tpl).length > 0
+			if (hasTemplates && !tpl[key] && !tpl[format]) return null
 			imageUrl = resolveExternalIconUrl(externalIcon, key)
 			githubUrl = ""
 		} else if (isCommunityIcon && mainIconUrl) {
