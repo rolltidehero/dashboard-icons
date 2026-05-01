@@ -43295,5 +43295,24 @@
                 "login": "spitivalleyt3-glitch"
             }
         }
+    },
+    "k3s": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "cloud",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:51:36.688Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "k3s-light",
+            "dark": "k3s-dark"
+        }
     }
 }
