@@ -16,6 +16,21 @@ const nextConfig: NextConfig = {
 		],
 	},
 	output: "standalone",
+	outputFileTracingExcludes: {
+		"*": [
+			"./scripts/**",
+			"./docs/**",
+			"./e2e/**",
+			"./playwright.config.ts",
+			"./.cursor/**",
+			"./node_modules/@biomejs/**",
+			"./node_modules/@playwright/**",
+			"./node_modules/playwright/**",
+			"./node_modules/playwright-core/**",
+			"./node_modules/typescript/**",
+			"./node_modules/@swc/helpers/**",
+		],
+	},
 };
 
 export default nextConfig;
