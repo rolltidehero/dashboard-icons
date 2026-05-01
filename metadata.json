@@ -42661,5 +42661,23 @@
                 "login": "ryekass3"
             }
         }
+    },
+    "sharry": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "tools",
+            "storage"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:30.241Z",
+            "author": {
+                "id": 33349740,
+                "login": "ellygaytor"
+            }
+        },
+        "colors": {
+            "dark": "sharry-dark"
+        }
     }
 }
