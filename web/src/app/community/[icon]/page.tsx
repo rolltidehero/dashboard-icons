@@ -241,11 +241,16 @@ export default async function CommunityIconPage({ params }: { params: Promise<{ 
 	const statusDisplayName = getStatusDisplayName(status)
 	const statusColor = getStatusColor(status)
 
+	const formattedName = icon
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ")
+
 	return (
 		<>
 			<script
 				type="application/ld+json"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: Needs to be done
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify({
 						"@context": "https://schema.org",
@@ -257,7 +262,22 @@ export default async function CommunityIconPage({ params }: { params: Promise<{ 
 							"@type": "Person",
 							name: authorData.name || authorData.login,
 						},
-					}),
+					}).replace(/</g, "\\u003c"),
+				}}
+			/>
+			<script
+				type="application/ld+json"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify({
+						"@context": "https://schema.org",
+						"@type": "BreadcrumbList",
+						itemListElement: [
+							{ "@type": "ListItem", position: 1, name: "Home", item: WEB_URL },
+							{ "@type": "ListItem", position: 2, name: "Community Icons", item: `${WEB_URL}/community` },
+							{ "@type": "ListItem", position: 3, name: `${formattedName} Icon`, item: `${WEB_URL}/community/${icon}` },
+						],
+					}).replace(/</g, "\\u003c"),
 				}}
 			/>
 			<IconDetails

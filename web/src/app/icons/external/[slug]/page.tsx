@@ -108,7 +108,7 @@ export default async function ExternalIconPage({ params }: { params: Promise<{ s
 		<>
 			<script
 				type="application/ld+json"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: Structured data for the icon detail page.
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify({
 						"@context": "https://schema.org",
@@ -121,7 +121,27 @@ export default async function ExternalIconPage({ params }: { params: Promise<{ s
 							name: sourceConfig.authorName,
 							url: sourceConfig.authorUrl,
 						},
-					}),
+					}).replace(/</g, "\\u003c"),
+				}}
+			/>
+			<script
+				type="application/ld+json"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify({
+						"@context": "https://schema.org",
+						"@type": "BreadcrumbList",
+						itemListElement: [
+							{ "@type": "ListItem", position: 1, name: "Home", item: WEB_URL },
+							{ "@type": "ListItem", position: 2, name: "Browse Icons", item: `${WEB_URL}/icons` },
+							{
+								"@type": "ListItem",
+								position: 3,
+								name: `${icon.external.name} Icon`,
+								item: `${WEB_URL}/icons/external/${slug}`,
+							},
+						],
+					}).replace(/</g, "\\u003c"),
 				}}
 			/>
 			<IconDetails icon={icon.external.slug} iconData={icon.data} authorData={authorData} externalIcon={icon.external} />

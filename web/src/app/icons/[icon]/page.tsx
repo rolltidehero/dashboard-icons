@@ -131,11 +131,16 @@ export default async function IconPage({ params }: { params: Promise<{ icon: str
 	const author = originalIconData.update.author
 	const authorData = await getAuthorData(author.id, { name: author.name, login: author.login })
 
+	const formattedName = icon
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ")
+
 	return (
 		<>
 			<script
 				type="application/ld+json"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: Needs to be done
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify({
 						"@context": "https://schema.org",
@@ -147,7 +152,22 @@ export default async function IconPage({ params }: { params: Promise<{ icon: str
 							"@type": "Person",
 							name: authorData.name || authorData.login,
 						},
-					}),
+					}).replace(/</g, "\\u003c"),
+				}}
+			/>
+			<script
+				type="application/ld+json"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify({
+						"@context": "https://schema.org",
+						"@type": "BreadcrumbList",
+						itemListElement: [
+							{ "@type": "ListItem", position: 1, name: "Home", item: WEB_URL },
+							{ "@type": "ListItem", position: 2, name: "Browse Icons", item: `${WEB_URL}/icons` },
+							{ "@type": "ListItem", position: 3, name: `${formattedName} Icon`, item: `${WEB_URL}/icons/${icon}` },
+						],
+					}).replace(/</g, "\\u003c"),
 				}}
 			/>
 			<IconDetails icon={icon} iconData={originalIconData} authorData={authorData} allIcons={iconsData} />
