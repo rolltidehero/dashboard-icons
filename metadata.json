@@ -43713,5 +43713,21 @@
                 "name": "browser-agent-robot"
             }
         }
+    },
+    "omarchy": {
+        "base": "png",
+        "aliases": [
+            "omakub"
+        ],
+        "categories": [
+            "developer-tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:39.139Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        }
     }
 }
