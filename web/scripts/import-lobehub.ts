@@ -253,7 +253,7 @@ function toRecord(
 		url_templates: buildUrlTemplates(slug, index),
 		license: LICENSE,
 		attribution: ATTRIBUTION,
-		source_url: SOURCE_URL,
+		source_url: `${SOURCE_URL}/${getBaseSlug(slug)}`,
 		updated_at_source: null,
 	}
 }
