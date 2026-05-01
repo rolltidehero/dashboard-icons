@@ -42949,5 +42949,20 @@
                 "login": "RioLi08123"
             }
         }
+    },
+    "font-awesome-icons": {
+        "base": "svg",
+        "aliases": [
+            "fa",
+            "fa icon"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:31.088Z",
+            "author": {
+                "id": 162880856,
+                "login": "RioLi08123"
+            }
+        }
     }
 }
