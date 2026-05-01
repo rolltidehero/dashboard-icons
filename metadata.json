@@ -43021,5 +43021,25 @@
                 "login": "agoettl"
             }
         }
+    },
+    "magicinfo": {
+        "base": "svg",
+        "aliases": [
+            "MagicInfo",
+            "Magic Info",
+            "Samsung MagicInfo",
+            "Samsung MagicINFO"
+        ],
+        "categories": [
+            "media",
+            "entertainment"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:46.486Z",
+            "author": {
+                "id": 163436602,
+                "login": "agoettl"
+            }
+        }
     }
 }
