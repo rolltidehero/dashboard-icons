@@ -360,10 +360,16 @@ export function IconSearch({ icons }: IconSearchProps) {
 
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<Button variant="outline" size="sm" className="flex-1 sm:flex-none cursor-pointer bg-background border-border shadow-sm">
+						<Button variant="outline" size="sm" className="flex-1 sm:flex-none cursor-pointer bg-background border-border shadow-sm">
+							{sourceFilter === "all" ? (
 								<Filter className="h-4 w-4 mr-2" />
-								<span>{getSourceLabel(sourceFilter)}</span>
-							</Button>
+							) : sourceFilter === "native" ? (
+								<img src={DASHBOARD_ICONS_ICON} alt="" width={16} height={16} className="shrink-0 mr-2" />
+							) : (
+								<img src={EXTERNAL_SOURCES[sourceFilter].icon} alt="" width={16} height={16} className="shrink-0 mr-2" />
+							)}
+							<span>{getSourceLabel(sourceFilter)}</span>
+						</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="start" className="w-56">
 							<DropdownMenuLabel className="font-semibold">Source</DropdownMenuLabel>
