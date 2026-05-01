@@ -18,3 +18,12 @@ export function getExternalIconPreviewUrl(icon: ExternalIcon): string {
 	const format = formats.includes("svg") ? "svg" : formats.includes("png") ? "png" : formats[0] || "svg"
 	return resolveExternalIconUrl(icon, format)
 }
+
+export function getExternalIconThemedPreviewUrl(icon: ExternalIcon, theme: "light" | "dark"): string {
+	const variants = icon.variants ?? {}
+	if (variants.light && variants.dark) {
+		const format = (icon.formats ?? []).includes("png") ? "png" : (icon.formats ?? []).includes("webp") ? "webp" : null
+		if (format) return resolveExternalIconUrl(icon, `${format}_${theme}`)
+	}
+	return getExternalIconPreviewUrl(icon)
+}
