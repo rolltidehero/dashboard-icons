@@ -42679,5 +42679,20 @@
         "colors": {
             "dark": "sharry-dark"
         }
+    },
+    "chimera-linux": {
+        "base": "svg",
+        "aliases": [
+            "chimera",
+            "linux"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:26:33.196Z",
+            "author": {
+                "id": 233751021,
+                "login": "mains-hum"
+            }
+        }
     }
 }
