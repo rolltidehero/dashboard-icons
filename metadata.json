@@ -43169,5 +43169,20 @@
                 "login": "thomaswilliams123"
             }
         }
+    },
+    "solus": {
+        "base": "svg",
+        "aliases": [
+            "Linux Distribution",
+            "Operating Systems"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:28:13.782Z",
+            "author": {
+                "id": 76603258,
+                "login": "Jaredy899"
+            }
+        }
     }
 }
