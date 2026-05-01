@@ -27,6 +27,11 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 			: `/icons/${name}`
 	return (
 		<MagicCard className="rounded-md shadow-md">
+			{externalIcon && sourceConfig && (
+				<div className="absolute top-0 right-0 z-10">
+					<Image src={sourceConfig.icon} alt="" width={24} height={24} className="shrink-0" unoptimized />
+				</div>
+			)}
 			<Link prefetch={false} href={linkHref} className="group flex flex-col items-center p-3 sm:p-4 cursor-pointer">
 				<div className="relative h-16 w-16 mb-2 rounded-lg ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10">
 					<Image
@@ -36,11 +41,6 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 						sizes="32px 32px"
 						className="object-contain p-2 group-hover:scale-110 transition-transform duration-300"
 					/>
-					{externalIcon && sourceConfig && (
-						<Badge variant="secondary" className="absolute -top-1.5 -right-1.5 z-10 h-5 px-1.5 text-[10px] shadow-sm">
-							{sourceConfig.label}
-						</Badge>
-					)}
 				</div>
 				<span className="text-xs sm:text-sm text-center truncate w-full capitalize group- dark:group-hover:text-primary transition-colors duration-200 font-medium">
 					{formatedIconName}

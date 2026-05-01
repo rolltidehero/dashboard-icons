@@ -13,13 +13,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId, REPO_PATH } from "@/constants"
 import { getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
@@ -172,7 +166,8 @@ export function IconDetails({
 	}
 
 	const communityData = iconData as CommunityIconData
-	const isCommunityIcon = !isExternalIcon && (!!communityData.mainIconUrl || (typeof iconData.base === "string" && iconData.base.startsWith("http")))
+	const isCommunityIcon =
+		!isExternalIcon && (!!communityData.mainIconUrl || (typeof iconData.base === "string" && iconData.base.startsWith("http")))
 	const mainIconUrl = communityData.mainIconUrl || (isCommunityIcon ? iconData.base : null)
 	const assetUrls = communityData.assetUrls || []
 
@@ -582,10 +577,7 @@ export function IconDetails({
 			const lightVariant = iconData.colors?.light
 			if (lightVariant) {
 				const lightSvg = assetUrls.find(
-					(url: string) =>
-						typeof url === "string" &&
-						url.toLowerCase().endsWith(".svg") &&
-						url.includes(lightVariant),
+					(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(lightVariant),
 				)
 				if (lightSvg) {
 					variants.push({
@@ -599,10 +591,7 @@ export function IconDetails({
 			const darkVariant = iconData.colors?.dark
 			if (darkVariant) {
 				const darkSvg = assetUrls.find(
-					(url: string) =>
-						typeof url === "string" &&
-						url.toLowerCase().endsWith(".svg") &&
-						url.includes(darkVariant),
+					(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(darkVariant),
 				)
 				if (darkSvg) {
 					variants.push({
@@ -616,10 +605,7 @@ export function IconDetails({
 			const wordmarkLight = iconData.wordmark?.light
 			if (wordmarkLight) {
 				const wordmarkLightSvg = assetUrls.find(
-					(url: string) =>
-						typeof url === "string" &&
-						url.toLowerCase().endsWith(".svg") &&
-						url.includes(wordmarkLight),
+					(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(wordmarkLight),
 				)
 				if (wordmarkLightSvg) {
 					variants.push({
@@ -633,10 +619,7 @@ export function IconDetails({
 			const wordmarkDark = iconData.wordmark?.dark
 			if (wordmarkDark) {
 				const wordmarkDarkSvg = assetUrls.find(
-					(url: string) =>
-						typeof url === "string" &&
-						url.toLowerCase().endsWith(".svg") &&
-						url.includes(wordmarkDark),
+					(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(wordmarkDark),
 				)
 				if (wordmarkDarkSvg) {
 					variants.push({
@@ -719,10 +702,7 @@ export function IconDetails({
 			}
 
 			const matchingUrl = assetUrls.find(
-				(url: string) =>
-					typeof url === "string" &&
-					url.toLowerCase().endsWith(".svg") &&
-					url.includes(variantOption.iconName),
+				(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(variantOption.iconName),
 			)
 			return matchingUrl || null
 		}
@@ -734,7 +714,10 @@ export function IconDetails({
 		return null
 	}
 
-	const svgUrl = useMemo(() => getSvgUrl(selectedVariant), [selectedVariant, availableVariants, isCommunityIcon, isExternalIcon, externalIcon, mainIconUrl, assetUrls, iconData, icon])
+	const svgUrl = useMemo(
+		() => getSvgUrl(selectedVariant),
+		[selectedVariant, availableVariants, isCommunityIcon, isExternalIcon, externalIcon, mainIconUrl, assetUrls, iconData, icon],
+	)
 
 	useEffect(() => {
 		if (!svgUrl) {
@@ -770,7 +753,7 @@ export function IconDetails({
 	const canCustomize = svgUrl !== null && availableFormats.includes("svg") && hasGradients === false && availableVariants.length > 0
 
 	return (
-		<main className="container mx-auto pt-12 pb-14 px-4 sm:px-6 lg:px-8">
+		<div className="container mx-auto pt-12 pb-14 px-4 sm:px-6 lg:px-8">
 			<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 				<div className="lg:col-span-1">
 					<Card className="h-full bg-background/50 border shadow-lg">
@@ -779,7 +762,13 @@ export function IconDetails({
 								<div className="relative">
 									<div className="relative w-32 h-32 rounded-xl ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10 overflow-hidden flex items-center justify-center p-3">
 										<Image
-											src={isExternalIcon && externalPreviewUrl ? externalPreviewUrl : isCommunityIcon && mainIconUrl ? mainIconUrl : `${BASE_URL}/${iconData.base}/${icon}.${iconData.base}`}
+											src={
+												isExternalIcon && externalPreviewUrl
+													? externalPreviewUrl
+													: isCommunityIcon && mainIconUrl
+														? mainIconUrl
+														: `${BASE_URL}/${iconData.base}/${icon}.${iconData.base}`
+											}
 											priority
 											width={96}
 											height={96}
@@ -788,11 +777,6 @@ export function IconDetails({
 											className="w-full h-full object-contain"
 										/>
 									</div>
-									{isExternalIcon && externalSourceConfig && (
-										<Badge variant="secondary" className="absolute -top-1.5 -right-1.5 z-10 h-5 px-1.5 text-[10px] shadow-sm">
-											{externalSourceConfig.label}
-										</Badge>
-									)}
 								</div>
 								<CardTitle className="text-2xl font-bold capitalize text-center mb-2">
 									<h1>{formatedIconName}</h1>
@@ -886,11 +870,7 @@ export function IconDetails({
 											Perfect for adding to dashboards, app directories, documentation, or anywhere you need the {formatIconName(icon)}{" "}
 											logo.
 										</p>
-										{isExternalIcon && externalSourceConfig && (
-											<p>
-												External icon provided by {externalSourceConfig.label}.
-											</p>
-										)}
+										{isExternalIcon && externalSourceConfig && <p>External icon provided by {externalSourceConfig.label}.</p>}
 									</div>
 								</div>
 								{isExternalIcon && externalIcon && (
@@ -1056,10 +1036,11 @@ export function IconDetails({
 								{isExternalIcon && externalIcon && externalSourceConfig && (
 									<div className="">
 										<h3 className="text-sm font-semibold text-muted-foreground mb-2">Source</h3>
-										<Button variant="outline" className="w-full" asChild>
+										<Button variant="outline" className="w-full gap-2" asChild>
 											<Link href={externalIcon.source_url} target="_blank" rel="noopener noreferrer">
-												<ExternalLink className="w-4 h-4 mr-2" />
+												<Image src={externalSourceConfig.icon} alt="" width={16} height={16} className="shrink-0" unoptimized />
 												View on {externalSourceConfig.label}
+												<ExternalLink className="w-4 h-4 ml-auto" />
 											</Link>
 										</Button>
 									</div>
@@ -1178,6 +1159,6 @@ export function IconDetails({
 						</section>
 					)
 				})()}
-		</main>
+		</div>
 	)
 }

@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
-import { EXTERNAL_SOURCE_IDS, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
+import { DASHBOARD_ICONS_ICON, EXTERNAL_SOURCE_IDS, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { filterAndSortIcons, normalizeForSearch, type SortOption } from "@/lib/utils"
 import type { IconRecord, IconSearchProps } from "@/types/icons"
 
@@ -270,6 +270,7 @@ export function IconSearch({ icons }: IconSearchProps) {
 					<Input
 						type="search"
 						placeholder="Search icons by name, alias, or category..."
+						aria-label="Search icons"
 						className="w-full h-10 pl-9 cursor-text transition-all duration-300 text-sm md:text-base   border-border shadow-sm"
 						value={searchQuery}
 						onChange={(e) => handleSearch(e.target.value)}
@@ -372,10 +373,12 @@ export function IconSearch({ icons }: IconSearchProps) {
 									All
 								</DropdownMenuRadioItem>
 								<DropdownMenuRadioItem value="native" className="cursor-pointer">
+									<img src={DASHBOARD_ICONS_ICON} alt="" width={14} height={14} className="shrink-0" />
 									Dashboard Icons
 								</DropdownMenuRadioItem>
 								{EXTERNAL_SOURCE_IDS.map((sourceId) => (
 									<DropdownMenuRadioItem key={sourceId} value={sourceId} className="cursor-pointer">
+										<img src={EXTERNAL_SOURCES[sourceId].icon} alt="" width={14} height={14} className="shrink-0" />
 										{EXTERNAL_SOURCES[sourceId].label}
 									</DropdownMenuRadioItem>
 								))}

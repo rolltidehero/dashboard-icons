@@ -1,4 +1,5 @@
 export const BASE_URL = "https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons"
+export const DASHBOARD_ICONS_ICON = `${BASE_URL}/svg/dashboard-icons.svg`
 export const REPO_PATH = "https://github.com/homarr-labs/dashboard-icons"
 export const METADATA_URL = "https://raw.githubusercontent.com/homarr-labs/dashboard-icons/refs/heads/main/metadata.json"
 export const WEB_URL = "https://dashboardicons.com"
@@ -14,6 +15,7 @@ export type ExternalSourceId = "selfhst"
 export interface ExternalSourceConfig {
 	id: ExternalSourceId
 	label: string
+	icon: string
 	cdnBase: string
 	website: string
 	authorName: string
@@ -29,6 +31,7 @@ export const EXTERNAL_SOURCES: Record<ExternalSourceId, ExternalSourceConfig> = 
 		label: "selfh.st",
 		cdnBase: "https://cdn.jsdelivr.net/gh/selfhst/icons",
 		website: "https://selfh.st/icons/",
+		icon: "https://cdn.jsdelivr.net/gh/selfhst/icons@main/svg/selfh-st.svg",
 		authorName: "selfh.st/icons",
 		authorLogin: "selfhst",
 		authorUrl: "https://selfh.st/icons/",
