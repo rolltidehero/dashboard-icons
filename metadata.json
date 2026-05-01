@@ -43511,5 +43511,27 @@
             "light": "stripe-light",
             "dark": "stripe-dark"
         }
+    },
+    "dotnet": {
+        "base": "svg",
+        "aliases": [
+            ".net",
+            "dot-net",
+            "microsoft-dotnet"
+        ],
+        "categories": [
+            "development"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:10.853Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "dotnet-light",
+            "dark": "dotnet-dark"
+        }
     }
 }
