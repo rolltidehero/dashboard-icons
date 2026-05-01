@@ -297,7 +297,22 @@ function readLocalTree(): GitHubTreeEntry[] | null {
 	return null
 }
 
+function parseArgs() {
+	const args = process.argv.slice(2)
+	const flags = {
+		purge: false,
+		dryRun: false,
+	}
+	for (const arg of args) {
+		if (arg === "--purge") flags.purge = true
+		if (arg === "--dry-run") flags.dryRun = true
+	}
+	return flags
+}
+
 async function main() {
+	const flags = parseArgs()
+
 	const adminEmail = process.env.PB_ADMIN
 	const adminPassword = process.env.PB_ADMIN_PASS
 	if (!adminEmail || !adminPassword) {
@@ -307,6 +322,22 @@ async function main() {
 	const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL || process.env.PB_URL || "http://127.0.0.1:8090"
 	const pb = new PocketBase(pbUrl)
 	await pb.collection("_superusers").authWithPassword(adminEmail, adminPassword)
+
+	if (flags.purge) {
+		const all = await pb.collection("external_icons").getFullList({
+			filter: pb.filter("source = {:source}", { source: SOURCE }),
+			fields: "id,slug",
+			requestKey: null,
+		})
+		console.log(`Purging all ${all.length} lobehub records...`)
+		if (!flags.dryRun) {
+			for (const r of all) {
+				await pb.collection("external_icons").delete(r.id)
+			}
+		}
+		console.log(flags.dryRun ? "(dry run, nothing deleted)" : `Deleted ${all.length} records`)
+		return
+	}
 
 	let tree = readLocalTree()
 	if (!tree) {
@@ -348,6 +379,12 @@ async function main() {
 		importedSlugs.add(group.primary)
 		const existingId = existingBySlug.get(group.primary)
 
+		if (flags.dryRun) {
+			console.log(`[dry-run] ${existingId ? "update" : "create"}: ${group.primary} (aliases: ${group.aliases.join(", ") || "none"})`)
+			existingId ? updated++ : created++
+			continue
+		}
+
 		if (existingId) {
 			await pb.collection("external_icons").update(existingId, record)
 			updated++
@@ -359,12 +396,12 @@ async function main() {
 
 	for (const [slug, id] of existingBySlug) {
 		if (!importedSlugs.has(slug)) {
-			await pb.collection("external_icons").delete(id)
+			if (!flags.dryRun) await pb.collection("external_icons").delete(id)
 			deleted++
 		}
 	}
 
-	console.log(`LobeHub import complete: ${created} created, ${updated} updated, ${deleted} removed (non-primary variants)`)
+	console.log(`LobeHub import complete: ${created} created, ${updated} updated, ${deleted} removed (non-primary variants)${flags.dryRun ? " (dry run)" : ""}`)
 }
 
 main().catch((error) => {
