@@ -42847,5 +42847,34 @@
                 "login": "redxtech"
             }
         }
+    },
+    "hpe": {
+        "base": "svg",
+        "aliases": [
+            "Hewlett Packard Enterprise",
+            "HPE",
+            "HPE Aruba Networking",
+            "HPE Juniper Mist"
+        ],
+        "categories": [
+            "network",
+            "automation",
+            "security",
+            "tools",
+            "utility",
+            "storage",
+            "development",
+            "cloud"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:08.014Z",
+            "author": {
+                "id": 1542904,
+                "login": "iamk3"
+            }
+        },
+        "colors": {
+            "dark": "hpe-dark"
+        }
     }
 }
