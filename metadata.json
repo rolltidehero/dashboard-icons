@@ -42876,5 +42876,21 @@
         "colors": {
             "dark": "hpe-dark"
         }
+    },
+    "nrk-logo": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:12.102Z",
+            "author": {
+                "id": 4692965,
+                "login": "esnor"
+            }
+        },
+        "colors": {
+            "light": "nrk-logo-light",
+            "dark": "nrk-logo-dark"
+        }
     }
 }
