@@ -22,7 +22,7 @@ export default async function Home() {
 		"@type": "WebSite",
 		name: "Dashboard Icons",
 		url: WEB_URL,
-		description: `A collection of ${iconStats.totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`,
+		description: `A collection of ${iconStats.totalIcons} curated icons and logos for services, applications and tools, designed specifically for dashboards and app directories.`,
 		inLanguage: "en",
 		publisher: {
 			"@type": "Organization",

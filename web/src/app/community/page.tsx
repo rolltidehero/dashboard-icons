@@ -11,12 +11,14 @@ export async function generateMetadata(): Promise<Metadata> {
 	const totalIcons = icons.length
 
 	return {
-		title: "Browse Community Icons",
-		description: `Search and browse through ${totalIcons} community-submitted icons awaiting review and addition to the Dashboard Icons collection.`,
+		title: "Browse Community Icons & Logos",
+		description: `Search and browse through ${totalIcons} community-submitted icons and logos awaiting review and addition to the Dashboard Icons collection.`,
 		keywords: [
 			"community icons",
+			"community logos",
 			"browse community icons",
 			"icon submissions",
+			"logo submissions",
 			"community contributions",
 			"pending icons",
 			"approved icons",
@@ -24,15 +26,15 @@ export async function generateMetadata(): Promise<Metadata> {
 			"user submitted icons",
 		],
 		openGraph: {
-			title: "Browse Community Icons",
-			description: `Search and browse through ${totalIcons} community-submitted icons awaiting review and addition to the Dashboard Icons collection.`,
+			title: "Browse Community Icons & Logos",
+			description: `Search and browse through ${totalIcons} community-submitted icons and logos awaiting review and addition to the Dashboard Icons collection.`,
 			type: "website",
 			url: `${WEB_URL}/community`,
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: "Browse Community Icons",
-			description: `Search and browse through ${totalIcons} community-submitted icons awaiting review and addition to the Dashboard Icons collection.`,
+			title: "Browse Community Icons & Logos",
+			description: `Search and browse through ${totalIcons} community-submitted icons and logos awaiting review and addition to the Dashboard Icons collection.`,
 		},
 		alternates: {
 			canonical: `${WEB_URL}/community`,
@@ -46,8 +48,8 @@ export default async function CommunityPage() {
 		<div className="isolate overflow-hidden p-2 mx-auto max-w-7xl">
 			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 				<div>
-					<h1 className="text-3xl font-bold">Browse community icons</h1>
-					<p className="text-muted-foreground mb-1">Search through our collection of {icons.length} community-submitted icons.</p>
+					<h1 className="text-3xl font-bold">Browse community icons & logos</h1>
+					<p className="text-muted-foreground mb-1">Search through our collection of {icons.length} community-submitted icons and logos.</p>
 				</div>
 			</div>
 			<Suspense fallback={<div className="text-muted-foreground">Loading...</div>}>
