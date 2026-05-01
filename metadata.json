@@ -42984,5 +42984,28 @@
                 "login": "deogratias-saidi"
             }
         }
+    },
+    "nextbike": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "utility",
+            "monitoring"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:38.216Z",
+            "author": {
+                "id": 8660192,
+                "login": "flukas"
+            }
+        },
+        "colors": {
+            "light": "nextbike-light",
+            "dark": "nextbike-dark"
+        },
+        "wordmark": {
+            "light": "nextbike-wordmark-light",
+            "dark": "nextbike-wordmark-dark"
+        }
     }
 }
