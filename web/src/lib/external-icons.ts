@@ -1,6 +1,7 @@
 import { unstable_cache } from "next/cache"
-import PocketBase from "pocketbase"
 import { cache } from "react"
+import { EXTERNAL_SOURCE_IDS, type ExternalSourceId, getExternalSource } from "@/constants"
+import { createServerPB, getPocketBaseUrl } from "@/lib/pb"
 import type { ExternalIcon, ExternalIconRecord, IconRecord, NativeIconRecord } from "@/types/icons"
 import { getIconsArray } from "./api"
 
@@ -13,15 +14,8 @@ type ListExternalIconsOptions = {
 	perPage?: number
 }
 
-function getPocketBaseUrl() {
-	return process.env.PB_URL || process.env.NEXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090"
-}
-
-function createServerPB(pbUrl = getPocketBaseUrl()) {
-	return new PocketBase(pbUrl)
-}
-
 function toExternalIconRecord(icon: ExternalIcon): ExternalIconRecord {
+	const sourceConfig = getExternalSource(icon.source)
 	const timestamp = icon.updated_at_source || icon.updated || icon.created || new Date(0).toISOString()
 	const colors =
 		icon.variants?.light || icon.variants?.dark
@@ -32,7 +26,7 @@ function toExternalIconRecord(icon: ExternalIcon): ExternalIconRecord {
 			: undefined
 
 	return {
-		source: "selfhst",
+		source: icon.source,
 		slug: icon.slug,
 		name: icon.name,
 		external: icon,
@@ -43,9 +37,9 @@ function toExternalIconRecord(icon: ExternalIcon): ExternalIconRecord {
 			update: {
 				timestamp,
 				author: {
-					id: "selfhst",
-					name: "selfh.st/icons",
-					login: "selfhst",
+					id: sourceConfig.id,
+					name: sourceConfig.authorName,
+					login: sourceConfig.authorLogin,
 				},
 			},
 			colors,
@@ -53,10 +47,11 @@ function toExternalIconRecord(icon: ExternalIcon): ExternalIconRecord {
 	}
 }
 
-async function fetchExternalIcons(pbUrl: string): Promise<ExternalIconRecord[]> {
-	const pb = createServerPB(pbUrl)
+async function fetchExternalIconsForSource(sourceId: ExternalSourceId): Promise<ExternalIconRecord[]> {
+	const pb = createServerPB()
+	const sourceConfig = getExternalSource(sourceId)
 	const records = await pb.collection("external_icons").getFullList<ExternalIcon>({
-		filter: pb.filter("source = {:source}", { source: "selfhst" }),
+		filter: pb.filter("source = {:source}", { source: sourceConfig.pbFilter }),
 		sort: "name",
 		requestKey: null,
 	})
@@ -64,12 +59,16 @@ async function fetchExternalIcons(pbUrl: string): Promise<ExternalIconRecord[]> 
 	return records.map(toExternalIconRecord)
 }
 
-const fetchExternalIconsCached = cache(fetchExternalIcons)
+async function fetchAllExternalIcons(): Promise<ExternalIconRecord[]> {
+	const results = await Promise.all(EXTERNAL_SOURCE_IDS.map(fetchExternalIconsForSource))
+	return results.flat()
+}
+
+const fetchAllExternalIconsCached = cache(fetchAllExternalIcons)
 
 export async function getExternalIcons(): Promise<ExternalIconRecord[]> {
-	const pbUrl = getPocketBaseUrl()
 	try {
-		return await fetchExternalIconsCached(pbUrl)
+		return await fetchAllExternalIconsCached()
 	} catch (error) {
 		console.error("Error fetching external icons:", error)
 		return []
@@ -77,22 +76,21 @@ export async function getExternalIcons(): Promise<ExternalIconRecord[]> {
 }
 
 export async function getExternalIconBySlug(slug: string): Promise<ExternalIconRecord | null> {
-	const pbUrl = getPocketBaseUrl()
 	try {
 		return await unstable_cache(
 			async () => {
-				const pb = createServerPB(pbUrl)
+				const pb = createServerPB()
 				const record = await pb
 					.collection("external_icons")
-					.getFirstListItem<ExternalIcon>(pb.filter("source = {:source} && slug = {:slug}", { source: "selfhst", slug }), {
+					.getFirstListItem<ExternalIcon>(pb.filter("slug = {:slug}", { slug }), {
 						requestKey: null,
 					})
 				return toExternalIconRecord(record)
 			},
-			[`external-icon-selfhst-${slug}-v2`, pbUrl],
+			[`external-icon-${slug}-v3`, getPocketBaseUrl()],
 			{
 				revalidate: EXTERNAL_REVALIDATE_SECONDS,
-				tags: ["external-icons", "selfhst-icons", `external-icon-${slug}`],
+				tags: ["external-icons", `external-icon-${slug}`],
 			},
 		)()
 	} catch (error) {
