@@ -42964,5 +42964,25 @@
                 "login": "RioLi08123"
             }
         }
+    },
+    "azure-service-bus": {
+        "base": "svg",
+        "aliases": [
+            "azure service bus",
+            "azure",
+            "service bus"
+        ],
+        "categories": [
+            "cloud",
+            "tools",
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:33.689Z",
+            "author": {
+                "id": 50410476,
+                "login": "deogratias-saidi"
+            }
+        }
     }
 }
