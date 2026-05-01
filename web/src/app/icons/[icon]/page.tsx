@@ -40,7 +40,7 @@ export async function generateMetadata({ params, searchParams }: Props, _parent:
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(" ")
 	return {
-		title: `${formattedIconName} Icon | Dashboard Icons`,
+		title: `${formattedIconName} Icon`,
 		description: `Download the ${formattedIconName} icon in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`,
 		assets: [`${BASE_URL}/svg/${icon}.svg`, `${BASE_URL}/png/${icon}.png`, `${BASE_URL}/webp/${icon}.webp`],
 		keywords: [
@@ -72,7 +72,7 @@ export async function generateMetadata({ params, searchParams }: Props, _parent:
 		},
 		abstract: `Download the ${formattedIconName} icon in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`,
 		openGraph: {
-			title: `${formattedIconName} Icon | Dashboard Icons`,
+			title: `${formattedIconName} Icon`,
 			description: `Download the ${formattedIconName} icon in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`,
 			type: "website",
 			url: pageUrl,
@@ -104,7 +104,7 @@ export async function generateMetadata({ params, searchParams }: Props, _parent:
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: `${formattedIconName} Icon | Dashboard Icons`,
+			title: `${formattedIconName} Icon`,
 			description: `Download the ${formattedIconName} icon in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`,
 			images: [`${BASE_URL}/png/${icon}.png`],
 		},

@@ -11,7 +11,7 @@ export async function generateMetadata(): Promise<Metadata> {
 	const totalIcons = icons.length
 
 	return {
-		title: "Browse Community Icons | Dashboard Icons",
+		title: "Browse Community Icons",
 		description: `Search and browse through ${totalIcons} community-submitted icons awaiting review and addition to the Dashboard Icons collection.`,
 		keywords: [
 			"community icons",
@@ -24,14 +24,14 @@ export async function generateMetadata(): Promise<Metadata> {
 			"user submitted icons",
 		],
 		openGraph: {
-			title: "Browse Community Icons | Dashboard Icons",
+			title: "Browse Community Icons",
 			description: `Search and browse through ${totalIcons} community-submitted icons awaiting review and addition to the Dashboard Icons collection.`,
 			type: "website",
 			url: `${WEB_URL}/community`,
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: "Browse Community Icons | Dashboard Icons",
+			title: "Browse Community Icons",
 			description: `Search and browse through ${totalIcons} community-submitted icons awaiting review and addition to the Dashboard Icons collection.`,
 		},
 		alternates: {

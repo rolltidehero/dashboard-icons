@@ -58,11 +58,11 @@ export default async function Home() {
 			/>
 			<div className="flex flex-col min-h-screen">
 				<HeroSection
-				totalIcons={iconStats.totalIcons}
-				nativeCount={iconStats.nativeCount}
-				sourceCounts={iconStats.sourceCounts}
-				stars={stars}
-			/>
+					totalIcons={iconStats.totalIcons}
+					nativeCount={iconStats.nativeCount}
+					sourceCounts={iconStats.sourceCounts}
+					stars={stars}
+				/>
 				<RecentlyAddedIcons icons={recentIcons} />
 			</div>
 		</>

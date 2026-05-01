@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 			? iconData.data.base
 			: (iconData.data as any).mainIconUrl || `${BASE_URL}/svg/${icon}.svg`
 	return {
-		title: `${formattedIconName} Icon (Community) | Dashboard Icons`,
+		title: `${formattedIconName} Icon (Community)`,
 		description: `Download the ${formattedIconName} community-submitted icon. Part of a collection of ${totalIcons} community icons awaiting review and addition to the Dashboard Icons collection.`,
 		assets: [mainIconUrl],
 		keywords: [
@@ -92,7 +92,7 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 		},
 		abstract: `Download the ${formattedIconName} community-submitted icon. Part of a collection of ${totalIcons} community icons awaiting review and addition to the Dashboard Icons collection.`,
 		openGraph: {
-			title: `${formattedIconName} Icon (Community) | Dashboard Icons`,
+			title: `${formattedIconName} Icon (Community)`,
 			description: `Download the ${formattedIconName} community-submitted icon. Part of a collection of ${totalIcons} community icons awaiting review and addition to the Dashboard Icons collection.`,
 			type: "website",
 			url: pageUrl,
@@ -110,7 +110,7 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: `${formattedIconName} Icon (Community) | Dashboard Icons`,
+			title: `${formattedIconName} Icon (Community)`,
 			description: `Download the ${formattedIconName} community-submitted icon. Part of a collection of ${totalIcons} community icons awaiting review and addition to the Dashboard Icons collection.`,
 			images: [mainIconUrl],
 		},

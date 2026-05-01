@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import { IconSubmissionForm } from "@/components/icon-submission-form"
 import { LoginModal } from "@/components/login-modal"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader } from "@/components/ui/card"
 import { pb } from "@/lib/pb"
 
 export default function SubmitPage() {
