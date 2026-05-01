@@ -43452,5 +43452,25 @@
             "light": "anthropic-light",
             "dark": "anthropic-dark"
         }
+    },
+    "wechat": {
+        "base": "svg",
+        "aliases": [
+            "weixin"
+        ],
+        "categories": [
+            "social"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:01.764Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "wechat-light",
+            "dark": "wechat-dark"
+        }
     }
 }
