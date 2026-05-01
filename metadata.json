@@ -43654,5 +43654,27 @@
             "light": "cloudflared-light",
             "dark": "cloudflared-dark"
         }
+    },
+    "bambu-lab": {
+        "base": "svg",
+        "aliases": [
+            "bambu",
+            "bambulab"
+        ],
+        "categories": [
+            "home-automation",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:31.245Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "bambu-lab-light",
+            "dark": "bambu-lab-dark"
+        }
     }
 }
