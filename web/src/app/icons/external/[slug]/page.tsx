@@ -12,9 +12,14 @@ export const revalidate = false
 
 export async function generateStaticParams() {
 	const icons = await getExternalIcons()
-	return icons.map((icon) => ({
-		slug: icon.slug,
-	}))
+	const seen = new Set<string>()
+	return icons
+		.filter((icon) => {
+			if (seen.has(icon.slug)) return false
+			seen.add(icon.slug)
+			return true
+		})
+		.map((icon) => ({ slug: icon.slug }))
 }
 
 type Props = {
@@ -114,7 +119,8 @@ export default async function ExternalIconPage({ params }: { params: Promise<{ s
 						"@context": "https://schema.org",
 						"@type": "ImageObject",
 						contentUrl: previewUrl,
-						license: "https://creativecommons.org/licenses/by/4.0/",
+						license:
+							sourceConfig.license === "MIT" ? "https://opensource.org/licenses/MIT" : "https://creativecommons.org/licenses/by/4.0/",
 						acquireLicensePage: `${WEB_URL}/license`,
 						creator: {
 							"@type": "Organization",

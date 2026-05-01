@@ -527,42 +527,45 @@ export function SubmissionsDataTable({
 				</div>
 			)}
 
-			{isAdmin && !hideStatusHints && (approvedSubmissions.length > 0 || pendingSubmissions.length > 0) && selectedSubmissionIds.length === 0 && (
-				<Alert className="border-amber-500/30 bg-amber-500/5">
-					<Rocket className="h-4 w-4 text-amber-500" />
-					<AlertTitle className="text-amber-600 dark:text-amber-400">
-						{approvedSubmissions.length > 0 && `${approvedSubmissions.length} approved`}
-						{approvedSubmissions.length > 0 && pendingSubmissions.length > 0 && " and "}
-						{pendingSubmissions.length > 0 && `${pendingSubmissions.length} pending`} submission
-						{approvedSubmissions.length + pendingSubmissions.length > 1 ? "s" : ""} available
-					</AlertTitle>
-					<AlertDescription className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
-						<span className="text-sm text-muted-foreground">Select submissions to approve or trigger the GitHub Action workflow.</span>
-						<div className="flex gap-2">
-							{pendingSubmissions.length > 0 && (
-								<Button
-									size="sm"
-									variant="outline"
-									onClick={handleSelectAllPending}
-									className="w-fit shrink-0 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
-								>
-									Select all pending
-								</Button>
-							)}
-							{approvedSubmissions.length > 0 && (
-								<Button
-									size="sm"
-									variant="outline"
-									onClick={handleSelectAllApproved}
-									className="w-fit shrink-0 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
-								>
-									Select all approved
-								</Button>
-							)}
-						</div>
-					</AlertDescription>
-				</Alert>
-			)}
+			{isAdmin &&
+				!hideStatusHints &&
+				(approvedSubmissions.length > 0 || pendingSubmissions.length > 0) &&
+				selectedSubmissionIds.length === 0 && (
+					<Alert className="border-amber-500/30 bg-amber-500/5">
+						<Rocket className="h-4 w-4 text-amber-500" />
+						<AlertTitle className="text-amber-600 dark:text-amber-400">
+							{approvedSubmissions.length > 0 && `${approvedSubmissions.length} approved`}
+							{approvedSubmissions.length > 0 && pendingSubmissions.length > 0 && " and "}
+							{pendingSubmissions.length > 0 && `${pendingSubmissions.length} pending`} submission
+							{approvedSubmissions.length + pendingSubmissions.length > 1 ? "s" : ""} available
+						</AlertTitle>
+						<AlertDescription className="flex flex-col sm:flex-row sm:items-center gap-2 mt-1">
+							<span className="text-sm text-muted-foreground">Select submissions to approve or trigger the GitHub Action workflow.</span>
+							<div className="flex gap-2">
+								{pendingSubmissions.length > 0 && (
+									<Button
+										size="sm"
+										variant="outline"
+										onClick={handleSelectAllPending}
+										className="w-fit shrink-0 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
+									>
+										Select all pending
+									</Button>
+								)}
+								{approvedSubmissions.length > 0 && (
+									<Button
+										size="sm"
+										variant="outline"
+										onClick={handleSelectAllApproved}
+										className="w-fit shrink-0 border-amber-500/30 hover:bg-amber-500/10 text-amber-700 dark:text-amber-300"
+									>
+										Select all approved
+									</Button>
+								)}
+							</div>
+						</AlertDescription>
+					</Alert>
+				)}
 
 			{isMobile ? (
 				<>

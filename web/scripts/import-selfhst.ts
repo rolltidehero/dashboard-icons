@@ -75,9 +75,9 @@ function template(format: string, suffix = ""): string {
 function buildUrlTemplates(formats: string[], variants: { light: boolean; dark: boolean }) {
 	const entries: [string, string][] = formats.map((format) => [format, template(format)])
 
-	if (formats.includes("svg")) {
-		if (variants.light) entries.push(["svg_light", template("svg", "-light")])
-		if (variants.dark) entries.push(["svg_dark", template("svg", "-dark")])
+	for (const format of formats) {
+		if (variants.light) entries.push([`${format}_light`, template(format, "-light")])
+		if (variants.dark) entries.push([`${format}_dark`, template(format, "-dark")])
 	}
 
 	return Object.fromEntries(entries)

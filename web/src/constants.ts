@@ -10,7 +10,7 @@ export const getDescription = (totalIcons: number) =>
 
 export const websiteTitle = "Free Dashboard Icons - Download High-Quality UI & App Icons"
 
-export type ExternalSourceId = "selfhst"
+export type ExternalSourceId = "selfhst" | "lobehub"
 
 export interface ExternalSourceConfig {
 	id: ExternalSourceId
@@ -37,6 +37,18 @@ export const EXTERNAL_SOURCES: Record<ExternalSourceId, ExternalSourceConfig> = 
 		authorUrl: "https://selfh.st/icons/",
 		license: "CC BY 4.0",
 		pbFilter: "selfhst",
+	},
+	lobehub: {
+		id: "lobehub",
+		label: "LobeHub",
+		icon: "https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/lobehub-color.png",
+		cdnBase: "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest",
+		website: "https://lobehub.com/icons",
+		authorName: "LobeHub Icons",
+		authorLogin: "lobehub",
+		authorUrl: "https://github.com/lobehub/lobe-icons",
+		license: "MIT",
+		pbFilter: "lobehub",
 	},
 }
 
