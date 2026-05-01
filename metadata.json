@@ -42633,5 +42633,17 @@
             "light": "kafka-wordmark-light",
             "dark": "kafka-wordmark-dark"
         }
+    },
+    "telmex": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:26:22.279Z",
+            "author": {
+                "id": "lil1ckwoi22xx5z",
+                "name": "groldeath"
+            }
+        }
     }
 }
