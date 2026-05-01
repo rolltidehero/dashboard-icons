@@ -43138,5 +43138,22 @@
                 "login": "ITGenConnect"
             }
         }
+    },
+    "hexedit": {
+        "base": "svg",
+        "aliases": [
+            "hexed.it"
+        ],
+        "categories": [
+            "tools",
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:07.948Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
