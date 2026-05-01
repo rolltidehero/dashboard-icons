@@ -5,6 +5,15 @@ const nextConfig: NextConfig = {
 	cacheComponents: false,
 	images: {
 		unoptimized: true,
+		remotePatterns: [
+			{
+				protocol: "https",
+				hostname: "cdn.jsdelivr.net",
+				port: "",
+				pathname: "/gh/selfhst/icons/**",
+				search: "",
+			},
+		],
 	},
 	output: "standalone",
 };
