@@ -2,7 +2,7 @@ import type { Metadata, ResolvingMetadata } from "next"
 import { notFound } from "next/navigation"
 import { IconDetails } from "@/components/icon-details"
 import { BASE_URL, WEB_URL } from "@/constants"
-import { getAllIcons, getAuthorData } from "@/lib/api"
+import { computeRelatedIcons, getAllIcons, getAuthorData } from "@/lib/api"
 
 export const dynamicParams = false
 export const revalidate = false
@@ -130,6 +130,8 @@ export default async function IconPage({ params }: { params: Promise<{ icon: str
 
 	const author = originalIconData.update.author
 	const authorData = await getAuthorData(author.id, { name: author.name, login: author.login })
+	const categories = originalIconData.categories || []
+	const relatedIcons = computeRelatedIcons(icon, categories, iconsData)
 
 	return (
 		<>
@@ -150,7 +152,13 @@ export default async function IconPage({ params }: { params: Promise<{ icon: str
 					}),
 				}}
 			/>
-			<IconDetails icon={icon} iconData={originalIconData} authorData={authorData} allIcons={iconsData} />
+			<IconDetails
+				icon={icon}
+				iconData={originalIconData}
+				authorData={authorData}
+				relatedIcons={relatedIcons}
+				relatedCategories={categories}
+			/>
 		</>
 	)
 }

@@ -1,6 +1,7 @@
+import type { RelatedIcon } from "@/components/icon-details"
 import { METADATA_URL } from "@/constants"
 import { ApiError } from "@/lib/errors"
-import type { AuthorData, IconFile, IconWithName, NativeIconRecord } from "@/types/icons"
+import type { AuthorData, Icon, IconFile, IconWithName, NativeIconRecord } from "@/types/icons"
 
 /**
  * Fetches all icon data from the metadata.json file
@@ -185,6 +186,36 @@ export async function getAuthorData(authorId: number | string, authorMeta?: { na
 
 	authorDataCache[cacheKey] = data
 	return data
+}
+
+const MAX_RELATED_ICONS = 16
+
+export function computeRelatedIcons(currentIcon: string, currentCategories: string[], allIcons: IconFile): RelatedIcon[] {
+	if (currentCategories.length === 0) return []
+
+	const scored: { name: string; data: Icon; score: number }[] = []
+	for (const [name, data] of Object.entries(allIcons)) {
+		if (name === currentIcon) continue
+		const otherCategories = data.categories || []
+		let score = 0
+		for (const cat of currentCategories) {
+			if (otherCategories.includes(cat)) score++
+		}
+		if (score > 0) scored.push({ name, data, score })
+	}
+
+	scored.sort((a, b) => b.score - a.score)
+
+	return scored.slice(0, MAX_RELATED_ICONS).map(({ name, data }) => ({
+		name,
+		data: {
+			base: data.base,
+			aliases: data.aliases ?? [],
+			categories: data.categories ?? [],
+			update: data.update,
+			colors: data.colors,
+		},
+	}))
 }
 
 /**
