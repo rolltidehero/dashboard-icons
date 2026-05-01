@@ -1,11 +1,37 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { useTheme } from "next-themes"
 import { MagicCard } from "@/components/magicui/magic-card"
 import { Badge } from "@/components/ui/badge"
 import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
-import { getExternalIconPreviewUrl } from "@/lib/external-icon-urls"
+import { getExternalIconThemedPreviewUrl } from "@/lib/external-icon-urls"
 import { formatIconName } from "@/lib/utils"
 import type { IconWithName } from "@/types/icons"
+
+function useThemedImageUrl(icon: IconWithName): string {
+	const { resolvedTheme } = useTheme()
+	const theme = resolvedTheme === "dark" ? "dark" : "light"
+	const { name, data: iconData } = icon
+	const externalIcon = icon.source && icon.source !== "native" ? icon.external : undefined
+	const isCommunityIcon = typeof iconData.base === "string" && iconData.base.startsWith("http")
+
+	if (externalIcon) {
+		return getExternalIconThemedPreviewUrl(externalIcon, theme)
+	}
+
+	if (isCommunityIcon) {
+		return iconData.base as string
+	}
+
+	const themeVariant = theme === "dark" ? iconData.colors?.dark : iconData.colors?.light
+	if (themeVariant) {
+		return `${BASE_URL}/${iconData.base}/${themeVariant}.${iconData.base}`
+	}
+
+	return `${BASE_URL}/${iconData.base}/${name}.${iconData.base}`
+}
 
 export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAlias?: string }) {
 	const { name, data: iconData } = icon
@@ -13,12 +39,7 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 
 	const externalIcon = icon.source && icon.source !== "native" ? icon.external : undefined
 	const sourceConfig = externalIcon ? EXTERNAL_SOURCES[icon.source as ExternalSourceId] : undefined
-	const isCommunityIcon = typeof iconData.base === "string" && iconData.base.startsWith("http")
-	const imageUrl = externalIcon
-		? getExternalIconPreviewUrl(externalIcon)
-		: isCommunityIcon
-			? iconData.base
-			: `${BASE_URL}/${iconData.base}/${name}.${iconData.base}`
+	const imageUrl = useThemedImageUrl(icon)
 
 	const linkHref = externalIcon
 		? `/icons/external/${icon.slug || externalIcon.slug}`
