@@ -1,5 +1,27 @@
 import { expect, test } from "@playwright/test"
 
+test.describe("External LobeHub icons", () => {
+	test("source filter narrows browse results to LobeHub", async ({ page }) => {
+		await page.goto("/icons?source=lobehub")
+		await expect(page.getByRole("button", { name: /lobehub/i })).toBeVisible()
+		await expect(page.getByText("LobeHub").first()).toBeVisible()
+
+		const firstExternalCard = page.locator('a[href^="/icons/external/"]').first()
+		await expect(firstExternalCard).toBeVisible()
+	})
+
+	test("external detail page renders attribution and jsDelivr assets", async ({ page }) => {
+		await page.goto("/icons/external/openai")
+
+		await expect(page.getByRole("heading", { name: /openai/i })).toBeVisible()
+		await expect(page.getByText("Icons by LobeHub (MIT)")).toBeVisible()
+		await expect(page.getByRole("link", { name: /view on lobehub/i })).toBeVisible()
+
+		const jsDelivrImages = page.locator('img[src^="https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/"]')
+		await expect(jsDelivrImages.first()).toBeVisible()
+	})
+})
+
 test.describe("External selfh.st icons", () => {
 	test("source filter narrows browse results to selfh.st", async ({ page }) => {
 		await page.goto("/icons?source=selfhst")
