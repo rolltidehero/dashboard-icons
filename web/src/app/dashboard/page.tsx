@@ -50,15 +50,6 @@ import {
 } from "@/hooks/use-submissions"
 import type { Submission } from "@/lib/pb"
 
-function StatInline({ label, value }: { label: string; value: number }) {
-	if (value === 0) return null
-	return (
-		<span className="text-sm text-muted-foreground">
-			<span className="font-medium tabular-nums text-foreground">{value}</span> {label}
-		</span>
-	)
-}
-
 function UserSubmissionCard({ submission, onExpand }: { submission: Submission; onExpand: (s: Submission) => void }) {
 	const hasAdminComment = submission.admin_comment?.trim()
 
@@ -144,13 +135,11 @@ export default function DashboardPage() {
 	const isAdmin = auth?.isAdmin ?? false
 	const currentUserId = auth?.userId ?? ""
 
-	const stats = React.useMemo(() => {
-		const pending = submissions.filter((s) => s.status === "pending").length
-		const approved = submissions.filter((s) => s.status === "approved").length
-		const rejected = submissions.filter((s) => s.status === "rejected").length
-		const added = submissions.filter((s) => s.status === "added_to_collection").length
-		return { pending, approved, rejected, added, total: submissions.length }
-	}, [submissions])
+	const counts = React.useMemo(() => ({
+		pending: submissions.filter((s) => s.status === "pending").length,
+		approved: submissions.filter((s) => s.status === "approved").length,
+		total: submissions.length,
+	}), [submissions])
 
 	const filteredSubmissions = React.useMemo(() => {
 		if (!isAdmin) return submissions
@@ -291,17 +280,12 @@ export default function DashboardPage() {
 		return (
 			<div className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8">
 				<div className="space-y-6">
-					<div>
-						<h1 className="text-xl sm:text-2xl font-semibold">Dashboard</h1>
-						<p className="text-sm text-muted-foreground mt-1">
-							{isAdmin ? "Review and manage icon submissions." : "Track your icon submissions."}
-						</p>
-					</div>
+					<h1 className="text-xl sm:text-2xl font-semibold">Submissions</h1>
 					<div className="flex items-center gap-3 p-4 rounded-lg border border-destructive/30 bg-destructive/5">
 						<AlertCircle className="h-5 w-5 text-destructive shrink-0" />
 						<div className="flex-1 min-w-0">
-							<p className="text-sm font-medium">Failed to load submissions</p>
-							<p className="text-xs text-muted-foreground mt-0.5">Something went wrong. Try refreshing.</p>
+							<p className="text-sm font-medium">Could not load submissions</p>
+							<p className="text-xs text-muted-foreground mt-0.5">Check your connection and try again.</p>
 						</div>
 						<Button variant="outline" size="sm" onClick={() => refetch()}>
 							<RefreshCw className="h-3.5 w-3.5 mr-1.5" />
@@ -320,67 +304,50 @@ export default function DashboardPage() {
 				<div className="container mx-auto pt-6 sm:pt-10 pb-14 px-4 sm:px-6 lg:px-8">
 					<div className="space-y-6">
 						{/* Header */}
-						<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-							<div>
-								<h1 className="text-xl sm:text-2xl font-semibold">Submissions</h1>
-								<p className="text-sm text-muted-foreground mt-1">
-									Review, approve, and deploy community icon submissions.
-								</p>
-							</div>
-							<Button variant="outline" size="sm" className="w-fit shrink-0" onClick={() => refetch()}>
+						<div className="flex items-end justify-between gap-4">
+							<h1 className="text-xl sm:text-2xl font-semibold">Submissions</h1>
+							<Button variant="outline" size="sm" className="shrink-0" onClick={() => refetch()}>
 								<RefreshCw className="h-3.5 w-3.5 mr-1.5" />
 								Refresh
 							</Button>
 						</div>
 
-						{/* Inline summary */}
-						{stats.total > 0 && (
-							<div className="flex flex-wrap items-center gap-x-4 gap-y-1">
-								<StatInline label="pending" value={stats.pending} />
-								<StatInline label="ready for CI" value={stats.approved} />
-								<StatInline label="live" value={stats.added} />
-								<StatInline label="rejected" value={stats.rejected} />
-							</div>
-						)}
-
 						{/* Tabs */}
 						<Tabs value={activeTab} onValueChange={setActiveTab}>
-							<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-								<TabsList>
-									<TabsTrigger value="review" className="gap-1.5">
-										<Clock className="h-3.5 w-3.5" />
-										Needs Review
-										{stats.pending > 0 && (
-											<Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs tabular-nums">
-												{stats.pending}
-											</Badge>
-										)}
-									</TabsTrigger>
-									<TabsTrigger value="deploy" className="gap-1.5">
-										<Github className="h-3.5 w-3.5" />
-										Ready for CI
-										{stats.approved > 0 && (
-											<Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs tabular-nums">
-												{stats.approved}
-											</Badge>
-										)}
-									</TabsTrigger>
-									<TabsTrigger value="all" className="gap-1.5">
-										All
+							<TabsList>
+								<TabsTrigger value="review" className="gap-1.5">
+									<Clock className="h-3.5 w-3.5" />
+									Needs Review
+									{counts.pending > 0 && (
 										<Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs tabular-nums">
-											{stats.total}
+											{counts.pending}
 										</Badge>
-									</TabsTrigger>
-								</TabsList>
-							</div>
+									)}
+								</TabsTrigger>
+								<TabsTrigger value="deploy" className="gap-1.5">
+									<Github className="h-3.5 w-3.5" />
+									Ready for CI
+									{counts.approved > 0 && (
+										<Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs tabular-nums">
+											{counts.approved}
+										</Badge>
+									)}
+								</TabsTrigger>
+								<TabsTrigger value="all" className="gap-1.5">
+									All
+									<Badge variant="secondary" className="ml-1 h-5 px-1.5 text-xs tabular-nums">
+										{counts.total}
+									</Badge>
+								</TabsTrigger>
+							</TabsList>
 
 							<TabsContent value="review">
-								{stats.pending === 0 ? (
-									<EmptyTab
-										icon={CheckCircle2}
-										title="All caught up"
-										description="No submissions waiting for review."
-									/>
+								{counts.pending === 0 ? (
+								<EmptyTab
+									icon={CheckCircle2}
+									title="All caught up"
+									description="Nothing waiting for review."
+								/>
 								) : (
 									<SubmissionsDataTable
 										data={filteredSubmissions}
@@ -403,12 +370,12 @@ export default function DashboardPage() {
 							</TabsContent>
 
 							<TabsContent value="deploy">
-								{stats.approved === 0 ? (
-									<EmptyTab
-										icon={Rocket}
-										title="Nothing to deploy"
-										description="Approve pending submissions to queue them for CI."
-									/>
+								{counts.approved === 0 ? (
+								<EmptyTab
+									icon={Rocket}
+									title="Nothing to deploy"
+									description="Approve submissions from the review tab first."
+								/>
 								) : (
 									<SubmissionsDataTable
 										data={filteredSubmissions}
@@ -431,12 +398,12 @@ export default function DashboardPage() {
 							</TabsContent>
 
 							<TabsContent value="all">
-								{stats.total === 0 ? (
-									<EmptyTab
-										icon={ImageIcon}
-										title="No submissions yet"
-										description="Submissions will appear here once community members contribute icons."
-									/>
+								{counts.total === 0 ? (
+								<EmptyTab
+									icon={ImageIcon}
+									title="No submissions yet"
+									description="Community contributions will appear here."
+								/>
 								) : (
 									<SubmissionsDataTable
 										data={filteredSubmissions}
@@ -494,140 +461,75 @@ export default function DashboardPage() {
 
 	// User view
 	return (
-		<>
-			<div className="container mx-auto pt-6 sm:pt-10 pb-14 px-4 sm:px-6 lg:px-8">
-				<div className="space-y-6">
-					{/* Header */}
-					<div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4">
-						<div>
-							<h1 className="text-xl sm:text-2xl font-semibold">My Submissions</h1>
-							<p className="text-sm text-muted-foreground mt-1">
-								Track the status of your icon submissions and view admin feedback.
-							</p>
-						</div>
-						<Button variant="outline" size="sm" className="w-fit shrink-0" onClick={() => refetch()}>
-							<RefreshCw className="h-3.5 w-3.5 mr-1.5" />
-							Refresh
-						</Button>
-					</div>
-
-					{/* User's own submissions */}
-					{userSubmissions.length > 0 ? (
-						<div className="space-y-2">
-							{userSubmissions.map((submission) => (
-								<UserSubmissionCard
-									key={submission.id}
-									submission={submission}
-									onExpand={setSelectedUserSubmission}
-								/>
-							))}
-						</div>
-					) : null}
-
-					{/* Submission detail drawer */}
-					<Drawer open={!!selectedUserSubmission} onOpenChange={(open) => !open && setSelectedUserSubmission(null)}>
-						<DrawerContent className="max-h-[85vh]">
-							<DrawerHeader className="text-left">
-								<DrawerTitle className="capitalize">{selectedUserSubmission?.name}</DrawerTitle>
-								<DrawerDescription>
-									{selectedUserSubmission?.status === "pending" && "Waiting for admin review."}
-									{selectedUserSubmission?.status === "approved" && "Approved and queued for deployment."}
-									{selectedUserSubmission?.status === "rejected" && "Not accepted. See admin feedback below."}
-									{selectedUserSubmission?.status === "added_to_collection" && "Live in the collection."}
-								</DrawerDescription>
-							</DrawerHeader>
-							{selectedUserSubmission && (
-								<div className="overflow-y-auto px-4 pb-6 space-y-4">
-									{selectedUserSubmission.assets.length > 0 && (
-										<div className="flex gap-2 overflow-x-auto pb-2">
-											{selectedUserSubmission.assets.map((asset, i) => (
-												<div key={i} className="w-20 h-20 rounded border flex items-center justify-center bg-muted/30 p-2 shrink-0">
-													<img
-														src={`${process.env.NEXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090"}/api/files/submissions/${selectedUserSubmission.id}/${asset}?thumb=200x200`}
-														alt={`${selectedUserSubmission.name} asset ${i + 1}`}
-														className="w-full h-full object-contain"
-													/>
-												</div>
-											))}
-										</div>
-									)}
-									{selectedUserSubmission.admin_comment?.trim() && (
-										<div className="rounded-lg border p-3 space-y-1">
-											<p className="text-xs font-medium text-muted-foreground">Admin feedback</p>
-											<p className="text-sm">{selectedUserSubmission.admin_comment}</p>
-										</div>
-									)}
-									<div className="text-xs text-muted-foreground space-y-1">
-										<p>Submitted {new Date(selectedUserSubmission.created).toLocaleDateString()}</p>
-										<p>Last updated {new Date(selectedUserSubmission.updated).toLocaleDateString()}</p>
-									</div>
-								</div>
-							)}
-						</DrawerContent>
-					</Drawer>
-
-					{/* Full submissions table (shows all community submissions for visibility) */}
-					<div className="space-y-3">
-						{userSubmissions.length > 0 && (
-							<h2 className="text-base font-medium text-muted-foreground">All Community Submissions</h2>
-						)}
-						{submissions.length === 0 ? (
-							<EmptyTab
-								icon={ImageIcon}
-								title="No submissions yet"
-								description="Submit your first icon to see it here."
-							/>
-						) : (
-							<SubmissionsDataTable
-								data={submissions}
-								isAdmin={isAdmin}
-								currentUserId={currentUserId}
-								onApprove={handleApprove}
-								onReject={handleReject}
-								onTriggerWorkflow={handleTriggerWorkflow}
-								onBulkTriggerWorkflow={handleBulkTriggerWorkflow}
-								onBulkApprove={handleBulkApprove}
-								isApproving={approveMutation.isPending}
-								isRejecting={rejectMutation.isPending}
-								isTriggeringWorkflow={workflowMutation.isPending}
-								isBulkTriggeringWorkflow={bulkWorkflowMutation.isPending}
-								isBulkApproving={bulkApproveMutation.isPending}
-								workflowUrl={workflowUrl}
-							/>
-						)}
-					</div>
+		<div className="container mx-auto pt-6 sm:pt-10 pb-14 px-4 sm:px-6 lg:px-8">
+			<div className="space-y-6">
+				<div className="flex items-end justify-between gap-4">
+					<h1 className="text-xl sm:text-2xl font-semibold">My Submissions</h1>
+					<Button variant="outline" size="sm" className="shrink-0" onClick={() => refetch()}>
+						<RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+						Refresh
+					</Button>
 				</div>
-			</div>
 
-			<ApproveDialog
-				isMobile={isMobile}
-				open={approveDialogOpen}
-				onClose={() => { setApproveDialogOpen(false); setApprovingSubmissionId(null); setApproveAdminComment("") }}
-				comment={approveAdminComment}
-				onCommentChange={setApproveAdminComment}
-				onSubmit={handleApproveSubmit}
-				isPending={approveMutation.isPending}
-			/>
-			<RejectDialog
-				isMobile={isMobile}
-				open={rejectDialogOpen}
-				onClose={() => { setRejectDialogOpen(false); setRejectingSubmissionId(null); setAdminComment("") }}
-				comment={adminComment}
-				onCommentChange={setAdminComment}
-				onSubmit={handleRejectSubmit}
-				isPending={rejectMutation.isPending}
-			/>
-			<BulkApproveDialog
-				isMobile={isMobile}
-				open={bulkApproveDialogOpen}
-				onClose={() => { setBulkApproveDialogOpen(false); setBulkApprovingIds([]); setBulkApproveAdminComment("") }}
-				count={bulkApprovingIds.length}
-				comment={bulkApproveAdminComment}
-				onCommentChange={setBulkApproveAdminComment}
-				onSubmit={handleBulkApproveSubmit}
-				isPending={bulkApproveMutation.isPending}
-			/>
-		</>
+				{userSubmissions.length > 0 ? (
+					<div className="space-y-2">
+						{userSubmissions.map((submission) => (
+							<UserSubmissionCard
+								key={submission.id}
+								submission={submission}
+								onExpand={setSelectedUserSubmission}
+							/>
+						))}
+					</div>
+				) : (
+					<EmptyTab
+						icon={ImageIcon}
+						title="No submissions yet"
+						description="Submit an icon to track its progress here."
+					/>
+				)}
+
+				<Drawer open={!!selectedUserSubmission} onOpenChange={(open) => !open && setSelectedUserSubmission(null)}>
+					<DrawerContent className="max-h-[85vh]">
+						<DrawerHeader className="text-left">
+							<DrawerTitle className="capitalize">{selectedUserSubmission?.name}</DrawerTitle>
+							<DrawerDescription>
+								{selectedUserSubmission?.status === "pending" && "In review."}
+								{selectedUserSubmission?.status === "approved" && "Approved, queued for deployment."}
+								{selectedUserSubmission?.status === "rejected" && "Not accepted."}
+								{selectedUserSubmission?.status === "added_to_collection" && "Live in the collection."}
+							</DrawerDescription>
+						</DrawerHeader>
+						{selectedUserSubmission && (
+							<div className="overflow-y-auto px-4 pb-6 space-y-4">
+								{selectedUserSubmission.assets.length > 0 && (
+									<div className="flex gap-2 overflow-x-auto pb-2">
+										{selectedUserSubmission.assets.map((asset, i) => (
+											<div key={i} className="w-20 h-20 rounded border flex items-center justify-center bg-muted/30 p-2 shrink-0">
+												<img
+													src={`${process.env.NEXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090"}/api/files/submissions/${selectedUserSubmission.id}/${asset}?thumb=200x200`}
+													alt={`${selectedUserSubmission.name} asset ${i + 1}`}
+													className="w-full h-full object-contain"
+												/>
+											</div>
+										))}
+									</div>
+								)}
+								{selectedUserSubmission.admin_comment?.trim() && (
+									<div className="rounded-lg border p-3 space-y-1">
+										<p className="text-xs font-medium text-muted-foreground">Admin feedback</p>
+										<p className="text-sm">{selectedUserSubmission.admin_comment}</p>
+									</div>
+								)}
+								<p className="text-xs text-muted-foreground">
+									Submitted {new Date(selectedUserSubmission.created).toLocaleDateString()}
+								</p>
+							</div>
+						)}
+					</DrawerContent>
+				</Drawer>
+			</div>
+		</div>
 	)
 }
 
@@ -658,11 +560,11 @@ function ApproveDialog({ isMobile, open, onClose, comment, onCommentChange, onSu
 				<DrawerContent>
 					<DrawerHeader className="text-left">
 						<DrawerTitle>Approve Submission</DrawerTitle>
-						<DrawerDescription>Add an optional note for the submitter.</DrawerDescription>
+						<DrawerDescription>This will notify the submitter.</DrawerDescription>
 					</DrawerHeader>
 					<div className="px-4 pb-2 space-y-2">
-						<Label htmlFor="approve-comment">Comment</Label>
-						<Textarea id="approve-comment" placeholder="Optional note..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+						<Label htmlFor="approve-comment">Note (optional)</Label>
+						<Textarea id="approve-comment" placeholder="Included in the notification email..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
 					</div>
 					<DrawerFooter>
 						<Button onClick={onSubmit} disabled={isPending}>{isPending ? "Approving..." : "Approve"}</Button>
@@ -678,11 +580,11 @@ function ApproveDialog({ isMobile, open, onClose, comment, onCommentChange, onSu
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Approve Submission</DialogTitle>
-					<DialogDescription>Add an optional note for the submitter.</DialogDescription>
+					<DialogDescription>This will notify the submitter.</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-2 py-4">
-					<Label htmlFor="approve-comment">Comment</Label>
-					<Textarea id="approve-comment" placeholder="Optional note..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+					<Label htmlFor="approve-comment">Note (optional)</Label>
+					<Textarea id="approve-comment" placeholder="Included in the notification email..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
 				</div>
 				<DialogFooter>
 					<Button variant="outline" onClick={onClose} disabled={isPending}>Cancel</Button>
@@ -708,11 +610,11 @@ function RejectDialog({ isMobile, open, onClose, comment, onCommentChange, onSub
 				<DrawerContent>
 					<DrawerHeader className="text-left">
 						<DrawerTitle>Reject Submission</DrawerTitle>
-						<DrawerDescription>Provide a reason. This will be visible to the submitter.</DrawerDescription>
+						<DrawerDescription>The submitter will see this reason.</DrawerDescription>
 					</DrawerHeader>
 					<div className="px-4 pb-2 space-y-2">
 						<Label htmlFor="reject-comment">Reason</Label>
-						<Textarea id="reject-comment" placeholder="Why is this being rejected?" value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+						<Textarea id="reject-comment" placeholder="e.g. Icon doesn't meet quality guidelines..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
 					</div>
 					<DrawerFooter>
 						<Button variant="destructive" onClick={onSubmit} disabled={isPending}>{isPending ? "Rejecting..." : "Reject"}</Button>
@@ -728,11 +630,11 @@ function RejectDialog({ isMobile, open, onClose, comment, onCommentChange, onSub
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>Reject Submission</DialogTitle>
-					<DialogDescription>Provide a reason. This will be visible to the submitter.</DialogDescription>
+					<DialogDescription>The submitter will see this reason.</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-2 py-4">
 					<Label htmlFor="reject-comment">Reason</Label>
-					<Textarea id="reject-comment" placeholder="Why is this being rejected?" value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+					<Textarea id="reject-comment" placeholder="e.g. Icon doesn't meet quality guidelines..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
 				</div>
 				<DialogFooter>
 					<Button variant="outline" onClick={onClose} disabled={isPending}>Cancel</Button>
@@ -761,11 +663,11 @@ function BulkApproveDialog({ isMobile, open, onClose, count, comment, onCommentC
 				<DrawerContent>
 					<DrawerHeader className="text-left">
 						<DrawerTitle>{label}</DrawerTitle>
-						<DrawerDescription>Add an optional note for the submitters.</DrawerDescription>
+						<DrawerDescription>All submitters will be notified.</DrawerDescription>
 					</DrawerHeader>
 					<div className="px-4 pb-2 space-y-2">
-						<Label htmlFor="bulk-approve-comment">Comment</Label>
-						<Textarea id="bulk-approve-comment" placeholder="Optional note..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+						<Label htmlFor="bulk-approve-comment">Note (optional)</Label>
+						<Textarea id="bulk-approve-comment" placeholder="Included in notification emails..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
 					</div>
 					<DrawerFooter>
 						<Button onClick={onSubmit} disabled={isPending}>{isPending ? "Approving..." : label}</Button>
@@ -781,11 +683,11 @@ function BulkApproveDialog({ isMobile, open, onClose, count, comment, onCommentC
 			<DialogContent>
 				<DialogHeader>
 					<DialogTitle>{label}</DialogTitle>
-					<DialogDescription>Add an optional note for the submitters.</DialogDescription>
+					<DialogDescription>All submitters will be notified.</DialogDescription>
 				</DialogHeader>
 				<div className="space-y-2 py-4">
-					<Label htmlFor="bulk-approve-comment">Comment</Label>
-					<Textarea id="bulk-approve-comment" placeholder="Optional note..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+					<Label htmlFor="bulk-approve-comment">Note (optional)</Label>
+					<Textarea id="bulk-approve-comment" placeholder="Included in notification emails..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
 				</div>
 				<DialogFooter>
 					<Button variant="outline" onClick={onClose} disabled={isPending}>Cancel</Button>
