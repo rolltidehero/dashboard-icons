@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { IconSearch } from "@/components/icon-search"
-import { BASE_URL } from "@/constants"
+import { BASE_URL, EXTERNAL_SOURCES, EXTERNAL_SOURCE_IDS } from "@/constants"
 import { getIconsArray } from "@/lib/api"
 import { getExternalIcons } from "@/lib/external-icons"
 
@@ -50,7 +50,7 @@ export default async function IconsPage() {
 				<div>
 					<h1 className="text-3xl font-bold">Browse icons</h1>
 					<p className="text-muted-foreground mb-1">
-						Search through {icons.length} icons from Dashboard Icons and selfh.st. {nativeIcons.length} are native Dashboard Icons.
+						Search through {icons.length} icons from Dashboard Icons{EXTERNAL_SOURCE_IDS.length > 0 && ` and ${EXTERNAL_SOURCE_IDS.map((id) => EXTERNAL_SOURCES[id].label).join(", ")}`}. {nativeIcons.length} are native Dashboard Icons.
 					</p>
 				</div>
 			</div>

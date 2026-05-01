@@ -21,7 +21,7 @@ import {
 	SelectValue,
 } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { BASE_URL, REPO_PATH } from "@/constants"
+import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId, REPO_PATH } from "@/constants"
 import { getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
 import { isClipboardAvailable } from "@/lib/svg-color-utils"
 import { formatIconName } from "@/lib/utils"
@@ -161,6 +161,7 @@ export function IconDetails({
 	})
 
 	const isExternalIcon = !!externalIcon
+	const externalSourceConfig = externalIcon ? EXTERNAL_SOURCES[externalIcon.source as ExternalSourceId] : undefined
 	const externalPreviewUrl = externalIcon ? getExternalIconPreviewUrl(externalIcon) : null
 
 	type CommunityIconData = Icon & {
@@ -785,9 +786,9 @@ export function IconDetails({
 											className="w-full h-full object-contain"
 										/>
 									</div>
-									{isExternalIcon && (
+									{isExternalIcon && externalSourceConfig && (
 										<Badge variant="secondary" className="absolute -top-1.5 -right-1.5 z-10 h-5 px-1.5 text-[10px] shadow-sm">
-											selfh.st
+											{externalSourceConfig.label}
 										</Badge>
 									)}
 								</div>
@@ -883,9 +884,9 @@ export function IconDetails({
 											Perfect for adding to dashboards, app directories, documentation, or anywhere you need the {formatIconName(icon)}{" "}
 											logo.
 										</p>
-										{isExternalIcon && externalIcon && (
+										{isExternalIcon && externalSourceConfig && (
 											<p>
-												External icon served via jsDelivr from the selfh.st/icons repository.
+												External icon provided by {externalSourceConfig.label}.
 											</p>
 										)}
 									</div>
@@ -1050,13 +1051,13 @@ export function IconDetails({
 									</div>
 								)}
 
-								{isExternalIcon && externalIcon && (
+								{isExternalIcon && externalIcon && externalSourceConfig && (
 									<div className="">
 										<h3 className="text-sm font-semibold text-muted-foreground mb-2">Source</h3>
 										<Button variant="outline" className="w-full" asChild>
 											<Link href={externalIcon.source_url} target="_blank" rel="noopener noreferrer">
 												<ExternalLink className="w-4 h-4 mr-2" />
-												View on selfh.st
+												View on {externalSourceConfig.label}
 											</Link>
 										</Button>
 									</div>

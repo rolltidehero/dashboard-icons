@@ -2,7 +2,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { MagicCard } from "@/components/magicui/magic-card"
 import { Badge } from "@/components/ui/badge"
-import { BASE_URL } from "@/constants"
+import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { getExternalIconPreviewUrl } from "@/lib/external-icon-urls"
 import { formatIconName } from "@/lib/utils"
 import type { IconWithName } from "@/types/icons"
@@ -11,7 +11,8 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 	const { name, data: iconData } = icon
 	const formatedIconName = formatIconName(name)
 
-	const externalIcon = icon.source === "selfhst" ? icon.external : undefined
+	const externalIcon = icon.source && icon.source !== "native" ? icon.external : undefined
+	const sourceConfig = externalIcon ? EXTERNAL_SOURCES[icon.source as ExternalSourceId] : undefined
 	const isCommunityIcon = typeof iconData.base === "string" && iconData.base.startsWith("http")
 	const imageUrl = externalIcon
 		? getExternalIconPreviewUrl(externalIcon)
@@ -35,9 +36,9 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 						sizes="32px 32px"
 						className="object-contain p-2 group-hover:scale-110 transition-transform duration-300"
 					/>
-					{externalIcon && (
+					{externalIcon && sourceConfig && (
 						<Badge variant="secondary" className="absolute -top-1.5 -right-1.5 z-10 h-5 px-1.5 text-[10px] shadow-sm">
-							selfh.st
+							{sourceConfig.label}
 						</Badge>
 					)}
 				</div>

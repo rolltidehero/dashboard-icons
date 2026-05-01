@@ -1,7 +1,7 @@
 import type { Metadata, ResolvingMetadata } from "next"
 import { notFound } from "next/navigation"
 import { IconDetails } from "@/components/icon-details"
-import { WEB_URL } from "@/constants"
+import { type ExternalSourceId, EXTERNAL_SOURCES, WEB_URL } from "@/constants"
 import { getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
 import { getExternalIconBySlug, getExternalIcons } from "@/lib/external-icons"
 import type { AuthorData } from "@/types/icons"
@@ -30,16 +30,17 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 		notFound()
 	}
 
+	const sourceConfig = EXTERNAL_SOURCES[icon.external.source as ExternalSourceId]
 	const formattedName = icon.external.name
 	const pageUrl = `${WEB_URL}/icons/external/${slug}`
 	const previewUrl = getExternalIconPreviewUrl(icon.external)
 	const imageType = previewUrl.endsWith(".svg") ? "image/svg+xml" : previewUrl.endsWith(".webp") ? "image/webp" : "image/png"
 
 	return {
-		title: `${formattedName} Icon (selfh.st) | Dashboard Icons`,
-		description: `Download the ${formattedName} icon from selfh.st/icons via Dashboard Icons. External assets are served by jsDelivr and attributed under CC BY 4.0.`,
+		title: `${formattedName} Icon (${sourceConfig.label}) | Dashboard Icons`,
+		description: `Download the ${formattedName} icon from ${sourceConfig.label} via Dashboard Icons. Licensed under ${sourceConfig.license}.`,
 		assets: icon.external.formats.map((format) => resolveExternalIconUrl(icon.external, format)),
-		keywords: [`${formattedName} icon`, `${slug} icon`, "selfh.st icons", "dashboard icon", "icon download"],
+		keywords: [`${formattedName} icon`, `${slug} icon`, `${sourceConfig.label} icons`, "dashboard icon", "icon download"],
 		icons: {
 			icon: previewUrl,
 		},
@@ -56,8 +57,8 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 			},
 		},
 		openGraph: {
-			title: `${formattedName} Icon (selfh.st) | Dashboard Icons`,
-			description: `Download the ${formattedName} icon from selfh.st/icons. External assets are served by jsDelivr with attribution.`,
+			title: `${formattedName} Icon (${sourceConfig.label}) | Dashboard Icons`,
+			description: `Download the ${formattedName} icon from ${sourceConfig.label}. Licensed under ${sourceConfig.license}.`,
 			type: "website",
 			url: pageUrl,
 			siteName: "Dashboard Icons",
@@ -74,8 +75,8 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: `${formattedName} Icon (selfh.st) | Dashboard Icons`,
-			description: `Download the ${formattedName} icon from selfh.st/icons via Dashboard Icons.`,
+			title: `${formattedName} Icon (${sourceConfig.label}) | Dashboard Icons`,
+			description: `Download the ${formattedName} icon from ${sourceConfig.label} via Dashboard Icons.`,
 			images: [previewUrl],
 		},
 		alternates: {
@@ -92,14 +93,15 @@ export default async function ExternalIconPage({ params }: { params: Promise<{ s
 		notFound()
 	}
 
+	const sourceConfig = EXTERNAL_SOURCES[icon.external.source as ExternalSourceId]
 	const previewUrl = getExternalIconPreviewUrl(icon.external)
 
 	const authorData: AuthorData = {
-		id: "selfhst",
-		name: "selfh.st/icons",
-		login: "selfhst",
+		id: sourceConfig.id,
+		name: sourceConfig.authorName,
+		login: sourceConfig.authorLogin,
 		avatar_url: "",
-		html_url: "https://selfh.st/icons/",
+		html_url: sourceConfig.authorUrl,
 	}
 
 	return (
@@ -116,8 +118,8 @@ export default async function ExternalIconPage({ params }: { params: Promise<{ s
 						acquireLicensePage: `${WEB_URL}/license`,
 						creator: {
 							"@type": "Organization",
-							name: "selfh.st/icons",
-							url: "https://selfh.st/icons/",
+							name: sourceConfig.authorName,
+							url: sourceConfig.authorUrl,
 						},
 					}),
 				}}

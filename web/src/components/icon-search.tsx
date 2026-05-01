@@ -22,10 +22,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { EXTERNAL_SOURCE_IDS, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { filterAndSortIcons, normalizeForSearch, type SortOption } from "@/lib/utils"
 import type { IconRecord, IconSearchProps } from "@/types/icons"
 
-type SourceFilter = "all" | "native" | "selfhst"
+type SourceFilter = "all" | "native" | ExternalSourceId
 
 function getIconsForSource(icons: IconRecord[], source: SourceFilter) {
 	if (source === "all") return icons
@@ -45,7 +46,7 @@ export function IconSearch({ icons }: IconSearchProps) {
 	const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategories ?? [])
 	const [sortOption, setSortOption] = useState<SortOption>(initialSort)
 	const [sourceFilter, setSourceFilter] = useState<SourceFilter>(
-		["all", "native", "selfhst"].includes(initialSource) ? initialSource : "all",
+		["all", "native", ...EXTERNAL_SOURCE_IDS].includes(initialSource) ? initialSource : "all",
 	)
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 	const noIconsFoundTimeoutRef = useRef<NodeJS.Timeout | null>(null)
@@ -253,14 +254,9 @@ export function IconSearch({ icons }: IconSearchProps) {
 	}
 
 	const getSourceLabel = (source: SourceFilter) => {
-		switch (source) {
-			case "native":
-				return "Dashboard Icons"
-			case "selfhst":
-				return "selfh.st"
-			default:
-				return "All sources"
-		}
+		if (source === "native") return "Dashboard Icons"
+		if (source === "all") return "All sources"
+		return EXTERNAL_SOURCES[source]?.label ?? source
 	}
 
 	return (
@@ -378,9 +374,11 @@ export function IconSearch({ icons }: IconSearchProps) {
 								<DropdownMenuRadioItem value="native" className="cursor-pointer">
 									Dashboard Icons
 								</DropdownMenuRadioItem>
-								<DropdownMenuRadioItem value="selfhst" className="cursor-pointer">
-									selfh.st
-								</DropdownMenuRadioItem>
+								{EXTERNAL_SOURCE_IDS.map((sourceId) => (
+									<DropdownMenuRadioItem key={sourceId} value={sourceId} className="cursor-pointer">
+										{EXTERNAL_SOURCES[sourceId].label}
+									</DropdownMenuRadioItem>
+								))}
 							</DropdownMenuRadioGroup>
 						</DropdownMenuContent>
 					</DropdownMenu>
