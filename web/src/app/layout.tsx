@@ -39,7 +39,17 @@ export async function generateMetadata(): Promise<Metadata> {
 			template: "%s | Dashboard Icons & Logos",
 		},
 		description: getDescription(totalIcons),
-		keywords: ["dashboard icons", "dashboard logos", "service icons", "service logos", "application icons", "app logos", "tool icons", "web dashboard", "app directory"],
+		keywords: [
+			"dashboard icons",
+			"dashboard logos",
+			"service icons",
+			"service logos",
+			"application icons",
+			"app logos",
+			"tool icons",
+			"web dashboard",
+			"app directory",
+		],
 		robots: {
 			index: true,
 			follow: true,

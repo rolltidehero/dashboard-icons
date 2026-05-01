@@ -40,7 +40,16 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 		title: `${formattedName} Icon & Logo (${sourceConfig.label})`,
 		description: `Download the ${formattedName} icon and logo from ${sourceConfig.label} via Dashboard Icons. Licensed under ${sourceConfig.license}.`,
 		assets: icon.external.formats.map((format) => resolveExternalIconUrl(icon.external, format)),
-		keywords: [`${formattedName} icon`, `${formattedName} logo`, `${slug} icon`, `${slug} logo`, `${sourceConfig.label} icons`, "dashboard icon", "logo download", "icon download"],
+		keywords: [
+			`${formattedName} icon`,
+			`${formattedName} logo`,
+			`${slug} icon`,
+			`${slug} logo`,
+			`${sourceConfig.label} icons`,
+			"dashboard icon",
+			"logo download",
+			"icon download",
+		],
 		icons: {
 			icon: previewUrl,
 		},

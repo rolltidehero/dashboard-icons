@@ -4,7 +4,8 @@ import { cn } from "@/lib/utils"
 
 export const metadata: Metadata = {
 	title: "Submit an Icon or Logo",
-	description: "Submit your icons and logos to the Dashboard Icons collection. Share your designs with the community and help expand the collection.",
+	description:
+		"Submit your icons and logos to the Dashboard Icons collection. Share your designs with the community and help expand the collection.",
 	robots: {
 		index: true,
 		follow: true,
