@@ -42935,5 +42935,19 @@
                 "login": "ssouthcity"
             }
         }
+    },
+    "material-design-icons": {
+        "base": "svg",
+        "aliases": [
+            "mdi"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:28.349Z",
+            "author": {
+                "id": 162880856,
+                "login": "RioLi08123"
+            }
+        }
     }
 }
