@@ -43124,5 +43124,19 @@
                 "login": "ITGenConnect"
             }
         }
+    },
+    "konica-minolta": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:05.354Z",
+            "author": {
+                "id": 170592029,
+                "login": "ITGenConnect"
+            }
+        }
     }
 }
