@@ -1,12 +1,8 @@
-"use client"
-
 import Image from "next/image"
 import Link from "next/link"
-import { useTheme } from "next-themes"
-import { useEffect, useState } from "react"
 import { MagicCard } from "@/components/magicui/magic-card"
-import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
-import { getExternalIconThemedPreviewUrl } from "@/lib/external-icon-urls"
+import { EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
+import { getIconImageUrl } from "@/lib/icon-url"
 import { formatIconName } from "@/lib/utils"
 import type { IconWithName } from "@/types/icons"
 
@@ -33,31 +29,11 @@ function getLinkHref(kind: IconKind, name: string): string {
 	}
 }
 
-function useThemedImageUrl(icon: IconWithName, kind: IconKind): string {
-	const [mounted, setMounted] = useState(false)
-	useEffect(() => setMounted(true), [])
-	const { resolvedTheme } = useTheme()
-	const theme = mounted && resolvedTheme === "dark" ? "dark" : "light"
-	const { name, data: iconData } = icon
-
-	if (kind.type === "external" && icon.external) {
-		return getExternalIconThemedPreviewUrl(icon.external, theme)
-	}
-
-	if (kind.type === "community") {
-		return iconData.base as string
-	}
-
-	const themeVariant = theme === "dark" ? iconData.colors?.dark : iconData.colors?.light
-	const fileName = themeVariant ?? name
-	return `${BASE_URL}/${iconData.base}/${fileName}.${iconData.base}`
-}
-
 export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAlias?: string }) {
 	const { name } = icon
 	const kind = getIconKind(icon)
 	const sourceConfig = kind.type === "external" ? EXTERNAL_SOURCES[kind.sourceId] : undefined
-	const imageUrl = useThemedImageUrl(icon, kind)
+	const imageUrl = getIconImageUrl(icon)
 
 	return (
 		<MagicCard className="group/card rounded-md shadow-md">

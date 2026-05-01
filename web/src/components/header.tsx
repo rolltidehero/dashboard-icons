@@ -1,6 +1,7 @@
 "use client"
 
 import { Github, LayoutDashboard, LogOut, PlusCircle, Search } from "lucide-react"
+import dynamic from "next/dynamic"
 import Link from "next/link"
 import { usePostHog } from "posthog-js/react"
 import { useEffect, useState } from "react"
@@ -12,7 +13,8 @@ import { getExternalIcons } from "@/lib/external-icons"
 import { pb } from "@/lib/pb"
 import { resetPostHogIdentity } from "@/lib/posthog-utils"
 import type { IconWithName } from "@/types/icons"
-import { CommandMenu } from "./command-menu"
+
+const CommandMenu = dynamic(() => import("./command-menu").then((mod) => mod.CommandMenu), { ssr: false })
 import { HeaderNav } from "./header-nav"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { Button } from "./ui/button"

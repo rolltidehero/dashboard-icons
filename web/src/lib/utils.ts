@@ -231,24 +231,35 @@ export function filterAndSortIcons({
 			.filter((item) => item.score > 0.7)
 			.sort((a, b) => {
 				if (b.score !== a.score) return b.score - a.score
+				const aIsNative = !a.icon.source || a.icon.source === "native" ? 0 : 1
+				const bIsNative = !b.icon.source || b.icon.source === "native" ? 0 : 1
+				if (aIsNative !== bIsNative) return aIsNative - bIsNative
 				return a.icon.name.localeCompare(b.icon.name)
 			})
 
 		filtered = scored.map((item) => item.icon)
 	}
 
-	// Sorting
+	// Sorting — native icons are always prioritized over external ones
+	const nativeFirst = (a: IconWithName, b: IconWithName) => {
+		const aExt = a.source && a.source !== "native" ? 1 : 0
+		const bExt = b.source && b.source !== "native" ? 1 : 0
+		return aExt - bExt
+	}
+
 	if (sort === "alphabetical-asc") {
-		filtered = filtered.slice().sort((a, b) => a.name.localeCompare(b.name))
+		filtered = filtered.slice().sort((a, b) => nativeFirst(a, b) || a.name.localeCompare(b.name))
 	} else if (sort === "alphabetical-desc") {
-		filtered = filtered.slice().sort((a, b) => b.name.localeCompare(a.name))
+		filtered = filtered.slice().sort((a, b) => nativeFirst(a, b) || b.name.localeCompare(a.name))
 	} else if (sort === "newest") {
 		filtered = filtered.slice().sort((a, b) => {
+			const nf = nativeFirst(a, b)
+			if (nf !== 0) return nf
 			const aTime = a.data.update?.timestamp ? new Date(a.data.update.timestamp).getTime() : 0
 			const bTime = b.data.update?.timestamp ? new Date(b.data.update.timestamp).getTime() : 0
 			return bTime - aTime
 		})
-	} // else: relevance (already sorted by score)
+	} // else: relevance (already sorted by score with native priority)
 
 	if (limit && filtered.length > limit) {
 		return filtered.slice(0, limit)
