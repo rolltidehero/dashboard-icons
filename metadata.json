@@ -43772,5 +43772,27 @@
             "light": "golang-light",
             "dark": "golang-dark"
         }
+    },
+    "proxmox-backup-server": {
+        "base": "svg",
+        "aliases": [
+            "pbs",
+            "proxmox-backup"
+        ],
+        "categories": [
+            "storage",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:48.118Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "proxmox-backup-server-light",
+            "dark": "proxmox-backup-server-dark"
+        }
     }
 }
