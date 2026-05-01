@@ -68,7 +68,7 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 				<div className="relative h-16 w-16 mb-2 rounded-lg ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10">
 					<Image
 						src={imageUrl}
-						alt={`${name} icon`}
+						alt={`${name} icon and logo`}
 						fill
 						sizes="32px 32px"
 						className="object-contain p-2 group-hover:scale-110 transition-transform duration-300"

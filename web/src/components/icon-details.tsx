@@ -784,7 +784,7 @@ export function IconDetails({
 											width={96}
 											height={96}
 											placeholder="empty"
-											alt={`High quality ${formatedIconName} icon in ${iconData.base.toUpperCase()} format`}
+											alt={`${formatedIconName} icon and logo in ${iconData.base.toUpperCase()} format`}
 											className="w-full h-full object-contain"
 										/>
 									</div>
