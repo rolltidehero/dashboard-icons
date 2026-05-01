@@ -43351,5 +43351,26 @@
             "light": "qemu-light",
             "dark": "qemu-dark"
         }
+    },
+    "neovim": {
+        "base": "svg",
+        "aliases": [
+            "nvim"
+        ],
+        "categories": [
+            "development",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:51:47.256Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "neovim-light",
+            "dark": "neovim-dark"
+        }
     }
 }
