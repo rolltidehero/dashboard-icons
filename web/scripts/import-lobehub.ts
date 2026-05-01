@@ -128,7 +128,7 @@ async function fetchBrandMetadata(tree: GitHubTreeEntry[], headers: Record<strin
 			batch.map(async (p) => {
 				const url = `https://raw.githubusercontent.com/lobehub/lobe-icons/master/${p}`
 				try {
-					const res = await fetch(url, { headers: { Accept: "text/plain" } })
+					const res = await fetch(url, { headers: { ...headers, Accept: "text/plain" } })
 					if (!res.ok) return null
 					const text = await res.text()
 					const fm = parseFrontmatter(text)

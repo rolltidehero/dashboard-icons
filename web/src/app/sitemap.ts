@@ -40,7 +40,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 				`${BASE_URL}/webp/${iconName}.webp`,
 			].filter(Boolean) as string[],
 		})),
-		...externalIcons.map((icon) => {
+		...externalIcons.filter((icon, i, arr) => arr.findIndex((a) => a.slug === icon.slug) === i).map((icon) => {
 			const formats = (icon.external.formats ?? []).filter((f) => f === "svg" || f === "png" || f === "webp")
 			const images: string[] = formats.map((format) => resolveExternalIconUrl(icon.external, format))
 			const variants = icon.external.variants ?? {}

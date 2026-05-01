@@ -51,7 +51,7 @@ export function useApproveSubmission() {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			revalidateAllSubmissions()
+			void revalidateAllSubmissions()
 			toast.success("Submission approved")
 		},
 		onError: (error: any) => {
@@ -70,7 +70,7 @@ export function useBulkApproveSubmissions() {
 
 	return useMutation({
 		mutationFn: async ({ submissionIds, adminComment }: { submissionIds: string[]; adminComment?: string }) => {
-			const results = await Promise.all(
+			const results = await Promise.allSettled(
 				submissionIds.map((submissionId) =>
 					pb.collection("submissions").update(
 						submissionId,
@@ -83,11 +83,15 @@ export function useBulkApproveSubmissions() {
 					),
 				),
 			)
-			return results
+			const failures = results.filter((r) => r.status === "rejected")
+			if (failures.length > 0) {
+				throw new Error(`${failures.length} of ${submissionIds.length} approvals failed`)
+			}
+			return results.filter((r) => r.status === "fulfilled").map((r) => r.value)
 		},
 		onSuccess: (_data, variables) => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			revalidateAllSubmissions()
+			void revalidateAllSubmissions()
 			toast.success(`${variables.submissionIds.length} submission${variables.submissionIds.length > 1 ? "s" : ""} approved`)
 		},
 		onError: (error: any) => {
@@ -121,7 +125,7 @@ export function useRejectSubmission() {
 		},
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			revalidateAllSubmissions()
+			void revalidateAllSubmissions()
 			toast.success("Submission rejected")
 		},
 		onError: (error: any) => {
