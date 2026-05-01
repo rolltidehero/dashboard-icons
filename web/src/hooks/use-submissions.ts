@@ -49,16 +49,10 @@ export function useApproveSubmission() {
 				},
 			)
 		},
-		onSuccess: async (_data) => {
-			// Invalidate and refetch submissions
+		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-
-			// Revalidate Next.js cache for community pages
-			await revalidateAllSubmissions()
-
-			toast.success("Submission approved", {
-				description: "The submission has been approved successfully",
-			})
+			revalidateAllSubmissions()
+			toast.success("Submission approved")
 		},
 		onError: (error: any) => {
 			console.error("Error approving submission:", error)
@@ -71,36 +65,30 @@ export function useApproveSubmission() {
 	})
 }
 
-// Bulk approve submissions mutation (chains approvals sequentially)
 export function useBulkApproveSubmissions() {
 	const queryClient = useQueryClient()
 
 	return useMutation({
 		mutationFn: async ({ submissionIds, adminComment }: { submissionIds: string[]; adminComment?: string }) => {
-			const results = []
-			for (const submissionId of submissionIds) {
-				const result = await pb.collection("submissions").update(
-					submissionId,
-					{
-						status: "approved",
-						approved_by: pb.authStore.record?.id || "",
-						admin_comment: adminComment || "",
-					},
-					{
-						requestKey: null,
-					},
-				)
-				results.push(result)
-			}
+			const results = await Promise.all(
+				submissionIds.map((submissionId) =>
+					pb.collection("submissions").update(
+						submissionId,
+						{
+							status: "approved",
+							approved_by: pb.authStore.record?.id || "",
+							admin_comment: adminComment || "",
+						},
+						{ requestKey: null },
+					),
+				),
+			)
 			return results
 		},
-		onSuccess: async (_data, variables) => {
+		onSuccess: (_data, variables) => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			await revalidateAllSubmissions()
-
-			toast.success(`${variables.submissionIds.length} submission${variables.submissionIds.length > 1 ? "s" : ""} approved`, {
-				description: "All selected submissions have been approved successfully",
-			})
+			revalidateAllSubmissions()
+			toast.success(`${variables.submissionIds.length} submission${variables.submissionIds.length > 1 ? "s" : ""} approved`)
 		},
 		onError: (error: any) => {
 			console.error("Error bulk approving submissions:", error)
@@ -131,16 +119,10 @@ export function useRejectSubmission() {
 				},
 			)
 		},
-		onSuccess: async () => {
-			// Invalidate and refetch submissions
+		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-
-			// Revalidate Next.js cache for community pages
-			await revalidateAllSubmissions()
-
-			toast.success("Submission rejected", {
-				description: "The submission has been rejected",
-			})
+			revalidateAllSubmissions()
+			toast.success("Submission rejected")
 		},
 		onError: (error: any) => {
 			console.error("Error rejecting submission:", error)
