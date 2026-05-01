@@ -2,15 +2,17 @@ import { EXTERNAL_SOURCES } from "@/constants"
 import type { ExternalIcon } from "@/types/icons"
 
 export function resolveExternalIconUrl(icon: Pick<ExternalIcon, "source" | "slug" | "url_templates">, key: string): string {
-	const template = icon.url_templates?.[key]
+	const templates = icon.url_templates ?? {}
+	const template = templates[key]
 	if (template) return template.replace("{slug}", icon.slug)
+
+	const [format] = key.split("_")
+	const baseTemplate = templates[format]
+	if (baseTemplate) return baseTemplate.replace("{slug}", icon.slug)
 
 	const sourceConfig = EXTERNAL_SOURCES[icon.source]
 	const cdnBase = sourceConfig?.cdnBase ?? ""
-
-	const [format, variant] = key.split("_")
-	const suffix = variant ? `-${variant}` : ""
-	return `${cdnBase}/${format}/${icon.slug}${suffix}.${format}`
+	return `${cdnBase}/${format}/${icon.slug}.${format}`
 }
 
 export function getExternalIconPreviewUrl(icon: ExternalIcon): string {
