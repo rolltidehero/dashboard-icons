@@ -1,20 +1,7 @@
 import { unstable_cache } from "next/cache"
-import PocketBase from "pocketbase"
 import type { CommunityGallery } from "@/lib/pb"
+import { createServerPB, getPocketBaseUrl } from "@/lib/pb"
 import type { IconWithName } from "@/types/icons"
-
-/**
- * Server-side utility functions for community gallery (public submissions view)
- * Uses unstable_cache with tags for on-demand revalidation
- */
-
-/**
- * Create a new PocketBase instance for server-side operations
- * Note: Do not use the client-side pb instance (with auth store) on the server
- */
-function createServerPB() {
-	return new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090")
-}
 
 /**
  * Helper to find the best matching asset filename for a given original filename
@@ -58,7 +45,7 @@ function findBestMatchingAsset(originalName: string, assets: string[]): string {
  * Additional assets are stored but not exposed in the standard Icon format
  */
 function transformGalleryToIcon(item: CommunityGallery): any {
-	const pbUrl = process.env.NEXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090"
+	const pbUrl = getPocketBaseUrl()
 
 	const mainIcon = item.assets?.[0] ? `${pbUrl}/api/files/community_gallery/${item.id}/${item.assets[0]}` : ""
 

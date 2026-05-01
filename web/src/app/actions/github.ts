@@ -1,6 +1,6 @@
 "use server"
 
-import PocketBase from "pocketbase"
+import { createServerPB } from "@/lib/pb"
 
 const GITHUB_OWNER = "homarr-labs"
 const GITHUB_REPO = "dashboard-icons"
@@ -22,7 +22,7 @@ async function verifyAdmin(authToken: string): Promise<{ isAdmin: boolean; error
 	}
 
 	try {
-		const pb = new PocketBase(process.env.NEXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090")
+		const pb = createServerPB()
 
 		// Validate the token by refreshing auth
 		// This will fail if the token is invalid/expired
