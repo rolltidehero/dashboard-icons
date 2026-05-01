@@ -30619,14 +30619,31 @@
     },
     "ilo": {
         "base": "svg",
-        "aliases": [],
-        "categories": [],
+        "aliases": [
+            "ProLiant",
+            "Density Line (DL)"
+        ],
+        "categories": [
+            "automation",
+            "monitoring",
+            "network",
+            "cloud",
+            "development",
+            "security",
+            "social",
+            "storage",
+            "tools",
+            "utility"
+        ],
         "update": {
-            "timestamp": "2023-04-13T13:56:18Z",
+            "timestamp": "2026-05-01T15:26:58.694Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 1542904,
+                "login": "iamk3"
             }
+        },
+        "colors": {
+            "dark": "ilo-dark"
         }
     },
     "zoraxy": {
