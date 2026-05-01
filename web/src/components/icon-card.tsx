@@ -9,10 +9,7 @@ import { getExternalIconThemedPreviewUrl } from "@/lib/external-icon-urls"
 import { formatIconName } from "@/lib/utils"
 import type { IconWithName } from "@/types/icons"
 
-type IconKind =
-	| { type: "external"; slug: string; sourceId: ExternalSourceId }
-	| { type: "community" }
-	| { type: "native" }
+type IconKind = { type: "external"; slug: string; sourceId: ExternalSourceId } | { type: "community" } | { type: "native" }
 
 function getIconKind(icon: IconWithName): IconKind {
 	if (icon.source && icon.source !== "native" && icon.external) {
@@ -62,9 +59,9 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 	return (
 		<MagicCard className="group/card rounded-md shadow-md">
 			{sourceConfig && (
-				<div className="absolute left-0 -top-7 z-10 flex items-center gap-1.5 px-2 py-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 bg-muted/90 backdrop-blur-sm rounded-md shadow-sm whitespace-nowrap">
-					<Image src={sourceConfig.icon} alt="" width={14} height={14} className="shrink-0" unoptimized />
-					<span className="text-[10px] text-muted-foreground">from {sourceConfig.label}</span>
+				<div className="absolute left-0 -top-7 z-10 flex items-center gap-1.5 pr-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 bg-muted/90 backdrop-blur-sm rounded-md shadow-sm whitespace-nowrap">
+					<Image src={sourceConfig.icon} alt={sourceConfig.label} width={28} height={28} className="shrink-0" unoptimized />
+					<span className="text-sm sm:text-md text-muted-foreground">from {sourceConfig.label}</span>
 				</div>
 			)}
 			<Link prefetch={false} href={getLinkHref(kind, name)} className="group flex flex-col items-center p-3 sm:p-4 cursor-pointer">

@@ -74,7 +74,8 @@ async function fetchExternalIconsForSource(sourceId: ExternalSourceId): Promise<
 	const sourceConfig = getExternalSource(sourceId)
 	const records = await pb.collection("external_icons").getFullList<ExternalIcon>({
 		filter: pb.filter("source = {:source}", { source: sourceConfig.pbFilter }),
-		fields: "id,source,slug,name,aliases,categories,formats,variants,url_templates,license,attribution,source_url,updated_at_source,created,updated",
+		fields:
+			"id,source,slug,name,aliases,categories,formats,variants,url_templates,license,attribution,source_url,updated_at_source,created,updated",
 		batch: 500,
 		sort: "name",
 		requestKey: null,

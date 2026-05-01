@@ -119,7 +119,8 @@ export default async function ExternalIconPage({ params }: { params: Promise<{ s
 						"@context": "https://schema.org",
 						"@type": "ImageObject",
 						contentUrl: previewUrl,
-						license: sourceConfig.license === "MIT" ? "https://opensource.org/licenses/MIT" : "https://creativecommons.org/licenses/by/4.0/",
+						license:
+							sourceConfig.license === "MIT" ? "https://opensource.org/licenses/MIT" : "https://creativecommons.org/licenses/by/4.0/",
 						acquireLicensePage: `${WEB_URL}/license`,
 						creator: {
 							"@type": "Organization",

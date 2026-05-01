@@ -1,39 +1,15 @@
 "use client"
 
 import { useQueryClient } from "@tanstack/react-query"
-import {
-	AlertCircle,
-	CheckCircle2,
-	Clock,
-	Github,
-	ImageIcon,
-	MessageSquare,
-	RefreshCw,
-	Rocket,
-} from "lucide-react"
+import { AlertCircle, CheckCircle2, Clock, Github, ImageIcon, MessageSquare, RefreshCw, Rocket } from "lucide-react"
 import * as React from "react"
 import { LoginModalContent } from "@/components/login-modal"
 import { SubmissionsDataTable } from "@/components/submissions-data-table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogHeader,
-	DialogTitle,
-} from "@/components/ui/dialog"
-import {
-	Drawer,
-	DrawerClose,
-	DrawerContent,
-	DrawerDescription,
-	DrawerFooter,
-	DrawerHeader,
-	DrawerTitle,
-} from "@/components/ui/drawer"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Drawer, DrawerClose, DrawerContent, DrawerDescription, DrawerFooter, DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import { Label } from "@/components/ui/label"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -83,9 +59,7 @@ function UserSubmissionCard({ submission, onExpand }: { submission: Submission; 
 						</div>
 					)}
 					{!hasAdminComment && (
-						<p className="text-xs text-muted-foreground mt-1">
-							Submitted {new Date(submission.created).toLocaleDateString()}
-						</p>
+						<p className="text-xs text-muted-foreground mt-1">Submitted {new Date(submission.created).toLocaleDateString()}</p>
 					)}
 				</div>
 			</div>
@@ -101,7 +75,11 @@ function SubmissionStatusBadge({ status }: { status: Submission["status"] }) {
 		added_to_collection: { label: "Live", className: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20" },
 	}
 	const { label, className } = config[status]
-	return <Badge variant="outline" className={`text-xs ${className}`}>{label}</Badge>
+	return (
+		<Badge variant="outline" className={`text-xs ${className}`}>
+			{label}
+		</Badge>
+	)
 }
 
 export default function DashboardPage() {
@@ -135,11 +113,14 @@ export default function DashboardPage() {
 	const isAdmin = auth?.isAdmin ?? false
 	const currentUserId = auth?.userId ?? ""
 
-	const counts = React.useMemo(() => ({
-		pending: submissions.filter((s) => s.status === "pending").length,
-		approved: submissions.filter((s) => s.status === "approved").length,
-		total: submissions.length,
-	}), [submissions])
+	const counts = React.useMemo(
+		() => ({
+			pending: submissions.filter((s) => s.status === "pending").length,
+			approved: submissions.filter((s) => s.status === "approved").length,
+			total: submissions.length,
+		}),
+		[submissions],
+	)
 
 	const filteredSubmissions = React.useMemo(() => {
 		if (!isAdmin) return submissions
@@ -173,17 +154,11 @@ export default function DashboardPage() {
 	}
 
 	const handleTriggerWorkflow = (submissionId: string) => {
-		workflowMutation.mutate(
-			{ submissionId },
-			{ onSuccess: (data) => setWorkflowUrl(data.workflowUrl) },
-		)
+		workflowMutation.mutate({ submissionId }, { onSuccess: (data) => setWorkflowUrl(data.workflowUrl) })
 	}
 
 	const handleBulkTriggerWorkflow = (submissionIds: string[]) => {
-		bulkWorkflowMutation.mutate(
-			{ submissionIds },
-			{ onSuccess: (data) => setWorkflowUrl(data.workflowUrl) },
-		)
+		bulkWorkflowMutation.mutate({ submissionIds }, { onSuccess: (data) => setWorkflowUrl(data.workflowUrl) })
 	}
 
 	const handleRejectSubmit = () => {
@@ -331,11 +306,7 @@ export default function DashboardPage() {
 
 							<TabsContent value="review">
 								{counts.pending === 0 ? (
-								<EmptyTab
-									icon={CheckCircle2}
-									title="All caught up"
-									description="Nothing waiting for review."
-								/>
+									<EmptyTab icon={CheckCircle2} title="All caught up" description="Nothing waiting for review." />
 								) : (
 									<SubmissionsDataTable
 										data={filteredSubmissions}
@@ -359,11 +330,7 @@ export default function DashboardPage() {
 
 							<TabsContent value="deploy">
 								{counts.approved === 0 ? (
-								<EmptyTab
-									icon={Rocket}
-									title="Nothing to deploy"
-									description="Approve submissions from the review tab first."
-								/>
+									<EmptyTab icon={Rocket} title="Nothing to deploy" description="Approve submissions from the review tab first." />
 								) : (
 									<SubmissionsDataTable
 										data={filteredSubmissions}
@@ -387,11 +354,7 @@ export default function DashboardPage() {
 
 							<TabsContent value="all">
 								{counts.total === 0 ? (
-								<EmptyTab
-									icon={ImageIcon}
-									title="No submissions yet"
-									description="Community contributions will appear here."
-								/>
+									<EmptyTab icon={ImageIcon} title="No submissions yet" description="Community contributions will appear here." />
 								) : (
 									<SubmissionsDataTable
 										data={filteredSubmissions}
@@ -418,7 +381,11 @@ export default function DashboardPage() {
 				<ApproveDialog
 					isMobile={isMobile}
 					open={approveDialogOpen}
-					onClose={() => { setApproveDialogOpen(false); setApprovingSubmissionId(null); setApproveAdminComment("") }}
+					onClose={() => {
+						setApproveDialogOpen(false)
+						setApprovingSubmissionId(null)
+						setApproveAdminComment("")
+					}}
 					comment={approveAdminComment}
 					onCommentChange={setApproveAdminComment}
 					onSubmit={handleApproveSubmit}
@@ -427,7 +394,11 @@ export default function DashboardPage() {
 				<RejectDialog
 					isMobile={isMobile}
 					open={rejectDialogOpen}
-					onClose={() => { setRejectDialogOpen(false); setRejectingSubmissionId(null); setAdminComment("") }}
+					onClose={() => {
+						setRejectDialogOpen(false)
+						setRejectingSubmissionId(null)
+						setAdminComment("")
+					}}
 					comment={adminComment}
 					onCommentChange={setAdminComment}
 					onSubmit={handleRejectSubmit}
@@ -436,7 +407,11 @@ export default function DashboardPage() {
 				<BulkApproveDialog
 					isMobile={isMobile}
 					open={bulkApproveDialogOpen}
-					onClose={() => { setBulkApproveDialogOpen(false); setBulkApprovingIds([]); setBulkApproveAdminComment("") }}
+					onClose={() => {
+						setBulkApproveDialogOpen(false)
+						setBulkApprovingIds([])
+						setBulkApproveAdminComment("")
+					}}
 					count={bulkApprovingIds.length}
 					comment={bulkApproveAdminComment}
 					onCommentChange={setBulkApproveAdminComment}
@@ -462,19 +437,11 @@ export default function DashboardPage() {
 				{userSubmissions.length > 0 ? (
 					<div className="space-y-2">
 						{userSubmissions.map((submission) => (
-							<UserSubmissionCard
-								key={submission.id}
-								submission={submission}
-								onExpand={setSelectedUserSubmission}
-							/>
+							<UserSubmissionCard key={submission.id} submission={submission} onExpand={setSelectedUserSubmission} />
 						))}
 					</div>
 				) : (
-					<EmptyTab
-						icon={ImageIcon}
-						title="No submissions yet"
-						description="Submit an icon to track its progress here."
-					/>
+					<EmptyTab icon={ImageIcon} title="No submissions yet" description="Submit an icon to track its progress here." />
 				)}
 
 				<Drawer open={!!selectedUserSubmission} onOpenChange={(open) => !open && setSelectedUserSubmission(null)}>
@@ -509,9 +476,7 @@ export default function DashboardPage() {
 										<p className="text-sm">{selectedUserSubmission.admin_comment}</p>
 									</div>
 								)}
-								<p className="text-xs text-muted-foreground">
-									Submitted {new Date(selectedUserSubmission.created).toLocaleDateString()}
-								</p>
+								<p className="text-xs text-muted-foreground">Submitted {new Date(selectedUserSubmission.created).toLocaleDateString()}</p>
 							</div>
 						)}
 					</DrawerContent>
@@ -533,7 +498,15 @@ function EmptyTab({ icon: Icon, title, description }: { icon: React.ElementType;
 	)
 }
 
-function ApproveDialog({ isMobile, open, onClose, comment, onCommentChange, onSubmit, isPending }: {
+function ApproveDialog({
+	isMobile,
+	open,
+	onClose,
+	comment,
+	onCommentChange,
+	onSubmit,
+	isPending,
+}: {
 	isMobile: boolean
 	open: boolean
 	onClose: () => void
@@ -552,11 +525,23 @@ function ApproveDialog({ isMobile, open, onClose, comment, onCommentChange, onSu
 					</DrawerHeader>
 					<div className="px-4 pb-2 space-y-2">
 						<Label htmlFor="approve-comment">Note (optional)</Label>
-						<Textarea id="approve-comment" placeholder="Included in the notification email..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+						<Textarea
+							id="approve-comment"
+							placeholder="Included in the notification email..."
+							value={comment}
+							onChange={(e) => onCommentChange(e.target.value)}
+							rows={3}
+						/>
 					</div>
 					<DrawerFooter>
-						<Button onClick={onSubmit} disabled={isPending}>{isPending ? "Approving..." : "Approve"}</Button>
-						<DrawerClose asChild><Button variant="outline" disabled={isPending}>Cancel</Button></DrawerClose>
+						<Button onClick={onSubmit} disabled={isPending}>
+							{isPending ? "Approving..." : "Approve"}
+						</Button>
+						<DrawerClose asChild>
+							<Button variant="outline" disabled={isPending}>
+								Cancel
+							</Button>
+						</DrawerClose>
 					</DrawerFooter>
 				</DrawerContent>
 			</Drawer>
@@ -572,18 +557,36 @@ function ApproveDialog({ isMobile, open, onClose, comment, onCommentChange, onSu
 				</DialogHeader>
 				<div className="space-y-2 py-4">
 					<Label htmlFor="approve-comment">Note (optional)</Label>
-					<Textarea id="approve-comment" placeholder="Included in the notification email..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+					<Textarea
+						id="approve-comment"
+						placeholder="Included in the notification email..."
+						value={comment}
+						onChange={(e) => onCommentChange(e.target.value)}
+						rows={3}
+					/>
 				</div>
 				<DialogFooter>
-					<Button variant="outline" onClick={onClose} disabled={isPending}>Cancel</Button>
-					<Button onClick={onSubmit} disabled={isPending}>{isPending ? "Approving..." : "Approve"}</Button>
+					<Button variant="outline" onClick={onClose} disabled={isPending}>
+						Cancel
+					</Button>
+					<Button onClick={onSubmit} disabled={isPending}>
+						{isPending ? "Approving..." : "Approve"}
+					</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	)
 }
 
-function RejectDialog({ isMobile, open, onClose, comment, onCommentChange, onSubmit, isPending }: {
+function RejectDialog({
+	isMobile,
+	open,
+	onClose,
+	comment,
+	onCommentChange,
+	onSubmit,
+	isPending,
+}: {
 	isMobile: boolean
 	open: boolean
 	onClose: () => void
@@ -602,11 +605,23 @@ function RejectDialog({ isMobile, open, onClose, comment, onCommentChange, onSub
 					</DrawerHeader>
 					<div className="px-4 pb-2 space-y-2">
 						<Label htmlFor="reject-comment">Reason</Label>
-						<Textarea id="reject-comment" placeholder="e.g. Icon doesn't meet quality guidelines..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+						<Textarea
+							id="reject-comment"
+							placeholder="e.g. Icon doesn't meet quality guidelines..."
+							value={comment}
+							onChange={(e) => onCommentChange(e.target.value)}
+							rows={3}
+						/>
 					</div>
 					<DrawerFooter>
-						<Button variant="destructive" onClick={onSubmit} disabled={isPending}>{isPending ? "Rejecting..." : "Reject"}</Button>
-						<DrawerClose asChild><Button variant="outline" disabled={isPending}>Cancel</Button></DrawerClose>
+						<Button variant="destructive" onClick={onSubmit} disabled={isPending}>
+							{isPending ? "Rejecting..." : "Reject"}
+						</Button>
+						<DrawerClose asChild>
+							<Button variant="outline" disabled={isPending}>
+								Cancel
+							</Button>
+						</DrawerClose>
 					</DrawerFooter>
 				</DrawerContent>
 			</Drawer>
@@ -622,18 +637,37 @@ function RejectDialog({ isMobile, open, onClose, comment, onCommentChange, onSub
 				</DialogHeader>
 				<div className="space-y-2 py-4">
 					<Label htmlFor="reject-comment">Reason</Label>
-					<Textarea id="reject-comment" placeholder="e.g. Icon doesn't meet quality guidelines..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+					<Textarea
+						id="reject-comment"
+						placeholder="e.g. Icon doesn't meet quality guidelines..."
+						value={comment}
+						onChange={(e) => onCommentChange(e.target.value)}
+						rows={3}
+					/>
 				</div>
 				<DialogFooter>
-					<Button variant="outline" onClick={onClose} disabled={isPending}>Cancel</Button>
-					<Button variant="destructive" onClick={onSubmit} disabled={isPending}>{isPending ? "Rejecting..." : "Reject"}</Button>
+					<Button variant="outline" onClick={onClose} disabled={isPending}>
+						Cancel
+					</Button>
+					<Button variant="destructive" onClick={onSubmit} disabled={isPending}>
+						{isPending ? "Rejecting..." : "Reject"}
+					</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
 	)
 }
 
-function BulkApproveDialog({ isMobile, open, onClose, count, comment, onCommentChange, onSubmit, isPending }: {
+function BulkApproveDialog({
+	isMobile,
+	open,
+	onClose,
+	count,
+	comment,
+	onCommentChange,
+	onSubmit,
+	isPending,
+}: {
 	isMobile: boolean
 	open: boolean
 	onClose: () => void
@@ -655,11 +689,23 @@ function BulkApproveDialog({ isMobile, open, onClose, count, comment, onCommentC
 					</DrawerHeader>
 					<div className="px-4 pb-2 space-y-2">
 						<Label htmlFor="bulk-approve-comment">Note (optional)</Label>
-						<Textarea id="bulk-approve-comment" placeholder="Included in notification emails..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+						<Textarea
+							id="bulk-approve-comment"
+							placeholder="Included in notification emails..."
+							value={comment}
+							onChange={(e) => onCommentChange(e.target.value)}
+							rows={3}
+						/>
 					</div>
 					<DrawerFooter>
-						<Button onClick={onSubmit} disabled={isPending}>{isPending ? "Approving..." : label}</Button>
-						<DrawerClose asChild><Button variant="outline" disabled={isPending}>Cancel</Button></DrawerClose>
+						<Button onClick={onSubmit} disabled={isPending}>
+							{isPending ? "Approving..." : label}
+						</Button>
+						<DrawerClose asChild>
+							<Button variant="outline" disabled={isPending}>
+								Cancel
+							</Button>
+						</DrawerClose>
 					</DrawerFooter>
 				</DrawerContent>
 			</Drawer>
@@ -675,11 +721,21 @@ function BulkApproveDialog({ isMobile, open, onClose, count, comment, onCommentC
 				</DialogHeader>
 				<div className="space-y-2 py-4">
 					<Label htmlFor="bulk-approve-comment">Note (optional)</Label>
-					<Textarea id="bulk-approve-comment" placeholder="Included in notification emails..." value={comment} onChange={(e) => onCommentChange(e.target.value)} rows={3} />
+					<Textarea
+						id="bulk-approve-comment"
+						placeholder="Included in notification emails..."
+						value={comment}
+						onChange={(e) => onCommentChange(e.target.value)}
+						rows={3}
+					/>
 				</div>
 				<DialogFooter>
-					<Button variant="outline" onClick={onClose} disabled={isPending}>Cancel</Button>
-					<Button onClick={onSubmit} disabled={isPending}>{isPending ? "Approving..." : label}</Button>
+					<Button variant="outline" onClick={onClose} disabled={isPending}>
+						Cancel
+					</Button>
+					<Button onClick={onSubmit} disabled={isPending}>
+						{isPending ? "Approving..." : label}
+					</Button>
 				</DialogFooter>
 			</DialogContent>
 		</Dialog>
