@@ -1,6 +1,7 @@
 # Dashboard Icons Web App
 
-A web application to browse, search, and download icons from the [Dashboard Icons](https://github.com/homarr-labs/dashboard-icons) collection.
+A web application to browse, search, and download icons from the
+[Dashboard Icons](https://github.com/homarr-labs/dashboard-icons) collection.
 
 ## Features
 
@@ -59,7 +60,7 @@ src/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm
 
 ### Installation
@@ -75,26 +76,28 @@ src/
    NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
    ```
 4. **Configure GitHub OAuth (Optional):**
-   
-   To enable GitHub OAuth login, you need to create a GitHub OAuth App and configure it in PocketBase:
+
+   To enable GitHub OAuth login, you need to create a GitHub OAuth App and
+   configure it in PocketBase:
 
    a. Create a GitHub OAuth App:
-      - Go to GitHub Settings → Developer settings → OAuth Apps → New OAuth App
-      - Set Application name: "Dashboard Icons" (or your preferred name)
-      - Set Homepage URL: `http://localhost:3000` (for development)
-      - Set Authorization callback URL: `http://localhost:8090/api/oauth2-redirect`
-      - After creation, note the **Client ID** and generate a **Client Secret**
+   - Go to GitHub Settings → Developer settings → OAuth Apps → New OAuth App
+   - Set Application name: "Dashboard Icons" (or your preferred name)
+   - Set Homepage URL: `http://localhost:3000` (for development)
+   - Set Authorization callback URL: `http://localhost:8090/api/oauth2-redirect`
+   - After creation, note the **Client ID** and generate a **Client Secret**
 
    b. Configure PocketBase OAuth:
-      - Start PocketBase: `pnpm run backend:start`
-      - Open PocketBase admin UI at `http://127.0.0.1:8090/_/`
-      - Navigate to Settings → Auth providers
-      - Enable GitHub provider and enter your Client ID and Client Secret
-      - Save the settings
+   - Start PocketBase: `pnpm run backend:start`
+   - Open PocketBase admin UI at `http://127.0.0.1:8090/_/`
+   - Navigate to Settings → Auth providers
+   - Enable GitHub provider and enter your Client ID and Client Secret
+   - Save the settings
 
    c. For production deployment:
-      - Update the Authorization callback URL to: `https://pb.dashboardicons.com/api/oauth2-redirect`
-      - Configure the same OAuth settings in your production PocketBase instance
+   - Update the Authorization callback URL to:
+     `https://pb.dashboardicons.com/api/oauth2-redirect`
+   - Configure the same OAuth settings in your production PocketBase instance
 
 5. Start the development server:
    ```bash
@@ -109,7 +112,11 @@ pnpm build
 
 ## Third-party sources: selfh.st
 
-Dashboard Icons can display external icon metadata from [selfh.st/icons](https://selfh.st/icons/) without copying icon files into the native collection. The `external_icons` PocketBase collection stores slugs, names, categories, available formats, variant metadata, jsDelivr URL templates, and license attribution.
+Dashboard Icons can display external icon metadata from
+[selfh.st/icons](https://selfh.st/icons/) without copying icon files into the
+native collection. The `external_icons` PocketBase collection stores slugs,
+names, categories, available formats, variant metadata, jsDelivr URL templates,
+and license attribution.
 
 External icon files stay on jsDelivr using this pattern:
 
@@ -117,9 +124,16 @@ External icon files stay on jsDelivr using this pattern:
 https://cdn.jsdelivr.net/gh/selfhst/icons/<format>/<slug>.<format>
 ```
 
-The imported records are public-read only. PocketBase rules are `listRule: ""` and `viewRule: ""`, while create/update/delete are superuser-only. Every external icon card and detail page must display `Icons by selfh.st/icons (CC BY 4.0)`.
+The imported records are public-read only. PocketBase rules are `listRule: ""`
+and `viewRule: ""`, while create/update/delete are superuser-only. Every
+external icon card and detail page must display
+`Icons by selfh.st/icons (CC BY 4.0)`.
 
-If the collection does not exist yet, import `data/sources/selfhst/external_icons.collection.json` in the PocketBase admin UI under Collections before running the importer. The JSON defines the `external_icons` fields, public list/view rules, disabled public writes, and the unique `(source, slug)` index.
+If the collection does not exist yet, import
+`data/sources/selfhst/external_icons.collection.json` in the PocketBase admin UI
+under Collections before running the importer. The JSON defines the
+`external_icons` fields, public list/view rules, disabled public writes, and the
+unique `(source, slug)` index.
 
 To refresh local metadata and import it into PocketBase:
 
@@ -131,20 +145,8 @@ curl -fsSL https://raw.githubusercontent.com/selfhst/icons/main/tags.json -o dat
 
 PB_ADMIN=admin@example.com PB_ADMIN_PASS=your-password \
 NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090 \
-pnpm exec tsx scripts/import-selfhst.ts
+bun run scripts/import-selfhst.ts
 ```
-
-Production sync runs from `.github/workflows/sync-selfhst.yml` and expects `PB_URL`, `PB_ADMIN`, and `PB_ADMIN_PASS` repository secrets.
-
-### Production PocketBase (`pb.dashboardicons.com`)
-
-1. **Ship the migration** — Ensure the deployed PocketBase image or host includes `web/backend/pb_migrations/1777632695_created_external_icons.js` next to your other migrations (the repo `web/backend/Dockerfile` copies `./pb_migrations` into the container). Redeploy or restart PocketBase so it runs pending migrations on startup (`pocketbase serve` applies anything new under `pb_migrations/`).
-
-2. **If you cannot use filesystem migrations** — In the PocketBase admin UI, use **Import collections** and import `web/data/sources/selfhst/external_icons.collection.json` so the `external_icons` collection and rules exist before importing rows.
-
-3. **Load data** — After the collection exists, either run **Actions → Sync selfh.st icons → Run workflow** (recommended; uses repo secrets), or run `pnpm exec tsx scripts/import-selfhst.ts` from `web/` with `NEXT_PUBLIC_POCKETBASE_URL` / `PB_URL` set to `https://pb.dashboardicons.com` and valid `PB_ADMIN` / `PB_ADMIN_PASS` superuser credentials.
-
-4. **Secrets** — In the GitHub repository, set `PB_URL` to the public PocketBase base URL, `PB_ADMIN` and `PB_ADMIN_PASS` to a superuser account allowed to upsert `external_icons` records.
 
 ### Deployment
 

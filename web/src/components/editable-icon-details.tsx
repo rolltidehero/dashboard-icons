@@ -387,7 +387,7 @@ export function EditableIconDetails({ onSubmit, initialData }: EditableIconDetai
 
 	return (
 		<form onSubmit={handleSubmit}>
-			<main className="container mx-auto pt-12 pb-14 px-4 sm:px-6 lg:px-8">
+			<div className="container mx-auto pt-12 pb-14 px-4 sm:px-6 lg:px-8">
 				<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 					{/* Left Column - Icon Info & Metadata */}
 					<div className="lg:col-span-1">
@@ -642,7 +642,7 @@ export function EditableIconDetails({ onSubmit, initialData }: EditableIconDetai
 						</Card>
 					</div>
 				</div>
-			</main>
+			</div>
 		</form>
 	)
 }

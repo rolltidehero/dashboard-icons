@@ -60,3 +60,10 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 package-lock.json
+
+.agents/
+DESIGN.json
+PRODUCT.md
+skills-lock.json
+DESIGN.md
+README.md

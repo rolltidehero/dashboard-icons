@@ -596,8 +596,8 @@ export function SubmissionsDataTable({
 												className={cn(
 													"flex items-center gap-3 p-3 rounded-lg border bg-background cursor-pointer active:bg-muted/50 transition-colors",
 													isSelected && "ring-2 ring-primary/50 bg-primary/5",
-													isApproved && !isSelected && "border-l-2 border-l-green-500",
-													isPending && !isSelected && "border-l-2 border-l-yellow-500",
+													isApproved && !isSelected && "bg-green-500/5",
+													isPending && !isSelected && "bg-yellow-500/5",
 												)}
 												onClick={() => setMobileDetailSubmission(submission)}
 											>
