@@ -1,3 +1,5 @@
+import type { ExternalSourceId } from "@/constants"
+
 export type IconAuthor = {
 	id: number | string
 	github_id?: string
@@ -36,7 +38,7 @@ export type IconFile = {
 export type IconWithName = {
 	name: string
 	data: Icon
-	source?: "native" | "selfhst"
+	source?: "native" | ExternalSourceId
 	slug?: string
 	external?: ExternalIcon
 }
@@ -59,7 +61,7 @@ export type ExternalIconUrlTemplates = {
 
 export type ExternalIcon = {
 	id: string
-	source: "selfhst"
+	source: ExternalSourceId
 	slug: string
 	name: string
 	aliases: string[]
@@ -84,7 +86,7 @@ export type NativeIconRecord = IconWithName & {
 }
 
 export type ExternalIconRecord = IconWithName & {
-	source: "selfhst"
+	source: ExternalSourceId
 	slug: string
 	external: ExternalIcon
 }
