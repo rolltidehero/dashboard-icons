@@ -42770,5 +42770,17 @@
                 "login": "RoyalKiwi"
             }
         }
+    },
+    "2dehands": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:26:49.281Z",
+            "author": {
+                "id": 108151652,
+                "login": "astradti"
+            }
+        }
     }
 }
