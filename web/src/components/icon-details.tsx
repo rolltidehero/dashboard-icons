@@ -2,7 +2,7 @@
 
 import confetti from "canvas-confetti"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowRight, Check, FileType, Github, Moon, Palette, PaletteIcon, Sun, Type } from "lucide-react"
+import { ArrowRight, Check, ExternalLink, FileType, Github, Moon, Palette, PaletteIcon, Sun, Type } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import type React from "react"
@@ -22,9 +22,10 @@ import {
 } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { BASE_URL, REPO_PATH } from "@/constants"
+import { getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
 import { isClipboardAvailable } from "@/lib/svg-color-utils"
 import { formatIconName } from "@/lib/utils"
-import type { AuthorData, Icon, IconFile } from "@/types/icons"
+import type { AuthorData, ExternalIcon, Icon, IconFile } from "@/types/icons"
 import { Carbon } from "./carbon"
 import { IconActions } from "./icon-actions"
 import { IconCustomizerInline } from "./icon-customizer-inline"
@@ -131,22 +132,24 @@ export type IconDetailsProps = {
 	icon: string
 	iconData: Icon
 	authorData: AuthorData
-	allIcons: IconFile
+	allIcons?: IconFile
 	status?: string
 	statusDisplayName?: string
 	statusColor?: string
 	rejectionReason?: string
+	externalIcon?: ExternalIcon
 }
 
 export function IconDetails({
 	icon,
 	iconData,
 	authorData,
-	allIcons,
+	allIcons = {},
 	status,
 	statusDisplayName,
 	statusColor,
 	rejectionReason,
+	externalIcon,
 }: IconDetailsProps) {
 	const authorName = authorData.name || authorData.login || ""
 	const _iconColorVariants = iconData.colors
@@ -157,13 +160,16 @@ export function IconDetails({
 		year: "numeric",
 	})
 
+	const isExternalIcon = !!externalIcon
+	const externalPreviewUrl = externalIcon ? getExternalIconPreviewUrl(externalIcon) : null
+
 	type CommunityIconData = Icon & {
 		mainIconUrl?: string
 		assetUrls?: string[]
 	}
 
 	const communityData = iconData as CommunityIconData
-	const isCommunityIcon = !!communityData.mainIconUrl || (typeof iconData.base === "string" && iconData.base.startsWith("http"))
+	const isCommunityIcon = !isExternalIcon && (!!communityData.mainIconUrl || (typeof iconData.base === "string" && iconData.base.startsWith("http")))
 	const mainIconUrl = communityData.mainIconUrl || (isCommunityIcon ? iconData.base : null)
 	const assetUrls = communityData.assetUrls || []
 
@@ -200,6 +206,9 @@ export function IconDetails({
 	}
 
 	const getAvailableFormats = (): string[] => {
+		if (isExternalIcon && externalIcon) {
+			return externalIcon.formats.filter((f) => f !== "ico")
+		}
 		if (isCommunityIcon) {
 			if (assetUrls.length > 0) {
 				const formats = assetUrls
@@ -425,7 +434,11 @@ export function IconDetails({
 		let imageUrl: string
 		let githubUrl: string
 
-		if (isCommunityIcon && mainIconUrl) {
+		if (isExternalIcon && externalIcon) {
+			const key = theme ? `${format}_${theme}` : format
+			imageUrl = resolveExternalIconUrl(externalIcon, key)
+			githubUrl = ""
+		} else if (isCommunityIcon && mainIconUrl) {
 			const formatExt = format === "svg" ? "svg" : format === "png" ? "png" : "webp"
 
 			// Try to find a specific asset URL that matches the requested variant filename
@@ -539,6 +552,19 @@ export function IconDetails({
 
 	const getAvailableSvgVariants = (): VariantOption[] => {
 		const variants: VariantOption[] = []
+
+		if (isExternalIcon && externalIcon) {
+			if (externalIcon.formats.includes("svg")) {
+				variants.push({ value: "base", label: "Base Icon", iconName: externalIcon.slug })
+			}
+			if (externalIcon.variants?.light) {
+				variants.push({ value: "light", label: "Light Variant", iconName: `${externalIcon.slug}-light` })
+			}
+			if (externalIcon.variants?.dark) {
+				variants.push({ value: "dark", label: "Dark Variant", iconName: `${externalIcon.slug}-dark` })
+			}
+			return variants
+		}
 
 		if (isCommunityIcon) {
 			const baseSvg = assetUrls.find((url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg"))
@@ -672,6 +698,14 @@ export function IconDetails({
 			return null
 		}
 
+		if (isExternalIcon && externalIcon) {
+			if (!externalIcon.formats.includes("svg")) return null
+			if (variant === "base") return resolveExternalIconUrl(externalIcon, "svg")
+			if (variant === "light") return externalIcon.variants?.light ? resolveExternalIconUrl(externalIcon, "svg_light") : null
+			if (variant === "dark") return externalIcon.variants?.dark ? resolveExternalIconUrl(externalIcon, "svg_dark") : null
+			return null
+		}
+
 		if (isCommunityIcon) {
 			if (variant === "base") {
 				if (mainIconUrl && mainIconUrl.toLowerCase().endsWith(".svg")) {
@@ -697,7 +731,7 @@ export function IconDetails({
 		return null
 	}
 
-	const svgUrl = useMemo(() => getSvgUrl(selectedVariant), [selectedVariant, availableVariants, isCommunityIcon, mainIconUrl, assetUrls, iconData, icon])
+	const svgUrl = useMemo(() => getSvgUrl(selectedVariant), [selectedVariant, availableVariants, isCommunityIcon, isExternalIcon, externalIcon, mainIconUrl, assetUrls, iconData, icon])
 
 	useEffect(() => {
 		if (!svgUrl) {
@@ -739,16 +773,23 @@ export function IconDetails({
 					<Card className="h-full bg-background/50 border shadow-lg">
 						<CardHeader className="pb-4">
 							<div className="flex flex-col items-center bg-background">
-								<div className="relative w-32 h-32 rounded-xl ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10 overflow-hidden flex items-center justify-center p-3">
-									<Image
-										src={isCommunityIcon && mainIconUrl ? mainIconUrl : `${BASE_URL}/${iconData.base}/${icon}.${iconData.base}`}
-										priority
-										width={96}
-										height={96}
-										placeholder="empty"
-										alt={`High quality ${formatedIconName} icon in ${iconData.base.toUpperCase()} format`}
-										className="w-full h-full object-contain"
-									/>
+								<div className="relative">
+									<div className="relative w-32 h-32 rounded-xl ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10 overflow-hidden flex items-center justify-center p-3">
+										<Image
+											src={isExternalIcon && externalPreviewUrl ? externalPreviewUrl : isCommunityIcon && mainIconUrl ? mainIconUrl : `${BASE_URL}/${iconData.base}/${icon}.${iconData.base}`}
+											priority
+											width={96}
+											height={96}
+											placeholder="empty"
+											alt={`High quality ${formatedIconName} icon in ${iconData.base.toUpperCase()} format`}
+											className="w-full h-full object-contain"
+										/>
+									</div>
+									{isExternalIcon && (
+										<Badge variant="secondary" className="absolute -top-1.5 -right-1.5 z-10 h-5 px-1.5 text-[10px] shadow-sm">
+											selfh.st
+										</Badge>
+									)}
 								</div>
 								<CardTitle className="text-2xl font-bold capitalize text-center mb-2">
 									<h1>{formatedIconName}</h1>
@@ -842,8 +883,19 @@ export function IconDetails({
 											Perfect for adding to dashboards, app directories, documentation, or anywhere you need the {formatIconName(icon)}{" "}
 											logo.
 										</p>
+										{isExternalIcon && externalIcon && (
+											<p>
+												External icon served via jsDelivr from the selfh.st/icons repository.
+											</p>
+										)}
 									</div>
 								</div>
+								{isExternalIcon && externalIcon && (
+									<div className="rounded-md border border-border p-3 text-xs text-muted-foreground">
+										<p className="font-medium text-foreground">{externalIcon.attribution}</p>
+										<p className="mt-1">License: {externalIcon.license}</p>
+									</div>
+								)}
 							</div>
 						</CardContent>
 					</Card>
@@ -998,7 +1050,19 @@ export function IconDetails({
 									</div>
 								)}
 
-								{!isCommunityIcon && (
+								{isExternalIcon && externalIcon && (
+									<div className="">
+										<h3 className="text-sm font-semibold text-muted-foreground mb-2">Source</h3>
+										<Button variant="outline" className="w-full" asChild>
+											<Link href={externalIcon.source_url} target="_blank" rel="noopener noreferrer">
+												<ExternalLink className="w-4 h-4 mr-2" />
+												View on selfh.st
+											</Link>
+										</Button>
+									</div>
+								)}
+
+								{!isCommunityIcon && !isExternalIcon && (
 									<div className="">
 										<h3 className="text-sm font-semibold text-muted-foreground mb-2">Source</h3>
 										<Button variant="outline" className="w-full" asChild>

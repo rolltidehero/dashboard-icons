@@ -1,0 +1,133 @@
+import type { Metadata, ResolvingMetadata } from "next"
+import { notFound } from "next/navigation"
+import { IconDetails } from "@/components/icon-details"
+import { WEB_URL } from "@/constants"
+import { getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
+import { getExternalIconBySlug, getExternalIcons } from "@/lib/external-icons"
+import type { AuthorData } from "@/types/icons"
+
+export const dynamicParams = true
+export const dynamic = "force-static"
+export const revalidate = 21600
+
+export async function generateStaticParams() {
+	const icons = await getExternalIcons()
+	return icons.map((icon) => ({
+		slug: icon.slug,
+	}))
+}
+
+type Props = {
+	params: Promise<{ slug: string }>
+	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+export async function generateMetadata({ params }: Props, _parent: ResolvingMetadata): Promise<Metadata> {
+	const { slug } = await params
+	const icon = await getExternalIconBySlug(slug)
+
+	if (!icon) {
+		notFound()
+	}
+
+	const formattedName = icon.external.name
+	const pageUrl = `${WEB_URL}/icons/external/${slug}`
+	const previewUrl = getExternalIconPreviewUrl(icon.external)
+	const imageType = previewUrl.endsWith(".svg") ? "image/svg+xml" : previewUrl.endsWith(".webp") ? "image/webp" : "image/png"
+
+	return {
+		title: `${formattedName} Icon (selfh.st) | Dashboard Icons`,
+		description: `Download the ${formattedName} icon from selfh.st/icons via Dashboard Icons. External assets are served by jsDelivr and attributed under CC BY 4.0.`,
+		assets: icon.external.formats.map((format) => resolveExternalIconUrl(icon.external, format)),
+		keywords: [`${formattedName} icon`, `${slug} icon`, "selfh.st icons", "dashboard icon", "icon download"],
+		icons: {
+			icon: previewUrl,
+		},
+		robots: {
+			index: true,
+			follow: true,
+			nocache: false,
+			googleBot: {
+				index: true,
+				follow: true,
+				noimageindex: false,
+				"max-video-preview": -1,
+				"max-image-preview": "large",
+			},
+		},
+		openGraph: {
+			title: `${formattedName} Icon (selfh.st) | Dashboard Icons`,
+			description: `Download the ${formattedName} icon from selfh.st/icons. External assets are served by jsDelivr with attribution.`,
+			type: "website",
+			url: pageUrl,
+			siteName: "Dashboard Icons",
+			locale: "en_US",
+			images: [
+				{
+					url: previewUrl,
+					width: 512,
+					height: 512,
+					alt: `${formattedName} icon`,
+					type: imageType,
+				},
+			],
+		},
+		twitter: {
+			card: "summary_large_image",
+			title: `${formattedName} Icon (selfh.st) | Dashboard Icons`,
+			description: `Download the ${formattedName} icon from selfh.st/icons via Dashboard Icons.`,
+			images: [previewUrl],
+		},
+		alternates: {
+			canonical: pageUrl,
+		},
+	}
+}
+
+export default async function ExternalIconPage({ params }: { params: Promise<{ slug: string }> }) {
+	const { slug } = await params
+	const icon = await getExternalIconBySlug(slug)
+
+	if (!icon) {
+		notFound()
+	}
+
+	const previewUrl = getExternalIconPreviewUrl(icon.external)
+
+	const authorData: AuthorData = {
+		id: "selfhst",
+		name: "selfh.st/icons",
+		login: "selfhst",
+		avatar_url: "",
+		html_url: "https://selfh.st/icons/",
+	}
+
+	return (
+		<>
+			<script
+				type="application/ld+json"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: Structured data for the icon detail page.
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify({
+						"@context": "https://schema.org",
+						"@type": "ImageObject",
+						contentUrl: previewUrl,
+						license: "https://creativecommons.org/licenses/by/4.0/",
+						acquireLicensePage: `${WEB_URL}/license`,
+						creator: {
+							"@type": "Organization",
+							name: "selfh.st/icons",
+							url: "https://selfh.st/icons/",
+						},
+					}),
+				}}
+			/>
+			<IconDetails
+				icon={icon.external.slug}
+				iconData={icon.data}
+				authorData={authorData}
+				externalIcon={icon.external}
+			/>
+		</>
+	)
+}
