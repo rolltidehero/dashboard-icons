@@ -43589,5 +43589,28 @@
             "light": "postman-light",
             "dark": "postman-dark"
         }
+    },
+    "xray": {
+        "base": "svg",
+        "aliases": [
+            "xtls",
+            "v2ray-ng",
+            "xray-core"
+        ],
+        "categories": [
+            "networking",
+            "security"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:22.781Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "xray-light",
+            "dark": "xray-dark"
+        }
     }
 }
