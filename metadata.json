@@ -43088,5 +43088,27 @@
         "colors": {
             "dark": "iode-os-dark"
         }
+    },
+    "nuxt-js": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "development"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:00.176Z",
+            "author": {
+                "id": 41539419,
+                "login": "XoTENoC"
+            }
+        },
+        "colors": {
+            "light": "nuxt-js-light",
+            "dark": "nuxt-js-dark"
+        },
+        "wordmark": {
+            "light": "nuxt-js-wordmark-light",
+            "dark": "nuxt-js-wordmark-dark"
+        }
     }
 }
