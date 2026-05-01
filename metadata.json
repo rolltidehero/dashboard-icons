@@ -42920,5 +42920,20 @@
                 "login": "Retrograde-i486"
             }
         }
+    },
+    "lakefs": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "storage",
+            "database"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:23.067Z",
+            "author": {
+                "id": 51554341,
+                "login": "ssouthcity"
+            }
+        }
     }
 }
