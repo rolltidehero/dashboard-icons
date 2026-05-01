@@ -43612,5 +43612,23 @@
             "light": "xray-light",
             "dark": "xray-dark"
         }
+    },
+    "mcp": {
+        "base": "png",
+        "aliases": [
+            "model-context-protocol",
+            "anthropic-mcp"
+        ],
+        "categories": [
+            "ai",
+            "developer-tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:25.151Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        }
     }
 }
