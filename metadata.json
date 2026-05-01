@@ -43184,5 +43184,25 @@
                 "login": "Jaredy899"
             }
         }
+    },
+    "haiku": {
+        "base": "svg",
+        "aliases": [
+            "haiku-os",
+            "zeta",
+            "beos"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:28:17.390Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "wordmark": {
+            "light": "haiku-wordmark-light",
+            "dark": "haiku-wordmark-dark"
+        }
     }
 }
