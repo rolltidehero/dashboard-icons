@@ -43630,5 +43630,29 @@
                 "name": "browser-agent-robot"
             }
         }
+    },
+    "cloudflared": {
+        "base": "svg",
+        "aliases": [
+            "cloudflare-tunnel",
+            "argo-tunnel",
+            "cloudflare"
+        ],
+        "categories": [
+            "network",
+            "security",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:28.146Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "cloudflared-light",
+            "dark": "cloudflared-dark"
+        }
     }
 }
