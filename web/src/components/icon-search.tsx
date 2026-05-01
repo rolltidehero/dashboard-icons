@@ -2,7 +2,6 @@
 
 import { ArrowDownAZ, ArrowUpZA, Calendar, Filter, Search, SortAsc, X } from "lucide-react"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
-import { useTheme } from "next-themes"
 import posthog from "posthog-js"
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { AddToSearchBarButton } from "@/components/add-to-search-bar-button"
@@ -23,24 +22,34 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import { DASHBOARD_ICONS_ICON, EXTERNAL_SOURCE_IDS, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { filterAndSortIcons, normalizeForSearch, type SortOption } from "@/lib/utils"
-import type { IconSearchProps } from "@/types/icons"
+import type { IconRecord, IconSearchProps } from "@/types/icons"
+
+type SourceFilter = "all" | "native" | ExternalSourceId
+
+function getIconsForSource(icons: IconRecord[], source: SourceFilter) {
+	if (source === "all") return icons
+	return icons.filter((icon) => icon.source === source)
+}
 
 export function IconSearch({ icons }: IconSearchProps) {
 	const searchParams = useSearchParams()
 	const initialQuery = searchParams.get("q")
 	const initialCategories = searchParams.getAll("category")
 	const initialSort = (searchParams.get("sort") as SortOption) || "relevance"
+	const initialSource = ((searchParams.get("source") as SourceFilter | null) || "all") as SourceFilter
 	const router = useRouter()
 	const pathname = usePathname()
 	const [searchQuery, setSearchQuery] = useState(initialQuery ?? "")
 	const [debouncedQuery, setDebouncedQuery] = useState(initialQuery ?? "")
 	const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategories ?? [])
 	const [sortOption, setSortOption] = useState<SortOption>(initialSort)
+	const [sourceFilter, setSourceFilter] = useState<SourceFilter>(
+		["all", "native", ...EXTERNAL_SOURCE_IDS].includes(initialSource) ? initialSource : "all",
+	)
 	const timeoutRef = useRef<NodeJS.Timeout | null>(null)
 	const noIconsFoundTimeoutRef = useRef<NodeJS.Timeout | null>(null)
-	const { resolvedTheme } = useTheme()
-	const [isLazyRequestSubmitted, setIsLazyRequestSubmitted] = useState(false)
 
 	useEffect(() => {
 		const timer = setTimeout(() => {
@@ -53,13 +62,13 @@ export function IconSearch({ icons }: IconSearchProps) {
 	// Extract all unique categories (normalized to lowercase)
 	const allCategories = useMemo(() => {
 		const categories = new Set<string>()
-		for (const icon of icons) {
+		for (const icon of getIconsForSource(icons, sourceFilter)) {
 			for (const category of icon.data.categories) {
 				categories.add(category.toLowerCase())
 			}
 		}
 		return Array.from(categories).sort()
-	}, [icons])
+	}, [icons, sourceFilter])
 
 	// Find matched aliases for display purposes
 	const matchedAliases = useMemo(() => {
@@ -90,17 +99,18 @@ export function IconSearch({ icons }: IconSearchProps) {
 	// Use useMemo for filtered icons with debounced query
 	const filteredIcons = useMemo(() => {
 		return filterAndSortIcons({
-			icons,
+			icons: getIconsForSource(icons, sourceFilter),
 			query: debouncedQuery,
 			categories: selectedCategories,
 			sort: sortOption,
 		})
-	}, [icons, debouncedQuery, selectedCategories, sortOption])
+	}, [icons, debouncedQuery, selectedCategories, sortOption, sourceFilter])
 
 	const updateResults = useCallback(
-		(query: string, categories: string[], sort: SortOption) => {
+		(query: string, categories: string[], sort: SortOption, source: SourceFilter) => {
 			const params = new URLSearchParams()
 			if (query) params.set("q", query)
+			if (source !== "all") params.set("source", source)
 
 			// Clear existing category params and add new ones
 			for (const category of categories) {
@@ -125,10 +135,10 @@ export function IconSearch({ icons }: IconSearchProps) {
 				clearTimeout(timeoutRef.current)
 			}
 			timeoutRef.current = setTimeout(() => {
-				updateResults(query, selectedCategories, sortOption)
+				updateResults(query, selectedCategories, sortOption, sourceFilter)
 			}, 200) // Changed from 100ms to 200ms
 		},
-		[updateResults, selectedCategories, sortOption],
+		[updateResults, selectedCategories, sortOption, sourceFilter],
 	)
 
 	const handleCategoryChange = useCallback(
@@ -145,24 +155,34 @@ export function IconSearch({ icons }: IconSearchProps) {
 			}
 
 			setSelectedCategories(newCategories)
-			updateResults(searchQuery, newCategories, sortOption)
+			updateResults(searchQuery, newCategories, sortOption, sourceFilter)
 		},
-		[updateResults, searchQuery, selectedCategories, sortOption],
+		[updateResults, searchQuery, selectedCategories, sortOption, sourceFilter],
 	)
 
 	const handleSortChange = useCallback(
 		(sort: SortOption) => {
 			setSortOption(sort)
-			updateResults(searchQuery, selectedCategories, sort)
+			updateResults(searchQuery, selectedCategories, sort, sourceFilter)
 		},
-		[updateResults, searchQuery, selectedCategories],
+		[updateResults, searchQuery, selectedCategories, sourceFilter],
+	)
+
+	const handleSourceChange = useCallback(
+		(source: SourceFilter) => {
+			setSourceFilter(source)
+			setSelectedCategories([])
+			updateResults(searchQuery, [], sortOption, source)
+		},
+		[searchQuery, sortOption, updateResults],
 	)
 
 	const clearFilters = useCallback(() => {
 		setSearchQuery("")
 		setSelectedCategories([])
 		setSortOption("relevance")
-		updateResults("", [], "relevance")
+		setSourceFilter("all")
+		updateResults("", [], "relevance", "all")
 	}, [updateResults])
 
 	useEffect(() => {
@@ -233,6 +253,12 @@ export function IconSearch({ icons }: IconSearchProps) {
 		}
 	}
 
+	const getSourceLabel = (source: SourceFilter) => {
+		if (source === "native") return "Dashboard Icons"
+		if (source === "all") return "All sources"
+		return EXTERNAL_SOURCES[source]?.label ?? source
+	}
+
 	return (
 		<>
 			<div className="space-y-4 w-full">
@@ -244,6 +270,7 @@ export function IconSearch({ icons }: IconSearchProps) {
 					<Input
 						type="search"
 						placeholder="Search icons by name, alias, or category..."
+						aria-label="Search icons"
 						className="w-full h-10 pl-9 cursor-text transition-all duration-300 text-sm md:text-base   border-border shadow-sm"
 						value={searchQuery}
 						onChange={(e) => handleSearch(e.target.value)}
@@ -288,7 +315,7 @@ export function IconSearch({ icons }: IconSearchProps) {
 									<DropdownMenuItem
 										onClick={() => {
 											setSelectedCategories([])
-											updateResults(searchQuery, [], sortOption)
+											updateResults(searchQuery, [], sortOption, sourceFilter)
 										}}
 										className="cursor-pointer  focus: focus:bg-rose-50 dark:focus:bg-rose-950/20"
 									>
@@ -331,10 +358,38 @@ export function IconSearch({ icons }: IconSearchProps) {
 						</DropdownMenuContent>
 					</DropdownMenu>
 
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="outline" size="sm" className="flex-1 sm:flex-none cursor-pointer bg-background border-border shadow-sm">
+								<Filter className="h-4 w-4 mr-2" />
+								<span>{getSourceLabel(sourceFilter)}</span>
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent align="start" className="w-56">
+							<DropdownMenuLabel className="font-semibold">Source</DropdownMenuLabel>
+							<DropdownMenuSeparator />
+							<DropdownMenuRadioGroup value={sourceFilter} onValueChange={(value) => handleSourceChange(value as SourceFilter)}>
+								<DropdownMenuRadioItem value="all" className="cursor-pointer">
+									All
+								</DropdownMenuRadioItem>
+								<DropdownMenuRadioItem value="native" className="cursor-pointer">
+									<img src={DASHBOARD_ICONS_ICON} alt="" width={14} height={14} className="shrink-0" />
+									Dashboard Icons
+								</DropdownMenuRadioItem>
+								{EXTERNAL_SOURCE_IDS.map((sourceId) => (
+									<DropdownMenuRadioItem key={sourceId} value={sourceId} className="cursor-pointer">
+										<img src={EXTERNAL_SOURCES[sourceId].icon} alt="" width={14} height={14} className="shrink-0" />
+										{EXTERNAL_SOURCES[sourceId].label}
+									</DropdownMenuRadioItem>
+								))}
+							</DropdownMenuRadioGroup>
+						</DropdownMenuContent>
+					</DropdownMenu>
+
 					<AddToSearchBarButton className="flex-1 sm:flex-none rounded-sm" />
 
 					{/* Clear all button */}
-					{(searchQuery || selectedCategories.length > 0 || sortOption !== "relevance") && (
+					{(searchQuery || selectedCategories.length > 0 || sortOption !== "relevance" || sourceFilter !== "all") && (
 						<Button variant="outline" size="sm" onClick={clearFilters} className="flex-1 sm:flex-none cursor-pointer bg-background">
 							<X className="h-4 w-4 mr-2" />
 							<span>Reset all</span>
@@ -367,7 +422,7 @@ export function IconSearch({ icons }: IconSearchProps) {
 							size="sm"
 							onClick={() => {
 								setSelectedCategories([])
-								updateResults(searchQuery, [], sortOption)
+								updateResults(searchQuery, [], sortOption, sourceFilter)
 							}}
 							className="text-xs h-7 px-2 cursor-pointer"
 						>
@@ -385,7 +440,6 @@ export function IconSearch({ icons }: IconSearchProps) {
 						<h2 className="text-3xl sm:text-5xl font-semibold">404: Not Found</h2>
 					</div>
 					<div className="flex flex-col gap-4 items-center w-full">
-						{/** biome-ignore lint/correctness/useUniqueElementIds: I want the ID to be fixed */}
 						<div id="icon-submission-content" className="w-full">
 							<IconSubmissionContent />
 						</div>

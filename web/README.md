@@ -1,6 +1,7 @@
 # Dashboard Icons Web App
 
-A web application to browse, search, and download icons from the [Dashboard Icons](https://github.com/homarr-labs/dashboard-icons) collection.
+A web application to browse, search, and download icons from the
+[Dashboard Icons](https://github.com/homarr-labs/dashboard-icons) collection.
 
 ## Features
 
@@ -59,7 +60,7 @@ src/
 
 ### Prerequisites
 
-- Node.js 18+ 
+- Node.js 18+
 - pnpm
 
 ### Installation
@@ -75,26 +76,28 @@ src/
    NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
    ```
 4. **Configure GitHub OAuth (Optional):**
-   
-   To enable GitHub OAuth login, you need to create a GitHub OAuth App and configure it in PocketBase:
+
+   To enable GitHub OAuth login, you need to create a GitHub OAuth App and
+   configure it in PocketBase:
 
    a. Create a GitHub OAuth App:
-      - Go to GitHub Settings → Developer settings → OAuth Apps → New OAuth App
-      - Set Application name: "Dashboard Icons" (or your preferred name)
-      - Set Homepage URL: `http://localhost:3000` (for development)
-      - Set Authorization callback URL: `http://localhost:8090/api/oauth2-redirect`
-      - After creation, note the **Client ID** and generate a **Client Secret**
+   - Go to GitHub Settings → Developer settings → OAuth Apps → New OAuth App
+   - Set Application name: "Dashboard Icons" (or your preferred name)
+   - Set Homepage URL: `http://localhost:3000` (for development)
+   - Set Authorization callback URL: `http://localhost:8090/api/oauth2-redirect`
+   - After creation, note the **Client ID** and generate a **Client Secret**
 
    b. Configure PocketBase OAuth:
-      - Start PocketBase: `pnpm run backend:start`
-      - Open PocketBase admin UI at `http://127.0.0.1:8090/_/`
-      - Navigate to Settings → Auth providers
-      - Enable GitHub provider and enter your Client ID and Client Secret
-      - Save the settings
+   - Start PocketBase: `pnpm run backend:start`
+   - Open PocketBase admin UI at `http://127.0.0.1:8090/_/`
+   - Navigate to Settings → Auth providers
+   - Enable GitHub provider and enter your Client ID and Client Secret
+   - Save the settings
 
    c. For production deployment:
-      - Update the Authorization callback URL to: `https://pb.dashboardicons.com/api/oauth2-redirect`
-      - Configure the same OAuth settings in your production PocketBase instance
+   - Update the Authorization callback URL to:
+     `https://pb.dashboardicons.com/api/oauth2-redirect`
+   - Configure the same OAuth settings in your production PocketBase instance
 
 5. Start the development server:
    ```bash
@@ -105,6 +108,44 @@ src/
 
 ```bash
 pnpm build
+```
+
+## Third-party sources: selfh.st
+
+Dashboard Icons can display external icon metadata from
+[selfh.st/icons](https://selfh.st/icons/) without copying icon files into the
+native collection. The `external_icons` PocketBase collection stores slugs,
+names, categories, available formats, variant metadata, jsDelivr URL templates,
+and license attribution.
+
+External icon files stay on jsDelivr using this pattern:
+
+```txt
+https://cdn.jsdelivr.net/gh/selfhst/icons/<format>/<slug>.<format>
+```
+
+The imported records are public-read only. PocketBase rules are `listRule: ""`
+and `viewRule: ""`, while create/update/delete are superuser-only. Every
+external icon card and detail page must display
+`Icons by selfh.st/icons (CC BY 4.0)`.
+
+If the collection does not exist yet, import
+`data/sources/selfhst/external_icons.collection.json` in the PocketBase admin UI
+under Collections before running the importer. The JSON defines the
+`external_icons` fields, public list/view rules, disabled public writes, and the
+unique `(source, slug)` index.
+
+To refresh local metadata and import it into PocketBase:
+
+```bash
+mkdir -p data/sources/selfhst
+curl -fsSL https://raw.githubusercontent.com/selfhst/icons/main/index.json -o data/sources/selfhst/index.json
+curl -fsSL https://raw.githubusercontent.com/selfhst/icons/main/index-consolidated.json -o data/sources/selfhst/index-consolidated.json
+curl -fsSL https://raw.githubusercontent.com/selfhst/icons/main/tags.json -o data/sources/selfhst/tags.json
+
+PB_ADMIN=admin@example.com PB_ADMIN_PASS=your-password \
+NEXT_PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090 \
+bun run scripts/import-selfhst.ts
 ```
 
 ### Deployment

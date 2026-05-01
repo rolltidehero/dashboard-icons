@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
+import { EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { useMediaQuery } from "@/hooks/use-media-query"
 import { filterAndSortIcons, formatIconName } from "@/lib/utils"
 import type { IconWithName } from "@/types/icons"
@@ -56,9 +57,13 @@ export function CommandMenu({ icons, open: externalOpen, onOpenChange: externalO
 		return () => document.removeEventListener("keydown", handleKeyDown)
 	}, [isOpen, setIsOpen])
 
-	const handleSelect = (name: string) => {
+	const handleSelect = (icon: IconWithName) => {
 		setIsOpen(false)
-		router.push(`/icons/${name}`)
+		if (icon.source && icon.source !== "native") {
+			router.push(`/icons/external/${icon.slug || icon.name}`)
+		} else {
+			router.push(`/icons/${icon.name}`)
+		}
 	}
 
 	const handleBrowseAll = () => {
@@ -73,15 +78,18 @@ export function CommandMenu({ icons, open: externalOpen, onOpenChange: externalO
 				{/* Icon Results */}
 				<CommandGroup heading="Icons">
 					{filteredIcons.length > 0 &&
-						filteredIcons.map(({ name, data }) => {
+						filteredIcons.map((icon) => {
+							const { name, data, source } = icon
 							const formatedIconName = formatIconName(name)
 							const hasCategories = data.categories && data.categories.length > 0
+							const isExternal = source && source !== "native"
+							const sourceConfig = isExternal ? EXTERNAL_SOURCES[source as ExternalSourceId] : undefined
 
 							return (
 								<CommandItem
-									key={name}
-									value={name}
-									onSelect={() => handleSelect(name)}
+									key={`${source || "native"}-${name}`}
+									value={`${name}${isExternal ? ` ${sourceConfig?.label}` : ""}`}
+									onSelect={() => handleSelect(icon)}
 									className="flex items-center gap-2 cursor-pointer py-1.5"
 								>
 									<div className="flex-shrink-0 h-5 w-5 relative">
@@ -92,9 +100,14 @@ export function CommandMenu({ icons, open: externalOpen, onOpenChange: externalO
 										</div>
 									</div>
 									<span className="flex-grow capitalize font-medium text-sm">{formatedIconName}</span>
+									{isExternal && sourceConfig && (
+										<Badge variant="outline" className="text-[10px] px-1.5 h-4 gap-0.5 flex-shrink-0">
+											<img src={sourceConfig.icon} alt="" width={10} height={10} className="shrink-0" />
+											{sourceConfig.label}
+										</Badge>
+									)}
 									{hasCategories && (
-										<div className="flex gap-1 items-center flex-shrink-0 overflow-hidden max-w-[40%]">
-											{/* First category */}
+										<div className="flex gap-1 items-center flex-shrink-0 overflow-hidden max-w-[30%]">
 											<Badge
 												key={data.categories[0]}
 												variant="secondary"
@@ -103,7 +116,6 @@ export function CommandMenu({ icons, open: externalOpen, onOpenChange: externalO
 												<Tag size={8} className="mr-1 flex-shrink-0" />
 												<span className="truncate">{data.categories[0].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</span>
 											</Badge>
-											{/* "+N" badge if more than one category */}
 											{data.categories.length > 1 && (
 												<Badge variant="outline" className="text-xs flex-shrink-0">
 													+{data.categories.length - 1}

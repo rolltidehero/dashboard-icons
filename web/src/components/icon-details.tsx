@@ -2,7 +2,7 @@
 
 import confetti from "canvas-confetti"
 import { AnimatePresence, motion } from "framer-motion"
-import { ArrowRight, Check, FileType, Github, Moon, Palette, PaletteIcon, Sun, Type } from "lucide-react"
+import { ArrowRight, Check, ExternalLink, FileType, Github, Moon, Palette, PaletteIcon, Sun, Type } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
 import type React from "react"
@@ -13,18 +13,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
-import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { BASE_URL, REPO_PATH } from "@/constants"
+import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId, REPO_PATH } from "@/constants"
+import { getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
 import { isClipboardAvailable } from "@/lib/svg-color-utils"
 import { formatIconName } from "@/lib/utils"
-import type { AuthorData, Icon, IconFile } from "@/types/icons"
+import type { AuthorData, ExternalIcon, Icon, IconFile } from "@/types/icons"
 import { Carbon } from "./carbon"
 import { IconActions } from "./icon-actions"
 import { IconCustomizerInline } from "./icon-customizer-inline"
@@ -33,6 +28,8 @@ import { Badge } from "./ui/badge"
 import { Separator } from "./ui/separator"
 
 type RenderVariantFn = (format: string, iconName: string, theme?: "light" | "dark") => React.ReactNode
+
+const COPY_SUPPORTED_FORMATS = new Set(["svg", "png", "webp"])
 
 type IconVariantsSectionProps = {
 	title: string
@@ -131,22 +128,24 @@ export type IconDetailsProps = {
 	icon: string
 	iconData: Icon
 	authorData: AuthorData
-	allIcons: IconFile
+	allIcons?: IconFile
 	status?: string
 	statusDisplayName?: string
 	statusColor?: string
 	rejectionReason?: string
+	externalIcon?: ExternalIcon
 }
 
 export function IconDetails({
 	icon,
 	iconData,
 	authorData,
-	allIcons,
+	allIcons = {},
 	status,
 	statusDisplayName,
 	statusColor,
 	rejectionReason,
+	externalIcon,
 }: IconDetailsProps) {
 	const authorName = authorData.name || authorData.login || ""
 	const _iconColorVariants = iconData.colors
@@ -157,13 +156,18 @@ export function IconDetails({
 		year: "numeric",
 	})
 
+	const isExternalIcon = !!externalIcon
+	const externalSourceConfig = externalIcon ? EXTERNAL_SOURCES[externalIcon.source as ExternalSourceId] : undefined
+	const externalPreviewUrl = externalIcon ? getExternalIconPreviewUrl(externalIcon) : null
+
 	type CommunityIconData = Icon & {
 		mainIconUrl?: string
 		assetUrls?: string[]
 	}
 
 	const communityData = iconData as CommunityIconData
-	const isCommunityIcon = !!communityData.mainIconUrl || (typeof iconData.base === "string" && iconData.base.startsWith("http"))
+	const isCommunityIcon =
+		!isExternalIcon && (!!communityData.mainIconUrl || (typeof iconData.base === "string" && iconData.base.startsWith("http")))
 	const mainIconUrl = communityData.mainIconUrl || (isCommunityIcon ? iconData.base : null)
 	const assetUrls = communityData.assetUrls || []
 
@@ -200,6 +204,9 @@ export function IconDetails({
 	}
 
 	const getAvailableFormats = (): string[] => {
+		if (isExternalIcon && externalIcon) {
+			return (externalIcon.formats ?? []).filter((f) => COPY_SUPPORTED_FORMATS.has(f))
+		}
 		if (isCommunityIcon) {
 			if (assetUrls.length > 0) {
 				const formats = assetUrls
@@ -425,7 +432,11 @@ export function IconDetails({
 		let imageUrl: string
 		let githubUrl: string
 
-		if (isCommunityIcon && mainIconUrl) {
+		if (isExternalIcon && externalIcon) {
+			const key = theme ? `${format}_${theme}` : format
+			imageUrl = resolveExternalIconUrl(externalIcon, key)
+			githubUrl = ""
+		} else if (isCommunityIcon && mainIconUrl) {
 			const formatExt = format === "svg" ? "svg" : format === "png" ? "png" : "webp"
 
 			// Try to find a specific asset URL that matches the requested variant filename
@@ -540,6 +551,19 @@ export function IconDetails({
 	const getAvailableSvgVariants = (): VariantOption[] => {
 		const variants: VariantOption[] = []
 
+		if (isExternalIcon && externalIcon) {
+			if (externalIcon.formats.includes("svg")) {
+				variants.push({ value: "base", label: "Base Icon", iconName: externalIcon.slug })
+			}
+			if (externalIcon.variants?.light) {
+				variants.push({ value: "light", label: "Light Variant", iconName: `${externalIcon.slug}-light` })
+			}
+			if (externalIcon.variants?.dark) {
+				variants.push({ value: "dark", label: "Dark Variant", iconName: `${externalIcon.slug}-dark` })
+			}
+			return variants
+		}
+
 		if (isCommunityIcon) {
 			const baseSvg = assetUrls.find((url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg"))
 			if (baseSvg || (mainIconUrl && mainIconUrl.toLowerCase().endsWith(".svg"))) {
@@ -553,10 +577,7 @@ export function IconDetails({
 			const lightVariant = iconData.colors?.light
 			if (lightVariant) {
 				const lightSvg = assetUrls.find(
-					(url: string) =>
-						typeof url === "string" &&
-						url.toLowerCase().endsWith(".svg") &&
-						url.includes(lightVariant),
+					(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(lightVariant),
 				)
 				if (lightSvg) {
 					variants.push({
@@ -570,10 +591,7 @@ export function IconDetails({
 			const darkVariant = iconData.colors?.dark
 			if (darkVariant) {
 				const darkSvg = assetUrls.find(
-					(url: string) =>
-						typeof url === "string" &&
-						url.toLowerCase().endsWith(".svg") &&
-						url.includes(darkVariant),
+					(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(darkVariant),
 				)
 				if (darkSvg) {
 					variants.push({
@@ -587,10 +605,7 @@ export function IconDetails({
 			const wordmarkLight = iconData.wordmark?.light
 			if (wordmarkLight) {
 				const wordmarkLightSvg = assetUrls.find(
-					(url: string) =>
-						typeof url === "string" &&
-						url.toLowerCase().endsWith(".svg") &&
-						url.includes(wordmarkLight),
+					(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(wordmarkLight),
 				)
 				if (wordmarkLightSvg) {
 					variants.push({
@@ -604,10 +619,7 @@ export function IconDetails({
 			const wordmarkDark = iconData.wordmark?.dark
 			if (wordmarkDark) {
 				const wordmarkDarkSvg = assetUrls.find(
-					(url: string) =>
-						typeof url === "string" &&
-						url.toLowerCase().endsWith(".svg") &&
-						url.includes(wordmarkDark),
+					(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(wordmarkDark),
 				)
 				if (wordmarkDarkSvg) {
 					variants.push({
@@ -672,6 +684,14 @@ export function IconDetails({
 			return null
 		}
 
+		if (isExternalIcon && externalIcon) {
+			if (!externalIcon.formats.includes("svg")) return null
+			if (variant === "base") return resolveExternalIconUrl(externalIcon, "svg")
+			if (variant === "light") return externalIcon.variants?.light ? resolveExternalIconUrl(externalIcon, "svg_light") : null
+			if (variant === "dark") return externalIcon.variants?.dark ? resolveExternalIconUrl(externalIcon, "svg_dark") : null
+			return null
+		}
+
 		if (isCommunityIcon) {
 			if (variant === "base") {
 				if (mainIconUrl && mainIconUrl.toLowerCase().endsWith(".svg")) {
@@ -682,10 +702,7 @@ export function IconDetails({
 			}
 
 			const matchingUrl = assetUrls.find(
-				(url: string) =>
-					typeof url === "string" &&
-					url.toLowerCase().endsWith(".svg") &&
-					url.includes(variantOption.iconName),
+				(url: string) => typeof url === "string" && url.toLowerCase().endsWith(".svg") && url.includes(variantOption.iconName),
 			)
 			return matchingUrl || null
 		}
@@ -697,7 +714,10 @@ export function IconDetails({
 		return null
 	}
 
-	const svgUrl = useMemo(() => getSvgUrl(selectedVariant), [selectedVariant, availableVariants, isCommunityIcon, mainIconUrl, assetUrls, iconData, icon])
+	const svgUrl = useMemo(
+		() => getSvgUrl(selectedVariant),
+		[selectedVariant, availableVariants, isCommunityIcon, isExternalIcon, externalIcon, mainIconUrl, assetUrls, iconData, icon],
+	)
 
 	useEffect(() => {
 		if (!svgUrl) {
@@ -733,22 +753,30 @@ export function IconDetails({
 	const canCustomize = svgUrl !== null && availableFormats.includes("svg") && hasGradients === false && availableVariants.length > 0
 
 	return (
-		<main className="container mx-auto pt-12 pb-14 px-4 sm:px-6 lg:px-8">
+		<div className="container mx-auto pt-12 pb-14 px-4 sm:px-6 lg:px-8">
 			<div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 				<div className="lg:col-span-1">
 					<Card className="h-full bg-background/50 border shadow-lg">
 						<CardHeader className="pb-4">
 							<div className="flex flex-col items-center bg-background">
-								<div className="relative w-32 h-32 rounded-xl ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10 overflow-hidden flex items-center justify-center p-3">
-									<Image
-										src={isCommunityIcon && mainIconUrl ? mainIconUrl : `${BASE_URL}/${iconData.base}/${icon}.${iconData.base}`}
-										priority
-										width={96}
-										height={96}
-										placeholder="empty"
-										alt={`High quality ${formatedIconName} icon in ${iconData.base.toUpperCase()} format`}
-										className="w-full h-full object-contain"
-									/>
+								<div className="relative">
+									<div className="relative w-32 h-32 rounded-xl ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10 overflow-hidden flex items-center justify-center p-3">
+										<Image
+											src={
+												isExternalIcon && externalPreviewUrl
+													? externalPreviewUrl
+													: isCommunityIcon && mainIconUrl
+														? mainIconUrl
+														: `${BASE_URL}/${iconData.base}/${icon}.${iconData.base}`
+											}
+											priority
+											width={96}
+											height={96}
+											placeholder="empty"
+											alt={`High quality ${formatedIconName} icon in ${iconData.base.toUpperCase()} format`}
+											className="w-full h-full object-contain"
+										/>
+									</div>
 								</div>
 								<CardTitle className="text-2xl font-bold capitalize text-center mb-2">
 									<h1>{formatedIconName}</h1>
@@ -842,8 +870,15 @@ export function IconDetails({
 											Perfect for adding to dashboards, app directories, documentation, or anywhere you need the {formatIconName(icon)}{" "}
 											logo.
 										</p>
+										{isExternalIcon && externalSourceConfig && <p>External icon provided by {externalSourceConfig.label}.</p>}
 									</div>
 								</div>
+								{isExternalIcon && externalIcon && (
+									<div className="rounded-md border border-border p-3 text-xs text-muted-foreground">
+										<p className="font-medium text-foreground">{externalIcon.attribution}</p>
+										<p className="mt-1">License: {externalIcon.license}</p>
+									</div>
+								)}
 							</div>
 						</CardContent>
 					</Card>
@@ -998,7 +1033,20 @@ export function IconDetails({
 									</div>
 								)}
 
-								{!isCommunityIcon && (
+								{isExternalIcon && externalIcon && externalSourceConfig && (
+									<div className="">
+										<h3 className="text-sm font-semibold text-muted-foreground mb-2">Source</h3>
+										<Button variant="outline" className="w-full gap-2" asChild>
+											<Link href={externalIcon.source_url} target="_blank" rel="noopener noreferrer">
+												<Image src={externalSourceConfig.icon} alt="" width={16} height={16} className="shrink-0" unoptimized />
+												View on {externalSourceConfig.label}
+												<ExternalLink className="w-4 h-4 ml-auto" />
+											</Link>
+										</Button>
+									</div>
+								)}
+
+								{!isCommunityIcon && !isExternalIcon && (
 									<div className="">
 										<h3 className="text-sm font-semibold text-muted-foreground mb-2">Source</h3>
 										<Button variant="outline" className="w-full" asChild>
@@ -1111,6 +1159,6 @@ export function IconDetails({
 						</section>
 					)
 				})()}
-		</main>
+		</div>
 	)
 }

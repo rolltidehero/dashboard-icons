@@ -188,7 +188,7 @@ export default function DashboardPage() {
 	// Not authenticated
 	if (!authLoading && !isAuthenticated) {
 		return (
-			<main className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8 flex justify-center">
+			<div className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8 flex justify-center">
 				<Card className="bg-background/50 border shadow-lg w-full max-w-md">
 					<CardContent className="pt-6 sm:pt-8 pb-6 px-4 sm:px-6">
 						<LoginModalContent
@@ -200,14 +200,14 @@ export default function DashboardPage() {
 						/>
 					</CardContent>
 				</Card>
-			</main>
+			</div>
 		)
 	}
 
 	// Loading state
 	if (isLoading) {
 		return (
-			<main className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8">
+			<div className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8">
 				<Card className="bg-background/50 border shadow-lg">
 					<CardHeader>
 						<div className="space-y-2">
@@ -226,14 +226,14 @@ export default function DashboardPage() {
 						</div>
 					</CardContent>
 				</Card>
-			</main>
+			</div>
 		)
 	}
 
 	// Error state
 	if (submissionsError) {
 		return (
-			<main className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8">
+			<div className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8">
 				<Card className="bg-background/50 border shadow-lg">
 					<CardHeader>
 						<CardTitle>Submissions Dashboard</CardTitle>
@@ -255,14 +255,14 @@ export default function DashboardPage() {
 						</Alert>
 					</CardContent>
 				</Card>
-			</main>
+			</div>
 		)
 	}
 
 	// Success state
 	return (
 		<>
-			<main className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8">
+			<div className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8">
 				<Card className="bg-background/50 border-none shadow-lg">
 					<CardHeader className="space-y-4">
 						<div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
@@ -339,7 +339,7 @@ export default function DashboardPage() {
 						/>
 					</CardContent>
 				</Card>
-			</main>
+			</div>
 
 			{isMobile ? (
 				<Drawer open={approveDialogOpen} onOpenChange={handleApproveDialogClose}>

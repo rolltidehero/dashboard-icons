@@ -49,7 +49,8 @@ next-env.d.ts
 # Pocketbase
 backend/pocketbase
 backend/pb_data
-scripts
+scripts/*
+!scripts/import-selfhst.ts
 
 # Playwright
 node_modules/
@@ -59,3 +60,10 @@ node_modules/
 /playwright/.cache/
 /playwright/.auth/
 package-lock.json
+
+.agents/
+DESIGN.json
+PRODUCT.md
+skills-lock.json
+DESIGN.md
+README.md

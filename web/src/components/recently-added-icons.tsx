@@ -32,7 +32,7 @@ export function RecentlyAddedIcons({ icons }: { icons: IconWithName[] }) {
 
 			<div className="mx-auto px-6 lg:px-8">
 				<div className="mx-auto max-w-2xl text-center my-4">
-					<h2 className="text-3xl font-bold tracking-tight sm:text-4xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary  motion-safe:motion-preset-fade-lg motion-duration-500">
+					<h2 className="text-3xl font-bold tracking-tight sm:text-4xl text-foreground motion-safe:motion-preset-fade-lg motion-duration-500">
 						Recently Added Icons
 					</h2>
 				</div>
