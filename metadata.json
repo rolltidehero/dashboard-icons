@@ -43431,5 +43431,26 @@
             "light": "astro-light",
             "dark": "astro-dark"
         }
+    },
+    "anthropic": {
+        "base": "svg",
+        "aliases": [
+            "claude",
+            "claude-ai"
+        ],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:51:58.794Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "anthropic-light",
+            "dark": "anthropic-dark"
+        }
     }
 }
