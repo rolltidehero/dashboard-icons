@@ -39,6 +39,7 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 
 	const externalIcon = icon.source && icon.source !== "native" ? icon.external : undefined
 	const sourceConfig = externalIcon ? EXTERNAL_SOURCES[icon.source as ExternalSourceId] : undefined
+	const isCommunityIcon = typeof iconData.base === "string" && iconData.base.startsWith("http")
 	const imageUrl = useThemedImageUrl(icon)
 
 	const linkHref = externalIcon
