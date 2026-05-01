@@ -42758,5 +42758,17 @@
                 "name": "ahembree"
             }
         }
+    },
+    "wise-moneytransfer": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:26:46.565Z",
+            "author": {
+                "id": 41553131,
+                "login": "RoyalKiwi"
+            }
+        }
     }
 }
