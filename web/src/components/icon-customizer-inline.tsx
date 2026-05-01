@@ -14,6 +14,7 @@ import { Separator } from "@/components/ui/separator"
 import {
 	applyColorMappingsToSvg,
 	type ColorMapping,
+	CURRENT_COLOR,
 	ensureSvgAttributes,
 	extractColorsFromSvg,
 	hexToHsl,
@@ -93,7 +94,7 @@ export function IconCustomizerInline({
 
 			const initialMappings: ColorMapping = {}
 			colors.forEach((color) => {
-				initialMappings[color] = color
+				initialMappings[color] = color === CURRENT_COLOR ? "#000000" : color
 			})
 			setColorMappings(initialMappings)
 		}
@@ -266,18 +267,22 @@ export function IconCustomizerInline({
 
 			<div className="space-y-4">
 				{originalColors.map((originalColor, index) => {
-					const currentColor = colorMappings[originalColor] || originalColor
-					const hslColor = hexToHsl(currentColor)
+					const mappedColor = colorMappings[originalColor] || (originalColor === CURRENT_COLOR ? "#000000" : originalColor)
+					const hslColor = hexToHsl(mappedColor)
+					const isCurrentColor = originalColor === CURRENT_COLOR
+					const swatchColor = isCurrentColor ? "#000000" : originalColor
 
 					return (
 						<div key={originalColor} className="space-y-2">
 							<div className="flex items-center gap-2">
 								<div
 									className="w-4 h-4 rounded border-2 border-border flex-shrink-0"
-									style={{ backgroundColor: originalColor }}
+									style={{ backgroundColor: swatchColor }}
 									title={`Original: ${originalColor}`}
 								/>
-								<Label className="text-xs text-muted-foreground">Color {index + 1}</Label>
+								<Label className="text-xs text-muted-foreground">
+									{isCurrentColor ? "Text Color (currentColor)" : `Color ${index + 1}`}
+								</Label>
 							</div>
 							<ColorPicker
 								color={hslColor}

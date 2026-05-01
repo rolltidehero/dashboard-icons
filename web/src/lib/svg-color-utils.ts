@@ -2,8 +2,10 @@
  * Shared utilities for SVG color manipulation and processing
  */
 
-export const MAX_EXTRACTED_COLORS = 5
+export const MAX_EXTRACTED_COLORS = 10
+export const CURRENT_COLOR = "currentColor"
 export const DEFAULT_VIEWBOX = "0 0 24 24"
+export const MAX_SVG_SIZE = 500_000
 
 export type ColorMapping = {
 	[key: string]: string
@@ -169,7 +171,16 @@ const CSS_NAMED_COLORS: Record<string, string> = {
  * Handles hex, rgb, rgba, CSS named colors, and special values (none, transparent, currentColor)
  */
 export function normalizeColor(color: string): string {
-	if (!color || color === "none" || color === "transparent" || color === "currentColor") {
+	if (!color || color === "none" || color === "transparent") {
+		return ""
+	}
+
+	if (color === "currentColor") {
+		return CURRENT_COLOR
+	}
+
+	const trimmedRaw = color.trim()
+	if (trimmedRaw.startsWith("url(")) {
 		return ""
 	}
 
@@ -331,6 +342,11 @@ export function extractColorsFromSvg(svg: string): string[] {
 		return []
 	}
 
+	if (svg.length > MAX_SVG_SIZE) {
+		console.warn("SVG too large for color extraction:", svg.length, "bytes")
+		return []
+	}
+
 	try {
 		const parser = new DOMParser()
 		const svgDoc = parser.parseFromString(svg, "image/svg+xml")
@@ -343,46 +359,39 @@ export function extractColorsFromSvg(svg: string): string[] {
 			return []
 		}
 
-		// Extract fill colors from element attributes and inline styles
-		const extractFill = (element: Element) => {
-			// Extract from fill attribute
-			const fill = element.getAttribute("fill")
-			if (fill) {
-				const normalized = normalizeColor(fill)
-				if (normalized) {
-					colors.add(normalized)
+		const COLOR_ATTRS = ["fill", "stroke", "stop-color", "flood-color", "lighting-color"] as const
+		const STYLE_COLOR_REGEX = /(?:(?<!\w-)fill|(?<!\w-)stroke|stop-color|flood-color|lighting-color)\s*:\s*(#[0-9a-fA-F]{3,8}|rgb\([^)]+\)|rgba\([^)]+\)|currentColor|[a-z]+)/gi
+		const SHAPE_TAGS = new Set(["path", "rect", "circle", "ellipse", "polygon", "polyline", "line", "text"])
+
+		let hasImplicitBlack = false
+
+		const extractFromElement = (element: Element) => {
+			for (const attr of COLOR_ATTRS) {
+				const value = element.getAttribute(attr)
+				if (value) {
+					const normalized = normalizeColor(value)
+					if (normalized) {
+						colors.add(normalized)
+					}
 				}
 			}
 
-			// Extract from stroke attribute
-			const stroke = element.getAttribute("stroke")
-			if (stroke) {
-				const normalized = normalizeColor(stroke)
-				if (normalized) {
-					colors.add(normalized)
+			if (
+				SHAPE_TAGS.has(element.tagName.toLowerCase()) &&
+				!element.getAttribute("fill") &&
+				!element.closest("clipPath") &&
+				!element.closest("mask")
+			) {
+				const styleAttr = element.getAttribute("style")
+				const hasFillInStyle = styleAttr && /(?<!\w-)fill\s*:/i.test(styleAttr)
+				if (!hasFillInStyle) {
+					hasImplicitBlack = true
 				}
 			}
 
-			// Extract from inline style attribute (e.g., style="fill:#2396ed")
 			const styleAttr = element.getAttribute("style")
 			if (styleAttr) {
-				// Match fill and stroke in inline styles
-				const fillColorRegex = /fill\s*:\s*(#[0-9a-fA-F]{3,6}|rgb\([^)]+\)|rgba\([^)]+\)|[a-z]+)/gi
-				const strokeColorRegex = /stroke\s*:\s*(#[0-9a-fA-F]{3,6}|rgb\([^)]+\)|rgba\([^)]+\)|[a-z]+)/gi
-
-				const fillMatches = styleAttr.matchAll(fillColorRegex)
-				for (const match of fillMatches) {
-					const color = match[1]
-					if (color) {
-						const normalized = normalizeColor(color)
-						if (normalized) {
-							colors.add(normalized)
-						}
-					}
-				}
-
-				const strokeMatches = styleAttr.matchAll(strokeColorRegex)
-				for (const match of strokeMatches) {
+				for (const match of styleAttr.matchAll(STYLE_COLOR_REGEX)) {
 					const color = match[1]
 					if (color) {
 						const normalized = normalizeColor(color)
@@ -393,22 +402,21 @@ export function extractColorsFromSvg(svg: string): string[] {
 				}
 			}
 
-			// Recursively process children
 			for (let i = 0; i < element.children.length; i++) {
-				extractFill(element.children[i])
+				extractFromElement(element.children[i])
 			}
 		}
 
-		extractFill(svgElement)
+		extractFromElement(svgElement)
 
-		// Extract colors from style tags
+		if (hasImplicitBlack) {
+			colors.add("#000000")
+		}
+
 		const styleTags = svgElement.getElementsByTagName("style")
 		for (let i = 0; i < styleTags.length; i++) {
 			const styleContent = styleTags[i].textContent || ""
-			// Updated regex to also match CSS named colors (word characters)
-			const fillColorRegex = /fill\s*:\s*(#[0-9a-fA-F]{3,6}|rgb\([^)]+\)|rgba\([^)]+\)|[a-z]+)/gi
-			const matches = styleContent.matchAll(fillColorRegex)
-			for (const match of matches) {
+			for (const match of styleContent.matchAll(STYLE_COLOR_REGEX)) {
 				const color = match[1]
 				if (color) {
 					const normalized = normalizeColor(color)
@@ -455,58 +463,65 @@ export function applyColorMappingsToSvg(svg: string, mappings: ColorMapping): st
 			return svg
 		}
 
-		// Apply mappings to element fill and stroke attributes, including inline styles
+		const COLOR_ATTRS = ["fill", "stroke", "stop-color", "flood-color", "lighting-color"] as const
+		const STYLE_COLOR_REGEX = /(?:(?<!\w-)fill|(?<!\w-)stroke|stop-color|flood-color|lighting-color)(\s*:\s*)(#[0-9a-fA-F]{3,8}|rgb\([^)]+\)|rgba\([^)]+\)|currentColor|[a-z]+)/gi
+		const SHAPE_TAGS = new Set(["path", "rect", "circle", "ellipse", "polygon", "polyline", "line", "text"])
+
+		const mappingKeys = Object.keys(mappings)
+		const findMapping = (normalized: string): string | undefined => {
+			const key = mappingKeys.find((k) => k.toLowerCase() === normalized.toLowerCase())
+			return key ? mappings[key] : undefined
+		}
+
+		const replaceStyleColors = (style: string): string => {
+			return style.replace(STYLE_COLOR_REGEX, (fullMatch, sep, rawColor) => {
+				const normalized = normalizeColor(rawColor)
+				if (!normalized) return fullMatch
+				const newColor = findMapping(normalized)
+				if (!newColor || newColor.toLowerCase() === normalized.toLowerCase()) return fullMatch
+				const prop = fullMatch.slice(0, fullMatch.indexOf(sep))
+				return `${prop}:${newColor}`
+			})
+		}
+
 		const applyMappings = (element: Element) => {
-			// Handle fill attribute
-			const fill = element.getAttribute("fill")
-			if (fill) {
-				const normalized = normalizeColor(fill)
-				if (normalized) {
-					// Case-insensitive matching
-					const matchingKey = Object.keys(mappings).find((key) => key.toLowerCase() === normalized.toLowerCase())
-					if (matchingKey && mappings[matchingKey]) {
-						element.setAttribute("fill", mappings[matchingKey])
+			for (const attr of COLOR_ATTRS) {
+				const value = element.getAttribute(attr)
+				if (value) {
+					const normalized = normalizeColor(value)
+					if (normalized) {
+						const newColor = findMapping(normalized)
+						if (newColor) {
+							element.setAttribute(attr, newColor)
+						}
 					}
 				}
 			}
 
-			// Handle stroke attribute
-			const stroke = element.getAttribute("stroke")
-			if (stroke) {
-				const normalized = normalizeColor(stroke)
-				if (normalized) {
-					// Case-insensitive matching
-					const matchingKey = Object.keys(mappings).find((key) => key.toLowerCase() === normalized.toLowerCase())
-					if (matchingKey && mappings[matchingKey]) {
-						element.setAttribute("stroke", mappings[matchingKey])
+			if (
+				SHAPE_TAGS.has(element.tagName.toLowerCase()) &&
+				!element.getAttribute("fill") &&
+				!element.closest("clipPath") &&
+				!element.closest("mask")
+			) {
+				const styleAttr = element.getAttribute("style")
+				const hasFillInStyle = styleAttr && /(?<!\w-)fill\s*:/i.test(styleAttr)
+				if (!hasFillInStyle) {
+					const newColor = findMapping("#000000")
+					if (newColor && newColor !== "#000000") {
+						element.setAttribute("fill", newColor)
 					}
 				}
 			}
 
-			// Handle inline style attribute (e.g., style="fill:#2396ed")
 			const styleAttr = element.getAttribute("style")
 			if (styleAttr) {
-				let updatedStyle = styleAttr
-
-				Object.keys(mappings).forEach((originalColorKey) => {
-					const newColor = mappings[originalColorKey]
-					if (originalColorKey.toLowerCase() !== newColor.toLowerCase() && newColor) {
-						// Escape special regex characters
-						const escapedColor = originalColorKey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-						// Case-insensitive replacement for both fill and stroke in inline styles
-						const fillRegex = new RegExp(`fill\\s*:\\s*${escapedColor}`, "gi")
-						const strokeRegex = new RegExp(`stroke\\s*:\\s*${escapedColor}`, "gi")
-						updatedStyle = updatedStyle.replace(fillRegex, `fill:${newColor}`)
-						updatedStyle = updatedStyle.replace(strokeRegex, `stroke:${newColor}`)
-					}
-				})
-
+				const updatedStyle = replaceStyleColors(styleAttr)
 				if (updatedStyle !== styleAttr) {
 					element.setAttribute("style", updatedStyle)
 				}
 			}
 
-			// Recursively process children
 			for (let i = 0; i < element.children.length; i++) {
 				applyMappings(element.children[i])
 			}
@@ -514,26 +529,14 @@ export function applyColorMappingsToSvg(svg: string, mappings: ColorMapping): st
 
 		applyMappings(svgElement)
 
-		// Apply mappings to style tags
 		const styleTags = svgElement.getElementsByTagName("style")
 		for (let i = 0; i < styleTags.length; i++) {
 			const styleElement = styleTags[i]
-			let styleContent = styleElement.textContent || ""
-
-			Object.keys(mappings).forEach((originalColorKey) => {
-				const newColor = mappings[originalColorKey]
-				if (originalColorKey.toLowerCase() !== newColor.toLowerCase() && newColor) {
-					// Escape special regex characters
-					const escapedColor = originalColorKey.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
-					// Case-insensitive replacement for both fill and stroke
-					const fillRegex = new RegExp(`fill\\s*:\\s*${escapedColor}`, "gi")
-					const strokeRegex = new RegExp(`stroke\\s*:\\s*${escapedColor}`, "gi")
-					styleContent = styleContent.replace(fillRegex, `fill:${newColor}`)
-					styleContent = styleContent.replace(strokeRegex, `stroke:${newColor}`)
-				}
-			})
-
-			styleElement.textContent = styleContent
+			const styleContent = styleElement.textContent || ""
+			const updatedContent = replaceStyleColors(styleContent)
+			if (updatedContent !== styleContent) {
+				styleElement.textContent = updatedContent
+			}
 		}
 
 		const serializer = new XMLSerializer()
