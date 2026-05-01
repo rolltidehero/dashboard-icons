@@ -360,7 +360,8 @@ export function extractColorsFromSvg(svg: string): string[] {
 		}
 
 		const COLOR_ATTRS = ["fill", "stroke", "stop-color", "flood-color", "lighting-color"] as const
-		const STYLE_COLOR_REGEX = /(?:(?<!\w-)fill|(?<!\w-)stroke|stop-color|flood-color|lighting-color)\s*:\s*(#[0-9a-fA-F]{3,8}|rgb\([^)]+\)|rgba\([^)]+\)|currentColor|[a-z]+)/gi
+		const STYLE_COLOR_REGEX =
+			/(?:(?<!\w-)fill|(?<!\w-)stroke|stop-color|flood-color|lighting-color)\s*:\s*(#[0-9a-fA-F]{3,8}|rgb\([^)]+\)|rgba\([^)]+\)|currentColor|[a-z]+)/gi
 		const SHAPE_TAGS = new Set(["path", "rect", "circle", "ellipse", "polygon", "polyline", "line", "text"])
 
 		let hasImplicitBlack = false
@@ -464,7 +465,8 @@ export function applyColorMappingsToSvg(svg: string, mappings: ColorMapping): st
 		}
 
 		const COLOR_ATTRS = ["fill", "stroke", "stop-color", "flood-color", "lighting-color"] as const
-		const STYLE_COLOR_REGEX = /(?:(?<!\w-)fill|(?<!\w-)stroke|stop-color|flood-color|lighting-color)(\s*:\s*)(#[0-9a-fA-F]{3,8}|rgb\([^)]+\)|rgba\([^)]+\)|currentColor|[a-z]+)/gi
+		const STYLE_COLOR_REGEX =
+			/(?:(?<!\w-)fill|(?<!\w-)stroke|stop-color|flood-color|lighting-color)(\s*:\s*)(#[0-9a-fA-F]{3,8}|rgb\([^)]+\)|rgba\([^)]+\)|currentColor|[a-z]+)/gi
 		const SHAPE_TAGS = new Set(["path", "rect", "circle", "ellipse", "polygon", "polyline", "line", "text"])
 
 		const mappingKeys = Object.keys(mappings)

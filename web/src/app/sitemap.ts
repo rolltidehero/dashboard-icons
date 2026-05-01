@@ -46,23 +46,27 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 				`${BASE_URL}/webp/${iconName}.webp`,
 			].filter(Boolean) as string[],
 		})),
-		...externalIcons.filter((icon, i, arr) => arr.findIndex((a) => a.slug === icon.slug) === i).map((icon) => {
-			const formats = (icon.external.formats ?? []).filter((f) => f === "svg" || f === "png" || f === "webp")
-			const images: string[] = formats.map((format) => resolveExternalIconUrl(icon.external, format))
-			const variants = icon.external.variants ?? {}
-			for (const format of formats) {
-				if (format === "svg") continue
-				if (variants.light) images.push(resolveExternalIconUrl(icon.external, `${format}_light`))
-				if (variants.dark) images.push(resolveExternalIconUrl(icon.external, `${format}_dark`))
-			}
-			return {
-				url: `${WEB_URL}/icons/external/${icon.slug}`,
-				lastModified: formatDate(new Date(icon.external.updated_at_source || icon.external.updated || icon.external.created || Date.now())),
-				changeFrequency: "yearly" as const,
-				priority: 0.6,
-				images,
-			}
-		}),
+		...externalIcons
+			.filter((icon, i, arr) => arr.findIndex((a) => a.slug === icon.slug) === i)
+			.map((icon) => {
+				const formats = (icon.external.formats ?? []).filter((f) => f === "svg" || f === "png" || f === "webp")
+				const images: string[] = formats.map((format) => resolveExternalIconUrl(icon.external, format))
+				const variants = icon.external.variants ?? {}
+				for (const format of formats) {
+					if (format === "svg") continue
+					if (variants.light) images.push(resolveExternalIconUrl(icon.external, `${format}_light`))
+					if (variants.dark) images.push(resolveExternalIconUrl(icon.external, `${format}_dark`))
+				}
+				return {
+					url: `${WEB_URL}/icons/external/${icon.slug}`,
+					lastModified: formatDate(
+						new Date(icon.external.updated_at_source || icon.external.updated || icon.external.created || Date.now()),
+					),
+					changeFrequency: "yearly" as const,
+					priority: 0.6,
+					images,
+				}
+			}),
 		...communityIcons.map((icon) => ({
 			url: `${WEB_URL}/community/${icon.name}`,
 			lastModified: formatDate(new Date(icon.data.update.timestamp)),

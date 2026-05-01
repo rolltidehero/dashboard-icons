@@ -1,4 +1,4 @@
-import { readFileSync, readdirSync } from "node:fs"
+import { readdirSync, readFileSync } from "node:fs"
 import { join } from "node:path"
 import { describe, expect, it } from "vitest"
 import {
@@ -20,8 +20,6 @@ const SVG_PLANNING_CENTER = `<svg xmlns="http://www.w3.org/2000/svg" xml:space="
 const SVG_GROK = `<svg fill="currentColor" fill-rule="evenodd" height="1em" style="flex:none;line-height:1" viewBox="0 0 24 24" width="1em" xmlns="http://www.w3.org/2000/svg"><title>Grok</title><path d="M9.27 15.29l7.978-5.897c.391-.29.95-.177 1.137.272.98 2.369.542 5.215-1.41 7.169-1.951 1.954-4.667 2.382-7.149 1.406l-2.711 1.257c3.889 2.661 8.611 2.003 11.562-.953 2.341-2.344 3.066-5.539 2.388-8.42l.006.007c-.983-4.232.242-5.924 2.75-9.383.06-.082.12-.164.179-.248l-3.301 3.305v-.01L9.267 15.292M7.623 16.723c-2.792-2.67-2.31-6.801.071-9.184 1.761-1.763 4.647-2.483 7.166-1.425l2.705-1.25a7.808 7.808 0 00-1.829-1A8.975 8.975 0 005.984 5.83c-2.533 2.536-3.33 6.436-1.962 9.764 1.022 2.487-.653 4.246-2.34 6.022-.599.63-1.199 1.259-1.682 1.925l7.62-6.815"></path></svg>`
 
 const SVG_ANTGROUP = `<svg fill="currentColor" fill-rule="evenodd" height="1em" style="flex:none;line-height:1" viewBox="0 0 73 24" xmlns="http://www.w3.org/2000/svg"><title>AntGroup</title><path d="M9.617 6.282a.447.447 0 01-.33-.315 1.037 1.037 0 010-.505c.153-.86.294-1.725.492-2.577.138-.7.413-1.367.808-1.96a2.274 2.274 0 011.238-.89c.86-.217 1.217.629.92 1.348-.254.593-.861.914-1.31 1.348-.819.795-1.075 2.14-1.311 3.212a.428.428 0 01-.507.339z" fill="url(#lobe-icons-ant-group-brand-0-_R_0_)" transform="translate(2)"></path><path d="M48.394 10.7c.31.52 1.15 1.559 3.045 1.924l.16-.834a3.86 3.86 0 01-2.152-1.09h2.178v-.828h-3.664v-.428h3.387v-.79h-3.243V8.29h3.01V7.52h-2.998v-.419h3.01v-.769h-3.01v-.418h3.243v-.79h-3.125c.188-.117.349-.273.472-.457.097-.155.15-.25.153-.259l-.775-.424c-.09.159-.188.313-.295.46a1.412 1.412 0 01-1.365.683h-.976c.168-.224.323-.457.466-.698l-.776-.425a10.18 10.18 0 01-2.193 2.572l.566.68c.147-.125.295-.25.419-.374v1.734c0 .57.268.84.834.84h2.311v.427h-3.664v.829h2.178a3.86 3.86 0 01-2.152 1.09l.16.834c1.895-.365 2.735-1.402 3.045-1.924h.433v2.01h.885v-2.01l.433-.012z"></path><defs><linearGradient id="lobe-icons-ant-group-brand-0-_R_0_" x1="32.052%" x2="60.95%" y1="95.551%" y2="-.348%"><stop offset="0%" stop-color="#06F"></stop><stop offset="20%" stop-color="#1677FF"></stop><stop offset="100%" stop-color="#04A6FF"></stop></linearGradient></defs></svg>`
-
-const SVG_WIDE_VIEWBOX = `<svg fill="currentColor" fill-rule="evenodd" height="1em" style="flex:none;line-height:1" viewBox="0 0 73 24" xmlns="http://www.w3.org/2000/svg"><title>Wide</title><rect width="70" height="20" x="1" y="2" fill="#ff0000"/></svg>`
 
 // ── normalizeColor ────────────────────────────────────────────────
 
@@ -301,10 +299,7 @@ describe("bulk: last 200 SVG icons from repository", () => {
 	for (const file of svgFiles) {
 		const content = readFileSync(join(svgDir, file), "utf-8")
 		const isUntestable =
-			content.length > MAX_SVG_SIZE ||
-			content.includes("data:image") ||
-			content.includes("data:img/png") ||
-			!content.includes("<svg")
+			content.length > MAX_SVG_SIZE || content.includes("data:image") || content.includes("data:img/png") || !content.includes("<svg")
 
 		it(`${file}: extractColorsFromSvg does not throw`, () => {
 			const colors = extractColorsFromSvg(content)
