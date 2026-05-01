@@ -43071,5 +43071,22 @@
                 "login": "agoettl"
             }
         }
+    },
+    "iode-os": {
+        "base": "svg",
+        "aliases": [
+            "iode"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:55.811Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "dark": "iode-os-dark"
+        }
     }
 }
