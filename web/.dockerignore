@@ -1,10 +1,13 @@
-# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
-
 # dependencies
 /node_modules
 
 # testing
 /coverage
+/e2e
+/playwright-report
+/test-results
+playwright.config.ts
+.env.test.example
 
 # next.js
 /.next/
@@ -23,7 +26,7 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files (can opt-in for committing if needed)
+# env files
 .env*
 
 # vercel
@@ -33,13 +36,25 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Cursor
+# Cursor / editor
 .cursor
-.env.local
-# Turborepo
+.agents
 .turbo
 
-# Pocketbase
+# PocketBase (local dev only)
 backend/pocketbase
 backend/pb_data
 backend/pb_migrations
+
+# Docs and design artifacts (not needed at runtime)
+/docs
+README.md
+PLAYWRIGHT_SETUP.md
+DESIGN.json
+skills-lock.json
+
+# Import scripts (not needed at build/runtime)
+/scripts
+
+# Biome config (linting only)
+biome.jsonc

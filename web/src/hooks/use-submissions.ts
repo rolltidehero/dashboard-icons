@@ -246,7 +246,6 @@ export function useAuth() {
 export function useTriggerWorkflow() {
 	return useMutation({
 		mutationFn: async ({ submissionId, dryRun = false }: { submissionId: string; dryRun?: boolean }) => {
-			// Get the auth token from the client-side PocketBase instance
 			const authToken = pb.authStore.token
 			if (!authToken) {
 				throw new Error("Not authenticated")

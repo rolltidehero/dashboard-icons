@@ -1,38 +1,70 @@
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
+import { useTheme } from "next-themes"
 import { MagicCard } from "@/components/magicui/magic-card"
-import { Badge } from "@/components/ui/badge"
 import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
-import { getExternalIconPreviewUrl } from "@/lib/external-icon-urls"
+import { getExternalIconThemedPreviewUrl } from "@/lib/external-icon-urls"
 import { formatIconName } from "@/lib/utils"
 import type { IconWithName } from "@/types/icons"
 
-export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAlias?: string }) {
+type IconKind = { type: "external"; slug: string; sourceId: ExternalSourceId } | { type: "community" } | { type: "native" }
+
+function getIconKind(icon: IconWithName): IconKind {
+	if (icon.source && icon.source !== "native" && icon.external) {
+		return { type: "external", slug: icon.slug || icon.external.slug, sourceId: icon.source as ExternalSourceId }
+	}
+	if (typeof icon.data.base === "string" && icon.data.base.startsWith("http")) {
+		return { type: "community" }
+	}
+	return { type: "native" }
+}
+
+function getLinkHref(kind: IconKind, name: string): string {
+	switch (kind.type) {
+		case "external":
+			return `/icons/external/${kind.slug}`
+		case "community":
+			return `/community/${name}`
+		case "native":
+			return `/icons/${name}`
+	}
+}
+
+function useThemedImageUrl(icon: IconWithName, kind: IconKind): string {
+	const { resolvedTheme } = useTheme()
+	const theme = resolvedTheme === "dark" ? "dark" : "light"
 	const { name, data: iconData } = icon
-	const formatedIconName = formatIconName(name)
 
-	const externalIcon = icon.source && icon.source !== "native" ? icon.external : undefined
-	const sourceConfig = externalIcon ? EXTERNAL_SOURCES[icon.source as ExternalSourceId] : undefined
-	const isCommunityIcon = typeof iconData.base === "string" && iconData.base.startsWith("http")
-	const imageUrl = externalIcon
-		? getExternalIconPreviewUrl(externalIcon)
-		: isCommunityIcon
-			? iconData.base
-			: `${BASE_URL}/${iconData.base}/${name}.${iconData.base}`
+	if (kind.type === "external" && icon.external) {
+		return getExternalIconThemedPreviewUrl(icon.external, theme)
+	}
 
-	const linkHref = externalIcon
-		? `/icons/external/${icon.slug || externalIcon.slug}`
-		: isCommunityIcon
-			? `/community/${name}`
-			: `/icons/${name}`
+	if (kind.type === "community") {
+		return iconData.base as string
+	}
+
+	const themeVariant = theme === "dark" ? iconData.colors?.dark : iconData.colors?.light
+	const fileName = themeVariant ?? name
+	return `${BASE_URL}/${iconData.base}/${fileName}.${iconData.base}`
+}
+
+export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAlias?: string }) {
+	const { name } = icon
+	const kind = getIconKind(icon)
+	const sourceConfig = kind.type === "external" ? EXTERNAL_SOURCES[kind.sourceId] : undefined
+	const imageUrl = useThemedImageUrl(icon, kind)
+
 	return (
-		<MagicCard className="rounded-md shadow-md">
-			{externalIcon && sourceConfig && (
-				<div className="absolute top-0 right-0 z-10">
-					<Image src={sourceConfig.icon} alt="" width={24} height={24} className="shrink-0" unoptimized />
+		<MagicCard className="group/card rounded-md shadow-md">
+			{sourceConfig && (
+				<div className="absolute left-0 -top-7 z-10 flex items-center gap-1.5 pr-2 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 bg-muted/90 backdrop-blur-sm rounded-md shadow-sm whitespace-nowrap">
+					<Image src={sourceConfig.icon} alt={sourceConfig.label} width={28} height={28} className="shrink-0" unoptimized />
+					<span className="text-sm sm:text-md text-muted-foreground">from {sourceConfig.label}</span>
 				</div>
 			)}
-			<Link prefetch={false} href={linkHref} className="group flex flex-col items-center p-3 sm:p-4 cursor-pointer">
+			<Link prefetch={false} href={getLinkHref(kind, name)} className="group flex flex-col items-center p-3 sm:p-4 cursor-pointer">
 				<div className="relative h-16 w-16 mb-2 rounded-lg ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10">
 					<Image
 						src={imageUrl}
@@ -43,7 +75,7 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 					/>
 				</div>
 				<span className="text-xs sm:text-sm text-center truncate w-full capitalize group- dark:group-hover:text-primary transition-colors duration-200 font-medium">
-					{formatedIconName}
+					{formatIconName(name)}
 				</span>
 				{matchedAlias && <span className="mt-1 max-w-full truncate text-[10px] text-muted-foreground">Alias: {matchedAlias}</span>}
 			</Link>

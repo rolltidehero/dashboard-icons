@@ -21,9 +21,38 @@ const nextConfig: NextConfig = {
 				pathname: "/gh/selfhst/icons/**",
 				search: "",
 			},
+			{
+				protocol: "https",
+				hostname: "cdn.jsdelivr.net",
+				port: "",
+				pathname: "/npm/@lobehub/**",
+				search: "",
+			},
+			{
+				protocol: "https",
+				hostname: "raw.githubusercontent.com",
+				port: "",
+				pathname: "/lobehub/lobe-icons/**",
+				search: "",
+			},
 		],
 	},
 	output: "standalone",
+	outputFileTracingExcludes: {
+		"*": [
+			"./scripts/**",
+			"./docs/**",
+			"./e2e/**",
+			"./playwright.config.ts",
+			"./.cursor/**",
+			"./node_modules/@biomejs/**",
+			"./node_modules/@playwright/**",
+			"./node_modules/playwright/**",
+			"./node_modules/playwright-core/**",
+			"./node_modules/typescript/**",
+			"./node_modules/@swc/helpers/**",
+		],
+	},
 	async headers() {
 		return [
 			{

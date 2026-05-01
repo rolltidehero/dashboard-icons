@@ -556,10 +556,10 @@
         "aliases": [],
         "categories": [],
         "update": {
-            "timestamp": "2023-04-13T13:56:18Z",
+            "timestamp": "2026-05-01T15:27:25.673Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 163436602,
+                "login": "agoettl"
             }
         }
     },
@@ -1661,10 +1661,10 @@
         "aliases": [],
         "categories": [],
         "update": {
-            "timestamp": "2023-04-13T13:56:18Z",
+            "timestamp": "2026-05-01T15:28:36.268Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 277670796,
+                "login": "spitivalleyt3-glitch"
             }
         }
     },
@@ -16818,14 +16818,14 @@
         }
     },
     "lancache": {
-        "base": "png",
+        "base": "svg",
         "aliases": [],
         "categories": [],
         "update": {
-            "timestamp": "2025-01-07T17:54:03Z",
+            "timestamp": "2026-05-01T15:27:20.499Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 274374549,
+                "login": "yeasure-server"
             }
         }
     },
@@ -22694,10 +22694,10 @@
         "aliases": [],
         "categories": [],
         "update": {
-            "timestamp": "2023-04-13T13:56:18Z",
+            "timestamp": "2026-05-01T15:26:52.835Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 273580321,
+                "login": "kaiydwi"
             }
         }
     },
@@ -26148,19 +26148,14 @@
         }
     },
     "jdownloader2": {
-        "base": "png",
-        "aliases": [
-            "jdownloader",
-            "jd2"
-        ],
-        "categories": [
-            "Download-Managers"
-        ],
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
         "update": {
-            "timestamp": "2025-01-07T17:54:03Z",
+            "timestamp": "2026-05-01T15:27:41.205Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 50268291,
+                "login": "infinit7even"
             }
         }
     },
@@ -30619,14 +30614,31 @@
     },
     "ilo": {
         "base": "svg",
-        "aliases": [],
-        "categories": [],
+        "aliases": [
+            "ProLiant",
+            "Density Line (DL)"
+        ],
+        "categories": [
+            "automation",
+            "monitoring",
+            "network",
+            "cloud",
+            "development",
+            "security",
+            "social",
+            "storage",
+            "tools",
+            "utility"
+        ],
         "update": {
-            "timestamp": "2023-04-13T13:56:18Z",
+            "timestamp": "2026-05-01T15:26:58.694Z",
             "author": {
-                "id": 71191962,
-                "name": "walkxcode"
+                "id": 1542904,
+                "login": "iamk3"
             }
+        },
+        "colors": {
+            "dark": "ilo-dark"
         }
     },
     "zoraxy": {
@@ -42632,6 +42644,656 @@
         "wordmark": {
             "light": "kafka-wordmark-light",
             "dark": "kafka-wordmark-dark"
+        }
+    },
+    "telmex": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:26:22.279Z",
+            "author": {
+                "id": "lil1ckwoi22xx5z",
+                "name": "groldeath"
+            }
+        }
+    },
+    "terramaster": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "network",
+            "storage",
+            "database"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:26.751Z",
+            "author": {
+                "id": 228809649,
+                "login": "ryekass3"
+            }
+        }
+    },
+    "sharry": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "tools",
+            "storage"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:30.241Z",
+            "author": {
+                "id": 33349740,
+                "login": "ellygaytor"
+            }
+        },
+        "colors": {
+            "dark": "sharry-dark"
+        }
+    },
+    "chimera-linux": {
+        "base": "svg",
+        "aliases": [
+            "chimera",
+            "linux"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:26:33.196Z",
+            "author": {
+                "id": 233751021,
+                "login": "mains-hum"
+            }
+        }
+    },
+    "angel-studios": {
+        "base": "svg",
+        "aliases": [
+            "Angel"
+        ],
+        "categories": [
+            "entertainment",
+            "media"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:35.852Z",
+            "author": {
+                "id": 25753452,
+                "login": "stake25"
+            }
+        }
+    },
+    "wiz": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "home-automation"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:38.489Z",
+            "author": {
+                "id": 41442410,
+                "login": "rkoktan"
+            }
+        }
+    },
+    "velero": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "automation",
+            "cloud",
+            "storage"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:41.149Z",
+            "author": {
+                "id": 2225871,
+                "login": "vexdev"
+            }
+        }
+    },
+    "librariarr": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "automation",
+            "entertainment",
+            "media",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:43.965Z",
+            "author": {
+                "id": "yf9qh5rnldwdqzz",
+                "name": "ahembree"
+            }
+        }
+    },
+    "wise-moneytransfer": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:26:46.565Z",
+            "author": {
+                "id": 41553131,
+                "login": "RoyalKiwi"
+            }
+        }
+    },
+    "2dehands": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:26:49.281Z",
+            "author": {
+                "id": 108151652,
+                "login": "astradti"
+            }
+        }
+    },
+    "railway": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "network",
+            "automation",
+            "cloud"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:55.493Z",
+            "author": {
+                "id": 41553131,
+                "login": "RoyalKiwi"
+            }
+        }
+    },
+    "vllm": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "development",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:01.750Z",
+            "author": {
+                "id": 156610488,
+                "login": "zenonsommers"
+            }
+        }
+    },
+    "signaturepdf": {
+        "base": "svg",
+        "aliases": [
+            "signature-pdf"
+        ],
+        "categories": [
+            "utility",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:04.664Z",
+            "author": {
+                "id": 18155001,
+                "login": "redxtech"
+            }
+        }
+    },
+    "hpe": {
+        "base": "svg",
+        "aliases": [
+            "Hewlett Packard Enterprise",
+            "HPE",
+            "HPE Aruba Networking",
+            "HPE Juniper Mist"
+        ],
+        "categories": [
+            "network",
+            "automation",
+            "security",
+            "tools",
+            "utility",
+            "storage",
+            "development",
+            "cloud"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:08.014Z",
+            "author": {
+                "id": 1542904,
+                "login": "iamk3"
+            }
+        },
+        "colors": {
+            "dark": "hpe-dark"
+        }
+    },
+    "nrk-logo": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:12.102Z",
+            "author": {
+                "id": 4692965,
+                "login": "esnor"
+            }
+        },
+        "colors": {
+            "light": "nrk-logo-light",
+            "dark": "nrk-logo-dark"
+        }
+    },
+    "open-notebook": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "automation"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:14.961Z",
+            "author": {
+                "id": 111348410,
+                "login": "ChrisA95G"
+            }
+        }
+    },
+    "iliadbox-svg": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "network"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:17.899Z",
+            "author": {
+                "id": 65242258,
+                "login": "Retrograde-i486"
+            }
+        }
+    },
+    "lakefs": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "storage",
+            "database"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:23.067Z",
+            "author": {
+                "id": 51554341,
+                "login": "ssouthcity"
+            }
+        }
+    },
+    "material-design-icons": {
+        "base": "svg",
+        "aliases": [
+            "mdi"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:28.349Z",
+            "author": {
+                "id": 162880856,
+                "login": "RioLi08123"
+            }
+        }
+    },
+    "font-awesome-icons": {
+        "base": "svg",
+        "aliases": [
+            "fa",
+            "fa icon"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:31.088Z",
+            "author": {
+                "id": 162880856,
+                "login": "RioLi08123"
+            }
+        }
+    },
+    "azure-service-bus": {
+        "base": "svg",
+        "aliases": [
+            "azure service bus",
+            "azure",
+            "service bus"
+        ],
+        "categories": [
+            "cloud",
+            "tools",
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:33.689Z",
+            "author": {
+                "id": 50410476,
+                "login": "deogratias-saidi"
+            }
+        }
+    },
+    "nextbike": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "utility",
+            "monitoring"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:38.216Z",
+            "author": {
+                "id": 8660192,
+                "login": "flukas"
+            }
+        },
+        "colors": {
+            "light": "nextbike-light",
+            "dark": "nextbike-dark"
+        },
+        "wordmark": {
+            "light": "nextbike-wordmark-light",
+            "dark": "nextbike-wordmark-dark"
+        }
+    },
+    "hcl-verse": {
+        "base": "svg",
+        "aliases": [
+            "hcl verse",
+            "verse",
+            "hcl mail",
+            "hcl email"
+        ],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:43.746Z",
+            "author": {
+                "id": 163436602,
+                "login": "agoettl"
+            }
+        }
+    },
+    "magicinfo": {
+        "base": "svg",
+        "aliases": [
+            "MagicInfo",
+            "Magic Info",
+            "Samsung MagicInfo",
+            "Samsung MagicINFO"
+        ],
+        "categories": [
+            "media",
+            "entertainment"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:46.486Z",
+            "author": {
+                "id": 163436602,
+                "login": "agoettl"
+            }
+        }
+    },
+    "gnustep": {
+        "base": "svg",
+        "aliases": [
+            "openstep",
+            "cocoa"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:49.550Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "dark": "gnustep-dark"
+        }
+    },
+    "barco": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:52.216Z",
+            "author": {
+                "id": 163436602,
+                "login": "agoettl"
+            }
+        }
+    },
+    "iode-os": {
+        "base": "svg",
+        "aliases": [
+            "iode"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:55.811Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "colors": {
+            "dark": "iode-os-dark"
+        }
+    },
+    "nuxt-js": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "development"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:00.176Z",
+            "author": {
+                "id": 41539419,
+                "login": "XoTENoC"
+            }
+        },
+        "colors": {
+            "light": "nuxt-js-light",
+            "dark": "nuxt-js-dark"
+        },
+        "wordmark": {
+            "light": "nuxt-js-wordmark-light",
+            "dark": "nuxt-js-wordmark-dark"
+        }
+    },
+    "foxit": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:02.804Z",
+            "author": {
+                "id": 170592029,
+                "login": "ITGenConnect"
+            }
+        }
+    },
+    "konica-minolta": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:05.354Z",
+            "author": {
+                "id": 170592029,
+                "login": "ITGenConnect"
+            }
+        }
+    },
+    "hexedit": {
+        "base": "svg",
+        "aliases": [
+            "hexed.it"
+        ],
+        "categories": [
+            "tools",
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:07.948Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
+    },
+    "qobuz": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "entertainment"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:10.988Z",
+            "author": {
+                "id": 97809825,
+                "login": "thomaswilliams123"
+            }
+        }
+    },
+    "solus": {
+        "base": "svg",
+        "aliases": [
+            "Linux Distribution",
+            "Operating Systems"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:28:13.782Z",
+            "author": {
+                "id": 76603258,
+                "login": "Jaredy899"
+            }
+        }
+    },
+    "haiku": {
+        "base": "svg",
+        "aliases": [
+            "haiku-os",
+            "zeta",
+            "beos"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:28:17.390Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        },
+        "wordmark": {
+            "light": "haiku-wordmark-light",
+            "dark": "haiku-wordmark-dark"
+        }
+    },
+    "ivanti": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "network",
+            "security"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:20.125Z",
+            "author": {
+                "id": 84699196,
+                "login": "alkanlab"
+            }
+        }
+    },
+    "wolframalpha": {
+        "base": "svg",
+        "aliases": [
+            "wolfram|alpha"
+        ],
+        "categories": [
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:22.853Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
+    },
+    "dictcc": {
+        "base": "svg",
+        "aliases": [
+            "dict.cc"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:28:25.431Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
+    },
+    "doozle": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "utility",
+            "tools",
+            "monitoring"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:28.374Z",
+            "author": {
+                "id": 1685289,
+                "login": "OberstK"
+            }
+        }
+    },
+    "gitbucket": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "tools",
+            "utility",
+            "development"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:30.972Z",
+            "author": {
+                "id": 84699196,
+                "login": "alkanlab"
+            }
+        }
+    },
+    "appium": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:33.708Z",
+            "author": {
+                "id": 277670796,
+                "login": "spitivalleyt3-glitch"
+            }
         }
     }
 }

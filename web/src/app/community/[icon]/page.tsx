@@ -2,7 +2,7 @@ import type { Metadata, ResolvingMetadata } from "next"
 import { notFound, permanentRedirect } from "next/navigation"
 import { IconDetails } from "@/components/icon-details"
 import { BASE_URL, WEB_URL } from "@/constants"
-import { getAllIcons, getAuthorData } from "@/lib/api"
+import { computeRelatedIcons, getAllIcons, getAuthorData } from "@/lib/api"
 import { getCommunityGalleryRecord, getCommunitySubmissionByName, getCommunitySubmissions } from "@/lib/community"
 
 function isIconAddedToCollection(
@@ -132,11 +132,13 @@ export default async function CommunityIconPage({ params }: { params: Promise<{ 
 	}
 
 	const record = await getCommunityGalleryRecord(icon)
-	const allIcons = await getAllIcons()
-	const isInCollection = isIconAddedToCollection(record, allIcons, icon)
+	const allIconsData = await getAllIcons()
+	const isInCollection = isIconAddedToCollection(record, allIconsData, icon)
 	if (isInCollection) {
 		permanentRedirect(`/icons/${icon}`)
 	}
+	const categories = iconData.data.categories || []
+	const relatedIcons = computeRelatedIcons(icon, categories, allIconsData)
 
 	const author = iconData.data.update.author as any
 	const githubId = author?.github_id
@@ -287,7 +289,8 @@ export default async function CommunityIconPage({ params }: { params: Promise<{ 
 				icon={icon}
 				iconData={iconDataForDisplay as any}
 				authorData={authorData}
-				allIcons={allIcons}
+				relatedIcons={relatedIcons}
+				relatedCategories={categories}
 				status={status}
 				rejectionReason={rejectionReason ?? undefined}
 				statusDisplayName={statusDisplayName}
