@@ -19,7 +19,7 @@ import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId, REPO_PATH } from "@/
 import { getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
 import { isClipboardAvailable } from "@/lib/svg-color-utils"
 import { formatIconName } from "@/lib/utils"
-import type { AuthorData, ExternalIcon, Icon, IconFile } from "@/types/icons"
+import type { AuthorData, ExternalIcon, Icon } from "@/types/icons"
 import { Carbon } from "./carbon"
 import { IconActions } from "./icon-actions"
 import { IconCustomizerInline } from "./icon-customizer-inline"
@@ -124,11 +124,17 @@ function WordmarkSection({ iconData, aavailableFormats, renderVariant }: Wordmar
 	)
 }
 
+export type RelatedIcon = {
+	name: string
+	data: Icon
+}
+
 export type IconDetailsProps = {
 	icon: string
 	iconData: Icon
 	authorData: AuthorData
-	allIcons?: IconFile
+	relatedIcons?: RelatedIcon[]
+	relatedCategories?: string[]
 	status?: string
 	statusDisplayName?: string
 	statusColor?: string
@@ -140,7 +146,8 @@ export function IconDetails({
 	icon,
 	iconData,
 	authorData,
-	allIcons = {},
+	relatedIcons = [],
+	relatedCategories = [],
 	status,
 	statusDisplayName,
 	statusColor,
@@ -1106,63 +1113,38 @@ export function IconDetails({
 					</Card>
 				</div>
 			</div>
-			{iconData.categories &&
-				iconData.categories.length > 0 &&
-				(() => {
-					const MAX_RELATED_ICONS = 16
-					const currentCategories = iconData.categories || []
-
-					const relatedIconsWithScore = Object.entries(allIcons)
-						.map(([name, data]) => {
-							if (name === icon) return null // Exclude the current icon
-
-							const otherCategories = data.categories || []
-							const commonCategories = currentCategories.filter((cat) => otherCategories.includes(cat))
-							const score = commonCategories.length
-
-							return score > 0 ? { name, data, score } : null
-						})
-						.filter((item): item is { name: string; data: Icon; score: number } => item !== null) // Type guard
-						.sort((a, b) => b.score - a.score) // Sort by score DESC
-
-					const topRelatedIcons = relatedIconsWithScore.slice(0, MAX_RELATED_ICONS)
-
-					const viewMoreUrl = `/icons?${currentCategories.map((cat) => `category=${encodeURIComponent(cat)}`).join("&")}`
-
-					if (topRelatedIcons.length === 0) return null
-
-					return (
-						<section className="container mx-auto mt-12" aria-labelledby="related-icons-title">
-							<Card className="bg-background/50 border shadow-lg">
-								<CardHeader>
-									<CardTitle>
-										<h2 id="related-icons-title">Related Icons</h2>
-									</CardTitle>
-									<CardDescription>
-										Other icons from {currentCategories.map((cat) => cat.replace(/-/g, " ")).join(", ")} categories
-									</CardDescription>
-								</CardHeader>
-								<CardContent>
-									<IconsGrid filteredIcons={topRelatedIcons} matchedAliases={{}} />
-									{relatedIconsWithScore.length > MAX_RELATED_ICONS && (
-										<div className="mt-6 text-center">
-											<Button
-												asChild
-												variant="link"
-												className="text-muted-foreground hover:text-primary transition-colors duration-200 hover:no-underline"
-											>
-												<Link href={viewMoreUrl} className="no-underline">
-													View all related icons
-													<ArrowRight className="ml-2 h-4 w-4" />
-												</Link>
-											</Button>
-										</div>
-									)}
-								</CardContent>
-							</Card>
-						</section>
-					)
-				})()}
+			{relatedIcons.length > 0 && (
+				<section className="container mx-auto mt-12" aria-labelledby="related-icons-title">
+					<Card className="bg-background/50 border shadow-lg">
+						<CardHeader>
+							<CardTitle>
+								<h2 id="related-icons-title">Related Icons</h2>
+							</CardTitle>
+							<CardDescription>
+								Other icons from {relatedCategories.map((cat) => cat.replace(/-/g, " ")).join(", ")} categories
+							</CardDescription>
+						</CardHeader>
+						<CardContent>
+							<IconsGrid filteredIcons={relatedIcons} matchedAliases={{}} />
+							<div className="mt-6 text-center">
+								<Button
+									asChild
+									variant="link"
+									className="text-muted-foreground hover:text-primary transition-colors duration-200 hover:no-underline"
+								>
+									<Link
+										href={`/icons?${relatedCategories.map((cat) => `category=${encodeURIComponent(cat)}`).join("&")}`}
+										className="no-underline"
+									>
+										View all related icons
+										<ArrowRight className="ml-2 h-4 w-4" />
+									</Link>
+								</Button>
+							</div>
+						</CardContent>
+					</Card>
+				</section>
+			)}
 		</div>
 	)
 }
