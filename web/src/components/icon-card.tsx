@@ -4,6 +4,7 @@ import Image from "next/image"
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { MagicCard } from "@/components/magicui/magic-card"
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { getExternalIconThemedPreviewUrl } from "@/lib/external-icon-urls"
 import { formatIconName } from "@/lib/utils"
@@ -60,11 +61,18 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 	const imageUrl = useThemedImageUrl(icon, kind)
 
 	return (
-		<MagicCard className="rounded-md shadow-md">
+		<MagicCard className="group/card rounded-md shadow-md">
 			{sourceConfig && (
-				<div className="absolute top-0 right-0 z-10">
-					<Image src={sourceConfig.icon} alt="" width={24} height={24} className="shrink-0" unoptimized />
-				</div>
+				<Tooltip>
+					<TooltipTrigger asChild>
+						<div className="absolute top-0 right-0 z-10 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
+							<Image src={sourceConfig.icon} alt="" width={24} height={24} className="shrink-0" unoptimized />
+						</div>
+					</TooltipTrigger>
+					<TooltipContent side="top">
+						Icon from {sourceConfig.label}
+					</TooltipContent>
+				</Tooltip>
 			)}
 			<Link prefetch={false} href={getLinkHref(kind, name)} className="group flex flex-col items-center p-3 sm:p-4 cursor-pointer">
 				<div className="relative h-16 w-16 mb-2 rounded-lg ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10">
