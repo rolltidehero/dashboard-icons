@@ -5,7 +5,7 @@ import { Footer } from "@/components/footer"
 import { HeaderWrapper } from "@/components/header-wrapper"
 import { LicenseNotice } from "@/components/license-notice"
 import { PostHogProvider } from "@/components/PostHogProvider"
-import { BASE_URL, getDescription, WEB_URL, websiteTitle } from "@/constants"
+import { getDescription, WEB_URL, websiteTitle } from "@/constants"
 import { getTotalIcons } from "@/lib/api"
 import "./globals.css"
 import { Providers } from "@/components/providers"
@@ -22,7 +22,10 @@ export const viewport: Viewport = {
 	minimumScale: 1,
 	maximumScale: 5,
 	userScalable: true,
-	themeColor: "#ffffff",
+	themeColor: [
+		{ media: "(prefers-color-scheme: light)", color: "#ffffff" },
+		{ media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+	],
 	viewportFit: "cover",
 }
 
@@ -31,7 +34,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 	return {
 		metadataBase: new URL(WEB_URL),
-		title: websiteTitle,
+		title: {
+			default: websiteTitle,
+			template: "%s | Dashboard Icons",
+		},
 		description: getDescription(totalIcons),
 		keywords: ["dashboard icons", "service icons", "application icons", "tool icons", "web dashboard", "app directory"],
 		robots: {
@@ -40,9 +46,9 @@ export async function generateMetadata(): Promise<Metadata> {
 			googleBot: "index, follow",
 		},
 		openGraph: {
-			siteName: WEB_URL,
+			siteName: "Dashboard Icons",
 			title: websiteTitle,
-			url: BASE_URL,
+			url: WEB_URL,
 			description: getDescription(totalIcons),
 			images: [
 				{
@@ -56,13 +62,13 @@ export async function generateMetadata(): Promise<Metadata> {
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: WEB_URL,
+			title: websiteTitle,
 			description: getDescription(totalIcons),
 			images: ["/og-image.png"],
 		},
-		applicationName: WEB_URL,
+		applicationName: "Dashboard Icons",
 		alternates: {
-			canonical: BASE_URL,
+			canonical: "/",
 		},
 
 		appleWebApp: {
@@ -80,6 +86,11 @@ export async function generateMetadata(): Promise<Metadata> {
 			apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
 		},
 		manifest: "/site.webmanifest",
+		formatDetection: {
+			email: false,
+			address: false,
+			telephone: false,
+		},
 	}
 }
 

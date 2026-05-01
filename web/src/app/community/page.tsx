@@ -1,7 +1,7 @@
 import type { Metadata } from "next"
 import { Suspense } from "react"
 import { CommunityIconSearch } from "@/components/community-icon-search"
-import { BASE_URL } from "@/constants"
+import { WEB_URL } from "@/constants"
 import { fetchCommunitySubmissions, getCommunitySubmissions } from "@/lib/community"
 
 export const revalidate = 300
@@ -27,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
 			title: "Browse Community Icons | Dashboard Icons",
 			description: `Search and browse through ${totalIcons} community-submitted icons awaiting review and addition to the Dashboard Icons collection.`,
 			type: "website",
-			url: `${BASE_URL}/community`,
+			url: `${WEB_URL}/community`,
 		},
 		twitter: {
 			card: "summary_large_image",
@@ -35,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
 			description: `Search and browse through ${totalIcons} community-submitted icons awaiting review and addition to the Dashboard Icons collection.`,
 		},
 		alternates: {
-			canonical: `${BASE_URL}/community`,
+			canonical: `${WEB_URL}/community`,
 		},
 	}
 }
