@@ -43204,5 +43204,20 @@
             "light": "haiku-wordmark-light",
             "dark": "haiku-wordmark-dark"
         }
+    },
+    "ivanti": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "network",
+            "security"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:20.125Z",
+            "author": {
+                "id": 84699196,
+                "login": "alkanlab"
+            }
+        }
     }
 }
