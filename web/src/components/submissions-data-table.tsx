@@ -68,6 +68,7 @@ interface SubmissionsDataTableProps {
 	isBulkTriggeringWorkflow?: boolean
 	isBulkApproving?: boolean
 	workflowUrl?: string
+	hideStatusHints?: boolean
 }
 
 // Group submissions by status with priority order
@@ -101,6 +102,7 @@ export function SubmissionsDataTable({
 	isBulkTriggeringWorkflow,
 	isBulkApproving,
 	workflowUrl,
+	hideStatusHints,
 }: SubmissionsDataTableProps) {
 	const isMobile = useIsMobile()
 	const [sorting, setSorting] = React.useState<SortingState>([])
@@ -525,7 +527,7 @@ export function SubmissionsDataTable({
 				</div>
 			)}
 
-			{isAdmin && (approvedSubmissions.length > 0 || pendingSubmissions.length > 0) && selectedSubmissionIds.length === 0 && (
+			{isAdmin && !hideStatusHints && (approvedSubmissions.length > 0 || pendingSubmissions.length > 0) && selectedSubmissionIds.length === 0 && (
 				<Alert className="border-amber-500/30 bg-amber-500/5">
 					<Rocket className="h-4 w-4 text-amber-500" />
 					<AlertTitle className="text-amber-600 dark:text-amber-400">
