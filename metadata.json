@@ -43533,5 +43533,23 @@
             "light": "dotnet-light",
             "dark": "dotnet-dark"
         }
+    },
+    "django": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "development"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:13.854Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "django-light",
+            "dark": "django-dark"
+        }
     }
 }
