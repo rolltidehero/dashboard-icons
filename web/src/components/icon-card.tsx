@@ -4,7 +4,6 @@ import Image from "next/image"
 import Link from "next/link"
 import { useTheme } from "next-themes"
 import { MagicCard } from "@/components/magicui/magic-card"
-import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { getExternalIconThemedPreviewUrl } from "@/lib/external-icon-urls"
 import { formatIconName } from "@/lib/utils"
@@ -63,16 +62,10 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 	return (
 		<MagicCard className="group/card rounded-md shadow-md">
 			{sourceConfig && (
-				<Tooltip>
-					<TooltipTrigger asChild>
-						<div className="absolute top-0 right-0 z-10 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200">
-							<Image src={sourceConfig.icon} alt="" width={24} height={24} className="shrink-0" unoptimized />
-						</div>
-					</TooltipTrigger>
-					<TooltipContent side="top">
-						Icon from {sourceConfig.label}
-					</TooltipContent>
-				</Tooltip>
+				<div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-1 px-2 py-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 bg-muted/80 backdrop-blur-sm rounded-b-md">
+					<Image src={sourceConfig.icon} alt="" width={14} height={14} className="shrink-0" unoptimized />
+					<span className="text-[10px] text-muted-foreground truncate">Icon from {sourceConfig.label}</span>
+				</div>
 			)}
 			<Link prefetch={false} href={getLinkHref(kind, name)} className="group flex flex-col items-center p-3 sm:p-4 cursor-pointer">
 				<div className="relative h-16 w-16 mb-2 rounded-lg ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10">
