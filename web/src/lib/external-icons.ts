@@ -1,5 +1,4 @@
 import { unstable_cache } from "next/cache"
-import { cache } from "react"
 import { EXTERNAL_SOURCE_IDS, type ExternalSourceId, getExternalSource } from "@/constants"
 import { createServerPB, getPocketBaseUrl } from "@/lib/pb"
 import type { ExternalIcon, ExternalIconRecord, IconRecord, NativeIconRecord } from "@/types/icons"
@@ -64,7 +63,10 @@ async function fetchAllExternalIcons(): Promise<ExternalIconRecord[]> {
 	return results.flat()
 }
 
-const fetchAllExternalIconsCached = cache(fetchAllExternalIcons)
+const fetchAllExternalIconsCached = unstable_cache(fetchAllExternalIcons, ["external-icons-all", getPocketBaseUrl()], {
+	revalidate: EXTERNAL_REVALIDATE_SECONDS,
+	tags: ["external-icons"],
+})
 
 export async function getExternalIcons(): Promise<ExternalIconRecord[]> {
 	try {

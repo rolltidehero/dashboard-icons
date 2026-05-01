@@ -208,7 +208,8 @@ export function IconDetails({
 
 	const getAvailableFormats = (): string[] => {
 		if (isExternalIcon && externalIcon) {
-			return externalIcon.formats.filter((f) => f !== "ico")
+			const COPY_SUPPORTED = new Set(["svg", "png", "webp"])
+			return externalIcon.formats.filter((f) => COPY_SUPPORTED.has(f))
 		}
 		if (isCommunityIcon) {
 			if (assetUrls.length > 0) {

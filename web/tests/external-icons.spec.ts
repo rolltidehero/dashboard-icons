@@ -14,7 +14,7 @@ test.describe("External selfh.st icons", () => {
 		await page.goto("/icons?source=native")
 		await expect(page.getByRole("button", { name: /dashboard icons/i })).toBeVisible()
 
-		const firstNativeCard = page.locator('a[href^="/icons/"]').filter({ hasNot: page.locator('a[href^="/icons/external/"]') }).first()
+		const firstNativeCard = page.locator('a[href^="/icons/"]:not([href^="/icons/external/"])').first()
 		await expect(firstNativeCard).toBeVisible()
 		await expect(firstNativeCard).not.toHaveAttribute("href", /\/icons\/external\//)
 	})

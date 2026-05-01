@@ -148,6 +148,14 @@ async function main() {
 	const consolidatedRows = readJson<SelfhstConsolidatedRow[]>("data/sources/selfhst/index-consolidated.json")
 	const createdAtBySlug = new Map(indexRows.map((row) => [row.Reference, row.CreatedAt]))
 
+	// Pre-fetch all existing records for this source to avoid N+1 lookups
+	const existingRecords = await pb.collection("external_icons").getFullList({
+		filter: pb.filter("source = {:source}", { source: SOURCE }),
+		fields: "id,slug",
+		requestKey: null,
+	})
+	const existingBySlug = new Map(existingRecords.map((r) => [r.slug as string, r.id as string]))
+
 	let created = 0
 	let updated = 0
 	let skipped = 0
@@ -159,13 +167,9 @@ async function main() {
 			continue
 		}
 
-		const existing = await pb
-			.collection("external_icons")
-			.getFirstListItem(pb.filter("source = {:source} && slug = {:slug}", { source: SOURCE, slug: record.slug }))
-			.catch(() => null)
-
-		if (existing) {
-			await pb.collection("external_icons").update(existing.id, record)
+		const existingId = existingBySlug.get(record.slug)
+		if (existingId) {
+			await pb.collection("external_icons").update(existingId, record)
 			updated++
 		} else {
 			await pb.collection("external_icons").create(record)

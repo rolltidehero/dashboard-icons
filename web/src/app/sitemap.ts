@@ -4,7 +4,7 @@ import { getAllIcons } from "@/lib/api"
 import { resolveExternalIconUrl } from "@/lib/external-icon-urls"
 import { getExternalIcons } from "@/lib/external-icons"
 
-export const dynamic = "force-static"
+export const revalidate = 21600
 
 // Helper function to format dates as YYYY-MM-DD
 const formatDate = (date: Date): string => {
