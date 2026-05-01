@@ -43393,5 +43393,25 @@
             "light": "nebula-light",
             "dark": "nebula-dark"
         }
+    },
+    "salesforce": {
+        "base": "svg",
+        "aliases": [
+            "sfdc"
+        ],
+        "categories": [
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:51:53.312Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "salesforce-light",
+            "dark": "salesforce-dark"
+        }
     }
 }
