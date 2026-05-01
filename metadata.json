@@ -43697,5 +43697,21 @@
             "light": "mermaid-light",
             "dark": "mermaid-dark"
         }
+    },
+    "unpackerr": {
+        "base": "png",
+        "aliases": [],
+        "categories": [
+            "media",
+            "automation",
+            "self-hosted"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:36.793Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        }
     }
 }
