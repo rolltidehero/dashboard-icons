@@ -42711,5 +42711,19 @@
                 "login": "stake25"
             }
         }
+    },
+    "wiz": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "home-automation"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:38.489Z",
+            "author": {
+                "id": 41442410,
+                "login": "rkoktan"
+            }
+        }
     }
 }
