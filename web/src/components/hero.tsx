@@ -236,7 +236,7 @@ export function HeroSection({
 							<HoverCardTrigger asChild>
 								<span className="cursor-default underline decoration-dotted underline-offset-4 decoration-muted-foreground/40 hover:decoration-primary transition-colors">
 									<NumberTicker value={totalIcons} startValue={1000} className="font-bold tracking-tighter text-muted-foreground" /> curated
-									icons
+									icons & logos
 								</span>
 							</HoverCardTrigger>
 							<HoverCardContent className="w-56 p-3" side="bottom">
@@ -271,7 +271,7 @@ export function HeroSection({
 						<SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} totalIcons={totalIcons} />
 						<div className="w-full flex gap-3 md:gap-4 flex-wrap justify-center motion-preset-slide-down motion-duration-500">
 							<Link href="/icons">
-								<InteractiveHoverButton className="rounded-md bg-input/30">Browse icons</InteractiveHoverButton>
+								<InteractiveHoverButton className="rounded-md bg-input/30">Browse icons & logos</InteractiveHoverButton>
 							</Link>
 							<GiveUsAStarButton stars={stars} />
 							<GiveUsMoneyButton />
@@ -311,10 +311,10 @@ export default function GiveUsAStarButton({ stars }: { stars: string | number })
 			<HoverCardContent className="w-96">
 				<div className="grid gap-4">
 					<div className="space-y-2">
-						<h4 className="font-medium leading-none flex items-center gap-2">
+						<p className="font-medium leading-none flex items-center gap-2">
 							<Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
 							What is Starring?
-						</h4>
+						</p>
 						<p className="text-sm text-muted-foreground">
 							Starring a repository on GitHub is like bookmarking it.
 							<br /> It helps you keep track of projects you find interesting and shows appreciation to the project maintainers.
@@ -324,7 +324,7 @@ export default function GiveUsAStarButton({ stars }: { stars: string | number })
 					</div>
 
 					<div className="space-y-2">
-						<h5 className="text-sm font-medium text-muted-foreground">How your star helps us:</h5>
+						<p className="text-sm font-medium text-muted-foreground">How your star helps us:</p>
 						<ul className="text-xs text-muted-foreground/80 space-y-1.5">
 							<li className="flex items-start gap-2">
 								<TrendingUp className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
@@ -386,10 +386,10 @@ export function GiveUsLoveButton() {
 			<HoverCardContent className="w-96">
 				<div className="grid gap-4">
 					<div className="space-y-2">
-						<h4 className="font-medium leading-none flex items-center gap-2">
+						<p className="font-medium leading-none flex items-center gap-2">
 							<Heart className="h-4 w-4 fill-primary text-primary" />
 							Support us without spending
-						</h4>
+						</p>
 						<p className="text-sm text-muted-foreground">We keep our service free through minimal, non-intrusive ads.</p>
 					</div>
 
@@ -407,7 +407,7 @@ export function GiveUsLoveButton() {
 					</div>
 
 					<div className="space-y-2">
-						<h5 className="text-sm font-medium text-muted-foreground">Our Privacy Promise:</h5>
+						<p className="text-sm font-medium text-muted-foreground">Our Privacy Promise:</p>
 						<ul className="text-xs text-muted-foreground/80 space-y-1.5">
 							<li className="flex items-start gap-2">
 								<span className="text-primary font-bold">✓</span>
@@ -427,10 +427,10 @@ export function GiveUsLoveButton() {
 					<Separator className="bg-secondary/20" />
 
 					<div className="space-y-2">
-						<h5 className="text-sm font-medium text-muted-foreground flex items-center gap-2">
+						<p className="text-sm font-medium text-muted-foreground flex items-center gap-2">
 							<Share2 className="h-4 w-4 text-primary" />
 							Spread the word
-						</h5>
+						</p>
 						<p className="text-xs text-muted-foreground/80">
 							Don't want to disable your ad blocker? You can still help us by sharing our website with others who might find it useful.
 						</p>
@@ -459,10 +459,10 @@ export function GiveUsMoneyButton() {
 			<HoverCardContent className="w-96">
 				<div className="grid gap-4">
 					<div className="space-y-2">
-						<h4 className="font-medium leading-none flex items-center gap-2">
+						<p className="font-medium leading-none flex items-center gap-2">
 							<DollarSign className="h-4 w-4 text-yellow-500" />
 							Support our open source work
-						</h4>
+						</p>
 						<p className="text-sm text-muted-foreground">Your donations help us maintain and improve our free, open-source project.</p>
 					</div>
 
@@ -475,7 +475,7 @@ export function GiveUsMoneyButton() {
 					</div>
 
 					<div className="space-y-2">
-						<h5 className="text-sm font-medium text-muted-foreground">Where your money goes:</h5>
+						<p className="text-sm font-medium text-muted-foreground">Where your money goes:</p>
 						<ul className="text-xs text-muted-foreground/80 space-y-1.5">
 							<li className="flex items-start gap-2">
 								<Server className="h-3.5 w-3.5 text-primary flex-shrink-0 mt-0.5" />
@@ -528,7 +528,7 @@ function SearchInput({ searchQuery, setSearchQuery, totalIcons }: SearchInputPro
 				name="q"
 				autoFocus
 				type="search"
-				placeholder={`Search our collection of ${totalIcons} icons by name or category...`}
+				placeholder={`Search our collection of ${totalIcons} icons and logos...`}
 				className="pl-10 h-10 md:h-12 rounded-lg w-full border-border focus:border-primary/20 text-sm md:text-base"
 				value={searchQuery}
 				onChange={(e) => setSearchQuery(e.target.value)}

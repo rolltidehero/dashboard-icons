@@ -208,7 +208,7 @@ export function Header() {
 							<Tooltip>
 								<TooltipTrigger asChild>
 									<Button variant="ghost" className="rounded-lg cursor-pointer transition-all duration-300 hover:ring-2 gap-1.5" asChild>
-										<Link href={REPO_PATH} target="_blank" className="group flex items-center">
+										<Link href={REPO_PATH} target="_blank" rel="noopener noreferrer" className="group flex items-center">
 											<Github className="h-5 w-5 group-hover: transition-all duration-300" />
 											{stars > 0 && <span className="text-xs font-medium text-muted-foreground">{formatStars(stars)}</span>}
 											<span className="sr-only">View on GitHub</span>

@@ -1,5 +1,14 @@
+import type { Metadata } from "next"
 import type React from "react"
 import { cn } from "@/lib/utils"
+
+export const metadata: Metadata = {
+	title: "Dashboard",
+	robots: {
+		index: false,
+		follow: false,
+	},
+}
 
 interface BackgroundWrapperProps {
 	children: React.ReactNode

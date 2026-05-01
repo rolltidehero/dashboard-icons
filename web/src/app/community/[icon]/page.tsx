@@ -63,14 +63,17 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 			? iconData.data.base
 			: (iconData.data as any).mainIconUrl || `${BASE_URL}/svg/${icon}.svg`
 	return {
-		title: `${formattedIconName} Icon (Community) | Dashboard Icons`,
-		description: `Download the ${formattedIconName} community-submitted icon. Part of a collection of ${totalIcons} community icons awaiting review and addition to the Dashboard Icons collection.`,
+		title: `${formattedIconName} Icon & Logo (Community)`,
+		description: `Download the ${formattedIconName} community-submitted icon and logo. Part of a collection of ${totalIcons} community icons and logos awaiting review and addition to the Dashboard Icons collection.`,
 		assets: [mainIconUrl],
 		keywords: [
 			`${formattedIconName} icon`,
+			`${formattedIconName} logo`,
 			`${formattedIconName} icon download`,
+			`${formattedIconName} logo download`,
 			`${formattedIconName} icon community`,
 			`${icon} icon`,
+			`${icon} logo`,
 			"community icon",
 			"user submitted icon",
 			"dashboard icon",
@@ -90,10 +93,10 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 				"max-image-preview": "large",
 			},
 		},
-		abstract: `Download the ${formattedIconName} community-submitted icon. Part of a collection of ${totalIcons} community icons awaiting review and addition to the Dashboard Icons collection.`,
+		abstract: `Download the ${formattedIconName} community-submitted icon and logo. Part of a collection of ${totalIcons} community icons and logos awaiting review and addition to the Dashboard Icons collection.`,
 		openGraph: {
-			title: `${formattedIconName} Icon (Community) | Dashboard Icons`,
-			description: `Download the ${formattedIconName} community-submitted icon. Part of a collection of ${totalIcons} community icons awaiting review and addition to the Dashboard Icons collection.`,
+			title: `${formattedIconName} Icon & Logo (Community)`,
+			description: `Download the ${formattedIconName} community-submitted icon and logo. Part of a collection of ${totalIcons} community icons and logos awaiting review and addition to the Dashboard Icons collection.`,
 			type: "website",
 			url: pageUrl,
 			siteName: "Dashboard Icons",
@@ -110,8 +113,8 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: `${formattedIconName} Icon (Community) | Dashboard Icons`,
-			description: `Download the ${formattedIconName} community-submitted icon. Part of a collection of ${totalIcons} community icons awaiting review and addition to the Dashboard Icons collection.`,
+			title: `${formattedIconName} Icon & Logo (Community)`,
+			description: `Download the ${formattedIconName} community-submitted icon and logo. Part of a collection of ${totalIcons} community icons and logos awaiting review and addition to the Dashboard Icons collection.`,
 			images: [mainIconUrl],
 		},
 		alternates: {
@@ -243,11 +246,16 @@ export default async function CommunityIconPage({ params }: { params: Promise<{ 
 	const statusDisplayName = getStatusDisplayName(status)
 	const statusColor = getStatusColor(status)
 
+	const formattedName = icon
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ")
+
 	return (
 		<>
 			<script
 				type="application/ld+json"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: Needs to be done
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify({
 						"@context": "https://schema.org",
@@ -259,7 +267,22 @@ export default async function CommunityIconPage({ params }: { params: Promise<{ 
 							"@type": "Person",
 							name: authorData.name || authorData.login,
 						},
-					}),
+					}).replace(/</g, "\\u003c"),
+				}}
+			/>
+			<script
+				type="application/ld+json"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify({
+						"@context": "https://schema.org",
+						"@type": "BreadcrumbList",
+						itemListElement: [
+							{ "@type": "ListItem", position: 1, name: "Home", item: WEB_URL },
+							{ "@type": "ListItem", position: 2, name: "Community Icons", item: `${WEB_URL}/community` },
+							{ "@type": "ListItem", position: 3, name: `${formattedName} Icon`, item: `${WEB_URL}/community/${icon}` },
+						],
+					}).replace(/</g, "\\u003c"),
 				}}
 			/>
 			<IconDetails

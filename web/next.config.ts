@@ -1,6 +1,14 @@
 import type { NextConfig } from "next";
 import { withPostHogConfig } from "@posthog/nextjs-config";
 
+const securityHeaders = [
+	{ key: "X-Content-Type-Options", value: "nosniff" },
+	{ key: "X-Frame-Options", value: "DENY" },
+	{ key: "X-XSS-Protection", value: "1; mode=block" },
+	{ key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+	{ key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+];
+
 const nextConfig: NextConfig = {
 	cacheComponents: false,
 	images: {
@@ -44,6 +52,32 @@ const nextConfig: NextConfig = {
 			"./node_modules/typescript/**",
 			"./node_modules/@swc/helpers/**",
 		],
+	},
+	async headers() {
+		return [
+			{
+				source: "/(.*)",
+				headers: securityHeaders,
+			},
+			{
+				source: "/:path*.png",
+				headers: [
+					{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+				],
+			},
+			{
+				source: "/:path*.svg",
+				headers: [
+					{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+				],
+			},
+			{
+				source: "/:path*.webp",
+				headers: [
+					{ key: "Cache-Control", value: "public, max-age=86400, stale-while-revalidate=604800" },
+				],
+			},
+		];
 	},
 };
 

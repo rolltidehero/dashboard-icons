@@ -215,7 +215,7 @@ export function SubmissionDetails({
 							</CardTitle>
 							<div className="flex flex-wrap gap-2">
 								<Button asChild size="sm" variant="outline" className="w-full sm:w-auto">
-									<Link href={`/community/${submission.name}`} target="_blank">
+									<Link href={`/community/${submission.name}`} target="_blank" rel="noopener noreferrer">
 										<Eye className="w-4 h-4 mr-2" />
 										Preview
 									</Link>

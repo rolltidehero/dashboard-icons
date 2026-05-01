@@ -49,9 +49,9 @@ export function useApproveSubmission() {
 				},
 			)
 		},
-		onSuccess: () => {
+		onSuccess: async () => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			void revalidateAllSubmissions()
+			await revalidateAllSubmissions()
 			toast.success("Submission approved")
 		},
 		onError: (error: any) => {
@@ -83,16 +83,21 @@ export function useBulkApproveSubmissions() {
 					),
 				),
 			)
-			const failures = results.filter((r) => r.status === "rejected")
-			if (failures.length > 0) {
-				throw new Error(`${failures.length} of ${submissionIds.length} approvals failed`)
+			const fulfilled = results.filter((r) => r.status === "fulfilled")
+			const rejected = results.filter((r) => r.status === "rejected")
+			if (rejected.length > 0 && fulfilled.length === 0) {
+				throw new Error(`All ${rejected.length} approvals failed`)
 			}
-			return results.filter((r) => r.status === "fulfilled").map((r) => r.value)
+			return { fulfilled: fulfilled.length, rejected: rejected.length, total: results.length }
 		},
-		onSuccess: (_data, variables) => {
+		onSuccess: async (data) => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			void revalidateAllSubmissions()
-			toast.success(`${variables.submissionIds.length} submission${variables.submissionIds.length > 1 ? "s" : ""} approved`)
+			await revalidateAllSubmissions()
+			if (data.rejected > 0) {
+				toast.warning(`${data.fulfilled} of ${data.total} submissions approved, ${data.rejected} failed`)
+			} else {
+				toast.success(`${data.total} submission${data.total > 1 ? "s" : ""} approved`)
+			}
 		},
 		onError: (error: any) => {
 			console.error("Error bulk approving submissions:", error)
@@ -123,9 +128,9 @@ export function useRejectSubmission() {
 				},
 			)
 		},
-		onSuccess: () => {
+		onSuccess: async () => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			void revalidateAllSubmissions()
+			await revalidateAllSubmissions()
 			toast.success("Submission rejected")
 		},
 		onError: (error: any) => {
@@ -241,7 +246,6 @@ export function useAuth() {
 export function useTriggerWorkflow() {
 	return useMutation({
 		mutationFn: async ({ submissionId, dryRun = false }: { submissionId: string; dryRun?: boolean }) => {
-			// Get the auth token from the client-side PocketBase instance
 			const authToken = pb.authStore.token
 			if (!authToken) {
 				throw new Error("Not authenticated")

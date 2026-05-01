@@ -40,18 +40,21 @@ export async function generateMetadata({ params, searchParams }: Props, _parent:
 		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 		.join(" ")
 	return {
-		title: `${formattedIconName} Icon | Dashboard Icons`,
-		description: `Download the ${formattedIconName} icon in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`,
+		title: `${formattedIconName} Icon & Logo`,
+		description: `Download the ${formattedIconName} icon and logo in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons and logos for services, applications and tools, designed specifically for dashboards and app directories.`,
 		assets: [`${BASE_URL}/svg/${icon}.svg`, `${BASE_URL}/png/${icon}.png`, `${BASE_URL}/webp/${icon}.webp`],
 		keywords: [
 			`${formattedIconName} icon`,
+			`${formattedIconName} logo`,
 			`${formattedIconName} icon download`,
+			`${formattedIconName} logo download`,
 			`${formattedIconName} icon svg`,
 			`${formattedIconName} icon png`,
 			`${formattedIconName} icon webp`,
 			`${icon} icon`,
+			`${icon} logo`,
 			"application icon",
-			"tool icon",
+			"service logo",
 			"web dashboard",
 			"app directory",
 		],
@@ -70,10 +73,10 @@ export async function generateMetadata({ params, searchParams }: Props, _parent:
 				"max-image-preview": "large",
 			},
 		},
-		abstract: `Download the ${formattedIconName} icon in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`,
+		abstract: `Download the ${formattedIconName} icon and logo in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons and logos for services, applications and tools, designed specifically for dashboards and app directories.`,
 		openGraph: {
-			title: `${formattedIconName} Icon | Dashboard Icons`,
-			description: `Download the ${formattedIconName} icon in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`,
+			title: `${formattedIconName} Icon & Logo`,
+			description: `Download the ${formattedIconName} icon and logo in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons and logos for services, applications and tools, designed specifically for dashboards and app directories.`,
 			type: "website",
 			url: pageUrl,
 			siteName: "Dashboard Icons",
@@ -104,8 +107,8 @@ export async function generateMetadata({ params, searchParams }: Props, _parent:
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: `${formattedIconName} Icon | Dashboard Icons`,
-			description: `Download the ${formattedIconName} icon in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`,
+			title: `${formattedIconName} Icon & Logo`,
+			description: `Download the ${formattedIconName} icon and logo in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons and logos for services, applications and tools, designed specifically for dashboards and app directories.`,
 			images: [`${BASE_URL}/png/${icon}.png`],
 		},
 		alternates: {
@@ -133,11 +136,16 @@ export default async function IconPage({ params }: { params: Promise<{ icon: str
 	const categories = originalIconData.categories || []
 	const relatedIcons = computeRelatedIcons(icon, categories, iconsData)
 
+	const formattedName = icon
+		.split("-")
+		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(" ")
+
 	return (
 		<>
 			<script
 				type="application/ld+json"
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: Needs to be done
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
 				dangerouslySetInnerHTML={{
 					__html: JSON.stringify({
 						"@context": "https://schema.org",
@@ -149,7 +157,22 @@ export default async function IconPage({ params }: { params: Promise<{ icon: str
 							"@type": "Person",
 							name: authorData.name || authorData.login,
 						},
-					}),
+					}).replace(/</g, "\\u003c"),
+				}}
+			/>
+			<script
+				type="application/ld+json"
+				// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
+				dangerouslySetInnerHTML={{
+					__html: JSON.stringify({
+						"@context": "https://schema.org",
+						"@type": "BreadcrumbList",
+						itemListElement: [
+							{ "@type": "ListItem", position: 1, name: "Home", item: WEB_URL },
+							{ "@type": "ListItem", position: 2, name: "Browse Icons", item: `${WEB_URL}/icons` },
+							{ "@type": "ListItem", position: 3, name: `${formattedName} Icon`, item: `${WEB_URL}/icons/${icon}` },
+						],
+					}).replace(/</g, "\\u003c"),
 				}}
 			/>
 			<IconDetails

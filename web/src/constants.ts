@@ -6,9 +6,9 @@ export const WEB_URL = "https://dashboardicons.com"
 export const REPO_NAME = "homarr-labs/dashboard-icons"
 
 export const getDescription = (totalIcons: number) =>
-	`A collection of ${totalIcons} curated icons for services, applications and tools, designed specifically for dashboards and app directories.`
+	`A collection of ${totalIcons} curated icons and logos for services, applications and tools, designed specifically for dashboards and app directories.`
 
-export const websiteTitle = "Free Dashboard Icons - Download High-Quality UI & App Icons"
+export const websiteTitle = "Free Dashboard Icons & Logos - Download High-Quality Service Icons"
 
 export type ExternalSourceId = "selfhst" | "lobehub"
 

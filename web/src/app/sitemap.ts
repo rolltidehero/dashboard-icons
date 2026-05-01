@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next"
 import { BASE_URL, WEB_URL } from "@/constants"
 import { getAllIcons } from "@/lib/api"
+import { getCommunitySubmissions } from "@/lib/community"
 import { resolveExternalIconUrl } from "@/lib/external-icon-urls"
 import { getExternalIcons } from "@/lib/external-icons"
 
@@ -13,7 +14,7 @@ const formatDate = (date: Date): string => {
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-	const [iconsData, externalIcons] = await Promise.all([getAllIcons(), getExternalIcons()])
+	const [iconsData, externalIcons, communityIcons] = await Promise.all([getAllIcons(), getExternalIcons(), getCommunitySubmissions()])
 	return [
 		{
 			url: WEB_URL,
@@ -28,6 +29,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 1,
 			images: [`${WEB_URL}/icons/icon.png`],
 		},
+		{
+			url: `${WEB_URL}/community`,
+			lastModified: formatDate(new Date()),
+			changeFrequency: "daily",
+			priority: 0.7,
+		},
 		...Object.keys(iconsData).map((iconName) => ({
 			url: `${WEB_URL}/icons/${iconName}`,
 			lastModified: formatDate(new Date(iconsData[iconName].update.timestamp)),
@@ -35,7 +42,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 			priority: 0.8,
 			images: [
 				`${BASE_URL}/png/${iconName}.png`,
-				// SVG is conditional if it exists
 				iconsData[iconName].base === "svg" ? `${BASE_URL}/svg/${iconName}.svg` : null,
 				`${BASE_URL}/webp/${iconName}.webp`,
 			].filter(Boolean) as string[],
@@ -57,5 +63,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 				images,
 			}
 		}),
+		...communityIcons.map((icon) => ({
+			url: `${WEB_URL}/community/${icon.name}`,
+			lastModified: formatDate(new Date(icon.data.update.timestamp)),
+			changeFrequency: "weekly" as const,
+			priority: 0.5,
+		})),
 	]
 }

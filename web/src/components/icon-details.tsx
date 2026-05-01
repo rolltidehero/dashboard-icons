@@ -178,6 +178,8 @@ export function IconDetails({
 	const mainIconUrl = communityData.mainIconUrl || (isCommunityIcon ? iconData.base : null)
 	const assetUrls = communityData.assetUrls || []
 
+	const heroImageUrl = externalPreviewUrl ?? mainIconUrl ?? `${BASE_URL}/${iconData.base}/${icon}.${iconData.base}`
+
 	const shouldShowBaseIcon = () => {
 		if (!iconData.colors) return true
 
@@ -773,18 +775,12 @@ export function IconDetails({
 								<div className="relative">
 									<div className="relative w-32 h-32 rounded-xl ring-1 ring-white/5 dark:ring-white/10 bg-primary/15 dark:bg-secondary/10 overflow-hidden flex items-center justify-center p-3">
 										<Image
-											src={
-												isExternalIcon && externalPreviewUrl
-													? externalPreviewUrl
-													: isCommunityIcon && mainIconUrl
-														? mainIconUrl
-														: `${BASE_URL}/${iconData.base}/${icon}.${iconData.base}`
-											}
+											src={heroImageUrl}
 											priority
 											width={96}
 											height={96}
 											placeholder="empty"
-											alt={`High quality ${formatedIconName} icon in ${iconData.base.toUpperCase()} format`}
+											alt={`${formatedIconName} icon and logo in ${iconData.base.toUpperCase()} format`}
 											className="w-full h-full object-contain"
 										/>
 									</div>

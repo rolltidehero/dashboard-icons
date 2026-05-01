@@ -1,5 +1,16 @@
+import type { Metadata } from "next"
 import type React from "react"
 import { cn } from "@/lib/utils"
+
+export const metadata: Metadata = {
+	title: "Submit an Icon or Logo",
+	description:
+		"Submit your icons and logos to the Dashboard Icons collection. Share your designs with the community and help expand the collection.",
+	robots: {
+		index: true,
+		follow: true,
+	},
+}
 
 interface BackgroundWrapperProps {
 	children: React.ReactNode
