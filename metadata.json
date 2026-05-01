@@ -43235,5 +43235,19 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "dictcc": {
+        "base": "svg",
+        "aliases": [
+            "dict.cc"
+        ],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:28:25.431Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
