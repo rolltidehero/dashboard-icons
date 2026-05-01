@@ -43751,5 +43751,26 @@
             "light": "paramount-plus-light",
             "dark": "paramount-plus-dark"
         }
+    },
+    "golang": {
+        "base": "svg",
+        "aliases": [
+            "go",
+            "go-lang"
+        ],
+        "categories": [
+            "development"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:45.104Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "golang-light",
+            "dark": "golang-dark"
+        }
     }
 }
