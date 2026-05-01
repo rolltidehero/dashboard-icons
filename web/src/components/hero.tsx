@@ -236,7 +236,7 @@ export function HeroSection({
 							<HoverCardTrigger asChild>
 								<span className="cursor-default underline decoration-dotted underline-offset-4 decoration-muted-foreground/40 hover:decoration-primary transition-colors">
 									<NumberTicker value={totalIcons} startValue={1000} className="font-bold tracking-tighter text-muted-foreground" /> curated
-									icons
+									icons & logos
 								</span>
 							</HoverCardTrigger>
 							<HoverCardContent className="w-56 p-3" side="bottom">
@@ -271,7 +271,7 @@ export function HeroSection({
 						<SearchInput searchQuery={searchQuery} setSearchQuery={setSearchQuery} totalIcons={totalIcons} />
 						<div className="w-full flex gap-3 md:gap-4 flex-wrap justify-center motion-preset-slide-down motion-duration-500">
 							<Link href="/icons">
-								<InteractiveHoverButton className="rounded-md bg-input/30">Browse icons</InteractiveHoverButton>
+								<InteractiveHoverButton className="rounded-md bg-input/30">Browse icons & logos</InteractiveHoverButton>
 							</Link>
 							<GiveUsAStarButton stars={stars} />
 							<GiveUsMoneyButton />
@@ -528,7 +528,7 @@ function SearchInput({ searchQuery, setSearchQuery, totalIcons }: SearchInputPro
 				name="q"
 				autoFocus
 				type="search"
-				placeholder={`Search our collection of ${totalIcons} icons by name or category...`}
+				placeholder={`Search our collection of ${totalIcons} icons and logos...`}
 				className="pl-10 h-10 md:h-12 rounded-lg w-full border-border focus:border-primary/20 text-sm md:text-base"
 				value={searchQuery}
 				onChange={(e) => setSearchQuery(e.target.value)}
