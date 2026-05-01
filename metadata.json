@@ -42741,5 +42741,22 @@
                 "login": "vexdev"
             }
         }
+    },
+    "librariarr": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "automation",
+            "entertainment",
+            "media",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:43.965Z",
+            "author": {
+                "id": "yf9qh5rnldwdqzz",
+                "name": "ahembree"
+            }
+        }
     }
 }
