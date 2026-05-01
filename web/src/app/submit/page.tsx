@@ -43,14 +43,14 @@ export default function SubmitPage() {
 					<div className="max-w-2xl mx-auto">
 						<Card>
 							<CardHeader className="text-center space-y-4 px-4 sm:px-6">
-								<CardTitle className="text-2xl sm:text-3xl">Submit an Icon</CardTitle>
+								<h1 className="text-2xl sm:text-3xl leading-none font-semibold">Submit an Icon</h1>
 								<CardDescription className="text-sm sm:text-base">
 									Share your icons with the community and help expand our collection
 								</CardDescription>
 							</CardHeader>
 							<CardContent className="space-y-6 px-4 sm:px-6">
 								<div className="bg-muted/50 p-4 sm:p-6 rounded-lg space-y-4">
-									<h3 className="font-semibold text-base sm:text-lg">Before you start</h3>
+									<h2 className="font-semibold text-base sm:text-lg">Before you start</h2>
 									<ul className="space-y-2 text-sm text-muted-foreground list-disc list-inside">
 										<li>You need to be logged in to submit icons</li>
 										<li>Icons should be in SVG, PNG, or WebP format</li>
