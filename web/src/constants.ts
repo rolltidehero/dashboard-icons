@@ -41,7 +41,7 @@ export const EXTERNAL_SOURCES: Record<ExternalSourceId, ExternalSourceConfig> = 
 	lobehub: {
 		id: "lobehub",
 		label: "LobeHub",
-		icon: "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest/icons/lobehub-color.svg",
+		icon: "https://raw.githubusercontent.com/lobehub/lobe-icons/refs/heads/master/packages/static-png/dark/lobehub-color.png",
 		cdnBase: "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest",
 		website: "https://lobehub.com/icons",
 		authorName: "LobeHub Icons",
