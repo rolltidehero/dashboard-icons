@@ -42815,5 +42815,20 @@
                 "login": "RoyalKiwi"
             }
         }
+    },
+    "vllm": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "development",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:27:01.750Z",
+            "author": {
+                "id": 156610488,
+                "login": "zenonsommers"
+            }
+        }
     }
 }
