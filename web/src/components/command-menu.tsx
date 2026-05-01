@@ -1,14 +1,27 @@
 "use client"
 
-import { Info, Search as SearchIcon, Tag } from "lucide-react"
+import { AnimatePresence, motion } from "framer-motion"
+import { ArrowRight } from "lucide-react"
 import { useRouter } from "next/navigation"
+import posthog from "posthog-js"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command"
 import { EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { useMediaQuery } from "@/hooks/use-media-query"
+import { getIconImageUrl } from "@/lib/icon-url"
 import { filterAndSortIcons, formatIconName } from "@/lib/utils"
 import type { IconWithName } from "@/types/icons"
+
+function normalizeCmdkValue(s: string): string {
+	return s.trim().toLowerCase().replace(/[\s-]/g, " ")
+}
+
+function getItemValue(icon: IconWithName): string {
+	const isExternal = icon.source && icon.source !== "native"
+	const sourceConfig = isExternal ? EXTERNAL_SOURCES[icon.source as ExternalSourceId] : undefined
+	return `${icon.name}${isExternal ? ` ${sourceConfig?.label}` : ""}`
+}
 
 interface CommandMenuProps {
 	icons: IconWithName[]
@@ -21,14 +34,22 @@ export function CommandMenu({ icons, open: externalOpen, onOpenChange: externalO
 	const router = useRouter()
 	const [internalOpen, setInternalOpen] = useState(false)
 	const [query, setQuery] = useState("")
-	const _isDesktop = useMediaQuery("(min-width: 768px)")
+	const [cmdkValue, setCmdkValue] = useState("")
+	const [selectedIcon, setSelectedIcon] = useState<IconWithName | null>(null)
+	const isDesktop = useMediaQuery("(min-width: 768px)")
 
-	// Use either external or internal state for controlling open state
 	const isOpen = externalOpen !== undefined ? externalOpen : internalOpen
 
-	// Wrap setIsOpen in useCallback to fix dependency issue
 	const setIsOpen = useCallback(
 		(value: boolean) => {
+			if (value) {
+				posthog.capture("command_menu_opened")
+			}
+			if (!value) {
+				setQuery("")
+				setSelectedIcon(null)
+				setCmdkValue("")
+			}
 			if (externalOnOpenChange) {
 				externalOnOpenChange(value)
 			} else {
@@ -39,8 +60,32 @@ export function CommandMenu({ icons, open: externalOpen, onOpenChange: externalO
 	)
 
 	const filteredIcons = useMemo(() => filterAndSortIcons({ icons, query, limit: 20 }), [icons, query])
-
 	const totalIcons = icons.length
+
+	const iconsByValue = useMemo(() => {
+		const map = new Map<string, IconWithName>()
+		for (const icon of filteredIcons) {
+			map.set(normalizeCmdkValue(getItemValue(icon)), icon)
+		}
+		return map
+	}, [filteredIcons])
+
+	const handleValueChange = useCallback(
+		(v: string) => {
+			setCmdkValue(v)
+			const icon = iconsByValue.get(normalizeCmdkValue(v))
+			if (icon) setSelectedIcon(icon)
+		},
+		[iconsByValue],
+	)
+
+	useEffect(() => {
+		if (filteredIcons.length > 0) {
+			setSelectedIcon(filteredIcons[0])
+		} else {
+			setSelectedIcon(null)
+		}
+	}, [filteredIcons])
 
 	useEffect(() => {
 		const handleKeyDown = (e: KeyboardEvent) => {
@@ -68,88 +113,117 @@ export function CommandMenu({ icons, open: externalOpen, onOpenChange: externalO
 
 	const handleBrowseAll = () => {
 		setIsOpen(false)
-		router.push("/icons")
+		if (query.trim()) {
+			router.push(`/icons?q=${encodeURIComponent(query)}`)
+		} else {
+			router.push("/icons")
+		}
 	}
 
 	return (
-		<CommandDialog open={isOpen} onOpenChange={setIsOpen} contentClassName="bg-background/90 backdrop-blur-sm border border-border/60">
-			<CommandInput placeholder={`Search our collection of ${totalIcons} icons by name...`} value={query} onValueChange={setQuery} />
-			<CommandList className="max-h-[300px]">
-				{/* Icon Results */}
-				<CommandGroup heading="Icons">
-					{filteredIcons.length > 0 &&
-						filteredIcons.map((icon) => {
-							const { name, data, source } = icon
-							const formatedIconName = formatIconName(name)
-							const hasCategories = data.categories && data.categories.length > 0
+		<CommandDialog
+			open={isOpen}
+			onOpenChange={setIsOpen}
+			commandValue={cmdkValue}
+			onCommandValueChange={handleValueChange}
+			className="max-w-3xl backdrop-blur-md bg-popover/95"
+			showCloseButton={false}
+		>
+			<CommandInput
+				placeholder={`Search ${totalIcons.toLocaleString()} icons...`}
+				value={query}
+				onValueChange={setQuery}
+				className="text-base h-12"
+			/>
+
+			<div className="flex min-h-0">
+				<CommandList className="max-h-[min(480px,60vh)] flex-1">
+					<CommandGroup>
+						{filteredIcons.map((icon) => {
+							const { name, source } = icon
+							const formattedIconName = formatIconName(name)
 							const isExternal = source && source !== "native"
 							const sourceConfig = isExternal ? EXTERNAL_SOURCES[source as ExternalSourceId] : undefined
 
 							return (
 								<CommandItem
 									key={`${source || "native"}-${name}`}
-									value={`${name}${isExternal ? ` ${sourceConfig?.label}` : ""}`}
+									value={getItemValue(icon)}
 									onSelect={() => handleSelect(icon)}
-									className="flex items-center gap-2 cursor-pointer py-1.5"
+									className="gap-3 py-3 px-3 text-base cursor-pointer"
+									onMouseEnter={() => setSelectedIcon(icon)}
 								>
-									<div className="flex-shrink-0 h-5 w-5 relative">
-										<div className="h-full w-full bg-primary/10 dark:bg-primary/20 rounded-md flex items-center justify-center">
-											<span className="text-[9px] font-medium text-primary dark:text-primary-foreground">
-												{name.substring(0, 2).toUpperCase()}
-											</span>
-										</div>
-									</div>
-									<span className="flex-grow capitalize font-medium text-sm">{formatedIconName}</span>
+									<span className="flex-grow capitalize font-medium truncate">{formattedIconName}</span>
 									{isExternal && sourceConfig && (
-										<Badge variant="outline" className="text-[10px] px-1.5 h-4 gap-0.5 flex-shrink-0">
-											<img src={sourceConfig.icon} alt="" width={10} height={10} className="shrink-0" />
+										<Badge variant="outline" className="text-xs px-2 h-6 gap-1.5 shrink-0">
+											<img src={sourceConfig.icon} alt="" width={12} height={12} className="shrink-0" />
 											{sourceConfig.label}
 										</Badge>
-									)}
-									{hasCategories && (
-										<div className="flex gap-1 items-center flex-shrink-0 overflow-hidden max-w-[30%]">
-											<Badge
-												key={data.categories[0]}
-												variant="secondary"
-												className="text-xs font-normal inline-flex items-center gap-1 whitespace-nowrap max-w-[120px] overflow-hidden"
-											>
-												<Tag size={8} className="mr-1 flex-shrink-0" />
-												<span className="truncate">{data.categories[0].replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase())}</span>
-											</Badge>
-											{data.categories.length > 1 && (
-												<Badge variant="outline" className="text-xs flex-shrink-0">
-													+{data.categories.length - 1}
-												</Badge>
-											)}
-										</div>
 									)}
 								</CommandItem>
 							)
 						})}
-				</CommandGroup>
-				<CommandEmpty>
-					{/* Minimal empty state */}
-					<div className="py-2 px-2 text-center text-xs text-muted-foreground flex items-center justify-center gap-1.5">
-						<Info className="h-3.5 w-3.5 text-destructive" /> {/* Smaller red icon */}
-						<span>No matching icons found.</span>
-					</div>
-				</CommandEmpty>
-			</CommandList>
+					</CommandGroup>
 
-			{/* Separator and Browse section - Styled div outside CommandList */}
-			<div className="border-t border-border/40 pt-1 mt-1 px-1 pb-1">
+					<CommandEmpty>
+						<div className="flex flex-col items-center py-10 text-center">
+							<p className="text-base font-medium">No icons match "{query}"</p>
+							<p className="text-sm text-muted-foreground mt-2">Try a shorter name or check for typos</p>
+						</div>
+					</CommandEmpty>
+				</CommandList>
+
+				{isDesktop && selectedIcon && (
+					<div className="w-56 border-l border-border flex flex-col items-center justify-center p-6">
+						<AnimatePresence mode="wait">
+							<motion.div
+								key={`${selectedIcon.source || "native"}-${selectedIcon.name}`}
+								className="flex flex-col items-center gap-3"
+								initial={{ opacity: 0, scale: 0.92 }}
+								animate={{ opacity: 1, scale: 1 }}
+								exit={{ opacity: 0, scale: 0.92 }}
+								transition={{ duration: 0.1 }}
+							>
+								<div className="h-24 w-24 rounded-xl bg-muted ring-1 ring-border flex items-center justify-center overflow-hidden">
+									<img src={getIconImageUrl(selectedIcon)} alt={selectedIcon.name} width={64} height={64} className="object-contain" />
+								</div>
+								<span className="text-sm font-medium text-center capitalize truncate max-w-full">{formatIconName(selectedIcon.name)}</span>
+								{selectedIcon.source && selectedIcon.source !== "native" && (
+									<span className="text-xs text-muted-foreground">{EXTERNAL_SOURCES[selectedIcon.source as ExternalSourceId]?.label}</span>
+								)}
+							</motion.div>
+						</AnimatePresence>
+					</div>
+				)}
+			</div>
+
+			<div className="flex items-center justify-between border-t border-border px-5 py-3">
 				<button
 					type="button"
-					className="flex items-center gap-2 cursor-pointer rounded-sm px-2 py-1 text-sm outline-none hover:bg-accent hover:text-accent-foreground focus-visible:bg-accent focus-visible:text-accent-foreground w-full"
+					className="flex items-center gap-2 cursor-pointer rounded-md px-3 py-2 outline-none transition-colors duration-150 hover:bg-accent focus-visible:bg-accent group"
 					onClick={handleBrowseAll}
 				>
-					<div className="flex-shrink-0 h-5 w-5 relative">
-						<div className="h-full w-full bg-primary/80 dark:bg-primary/40 rounded-md flex items-center justify-center">
-							<SearchIcon className="text-primary-foreground dark:text-primary-200 w-3.5 h-3.5" />
-						</div>
-					</div>
-					<span className="flex-grow text-sm">Browse all icons – {totalIcons} available</span>
+					<span className="font-medium text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-150">
+						{query.trim() ? `Search "${query}" in all icons` : `Browse all ${totalIcons.toLocaleString()} icons`}
+					</span>
+					<ArrowRight className="h-4 w-4 text-muted-foreground/50 group-hover:text-foreground transition-colors duration-150" />
 				</button>
+				{isDesktop && (
+					<div className="flex items-center gap-4 text-xs text-muted-foreground">
+						<span className="flex items-center gap-1.5">
+							<kbd className="inline-flex h-5 items-center rounded border border-border bg-muted px-1.5 font-mono text-xs">↑↓</kbd>
+							navigate
+						</span>
+						<span className="flex items-center gap-1.5">
+							<kbd className="inline-flex h-5 items-center rounded border border-border bg-muted px-1.5 font-mono text-xs">↵</kbd>
+							open
+						</span>
+						<span className="flex items-center gap-1.5">
+							<kbd className="inline-flex h-5 items-center rounded border border-border bg-muted px-1.5 font-mono text-xs">esc</kbd>
+							close
+						</span>
+					</div>
+				)}
 			</div>
 		</CommandDialog>
 	)
