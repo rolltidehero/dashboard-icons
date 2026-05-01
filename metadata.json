@@ -43372,5 +43372,26 @@
             "light": "neovim-light",
             "dark": "neovim-dark"
         }
+    },
+    "nebula": {
+        "base": "svg",
+        "aliases": [
+            "nebula.tv"
+        ],
+        "categories": [
+            "media",
+            "streaming"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:51:50.293Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "nebula-light",
+            "dark": "nebula-dark"
+        }
     }
 }
