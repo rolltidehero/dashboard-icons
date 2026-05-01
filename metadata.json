@@ -43551,5 +43551,24 @@
             "light": "django-light",
             "dark": "django-dark"
         }
+    },
+    "sonos": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "media",
+            "home-automation"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:16.856Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "sonos-light",
+            "dark": "sonos-dark"
+        }
     }
 }
