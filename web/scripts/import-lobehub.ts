@@ -30,9 +30,36 @@ const SOURCE = "lobehub"
 const ATTRIBUTION = "Icons by LobeHub (MIT)"
 const LICENSE = "MIT"
 const SOURCE_URL = "https://lobehub.com/icons"
-const CDN_BASE = "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest"
-const ICONS_PREFIX = "packages/static-svg/icons/"
 const LOCAL_MANIFEST = "data/sources/lobehub/icons.json"
+
+const CDN = {
+	svg: "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-svg@latest",
+	png: "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-png@latest",
+	webp: "https://cdn.jsdelivr.net/npm/@lobehub/icons-static-webp@latest",
+} as const
+
+const PREFIXES = {
+	svg: "packages/static-svg/icons/",
+	pngLight: "packages/static-png/light/",
+	pngDark: "packages/static-png/dark/",
+	webpLight: "packages/static-webp/light/",
+	webpDark: "packages/static-webp/dark/",
+	srcMd: "src/",
+} as const
+
+const SYNONYMS: Record<string, string[]> = {
+	openai: ["gpt", "chatgpt", "dall-e", "gpt-4", "gpt-4o", "gpt-5"],
+	anthropic: ["claude"],
+	google: ["gemini", "bard"],
+	meta: ["llama"],
+	"deepseek": ["deepseek-coder", "deepseek-v2", "deepseek-v3"],
+	mistral: ["mixtral"],
+	stability: ["stable-diffusion", "sdxl"],
+	midjourney: ["mj"],
+	huggingface: ["hf", "hugging-face"],
+	perplexity: ["pplx"],
+	cohere: ["command-r"],
+}
 
 function slugToName(slug: string): string {
 	return slug
@@ -45,23 +72,188 @@ function getBaseSlug(slug: string): string {
 	return slug.replace(/-(color|text|avatar|combine)$/, "")
 }
 
-function buildUrlTemplates() {
+function extractSlugsFromPrefix(tree: GitHubTreeEntry[], prefix: string, ext: string): Set<string> {
+	const slugs = new Set<string>()
+	for (const entry of tree) {
+		if (entry.type === "blob" && entry.path.startsWith(prefix) && entry.path.endsWith(ext)) {
+			slugs.add(path.basename(entry.path, ext))
+		}
+	}
+	return slugs
+}
+
+type AssetIndex = {
+	svgSlugs: Set<string>
+	pngLightSlugs: Set<string>
+	pngDarkSlugs: Set<string>
+	webpLightSlugs: Set<string>
+	webpDarkSlugs: Set<string>
+}
+
+function indexTree(tree: GitHubTreeEntry[]): AssetIndex {
 	return {
-		svg: `${CDN_BASE}/icons/{slug}.svg`,
+		svgSlugs: extractSlugsFromPrefix(tree, PREFIXES.svg, ".svg"),
+		pngLightSlugs: extractSlugsFromPrefix(tree, PREFIXES.pngLight, ".png"),
+		pngDarkSlugs: extractSlugsFromPrefix(tree, PREFIXES.pngDark, ".png"),
+		webpLightSlugs: extractSlugsFromPrefix(tree, PREFIXES.webpLight, ".webp"),
+		webpDarkSlugs: extractSlugsFromPrefix(tree, PREFIXES.webpDark, ".webp"),
 	}
 }
 
-function extractSlugsFromTree(tree: GitHubTreeEntry[]): string[] {
-	return tree
-		.filter((entry) => entry.type === "blob" && entry.path.startsWith(ICONS_PREFIX) && entry.path.endsWith(".svg"))
-		.map((entry) => path.basename(entry.path, ".svg"))
+type BrandMeta = { group: string; title: string }
+
+function parseFrontmatter(content: string): Record<string, string> {
+	const match = content.match(/^---\n([\s\S]*?)\n---/)
+	if (!match) return {}
+	const pairs: Record<string, string> = {}
+	for (const line of match[1].split("\n")) {
+		const idx = line.indexOf(":")
+		if (idx > 0) {
+			pairs[line.slice(0, idx).trim()] = line.slice(idx + 1).trim()
+		}
+	}
+	return pairs
 }
 
-function extractSlugsFromContents(entries: GitHubContentsEntry[]): string[] {
-	return entries.filter((entry) => entry.type === "file" && entry.name.endsWith(".svg")).map((entry) => path.basename(entry.name, ".svg"))
+async function fetchBrandMetadata(tree: GitHubTreeEntry[], headers: Record<string, string>): Promise<Map<string, BrandMeta>> {
+	const mdPaths = tree
+		.filter((e) => e.type === "blob" && e.path.startsWith(PREFIXES.srcMd) && e.path.endsWith("/index.md"))
+		.map((e) => e.path)
+
+	const meta = new Map<string, BrandMeta>()
+	const batchSize = 20
+	for (let i = 0; i < mdPaths.length; i += batchSize) {
+		const batch = mdPaths.slice(i, i + batchSize)
+		const results = await Promise.all(
+			batch.map(async (p) => {
+				const url = `https://raw.githubusercontent.com/lobehub/lobe-icons/master/${p}`
+				try {
+					const res = await fetch(url, { headers: { Accept: "text/plain" } })
+					if (!res.ok) return null
+					const text = await res.text()
+					const fm = parseFrontmatter(text)
+					const folder = p.split("/")[1]
+					if (folder && fm.group) {
+						return { folder, group: fm.group, title: fm.title || folder }
+					}
+				} catch { /* skip */ }
+				return null
+			}),
+		)
+		for (const r of results) {
+			if (r) meta.set(r.folder.toLowerCase(), r)
+		}
+	}
+
+	return meta
 }
 
-async function fetchSlugsFromGitHub(): Promise<string[]> {
+function buildSlugToBrand(svgSlugs: Set<string>, brandMeta: Map<string, BrandMeta>): Map<string, BrandMeta> {
+	const result = new Map<string, BrandMeta>()
+	const brandKeys = Array.from(brandMeta.keys())
+
+	for (const slug of svgSlugs) {
+		const base = getBaseSlug(slug)
+		const match = brandKeys.find((k) => k === base || k === slug)
+		if (match) {
+			result.set(slug, brandMeta.get(match)!)
+		}
+	}
+	return result
+}
+
+function buildUrlTemplates(slug: string, index: AssetIndex) {
+	const templates: Record<string, string> = {
+		svg: `${CDN.svg}/icons/{slug}.svg`,
+	}
+
+	const hasPngLight = index.pngLightSlugs.has(slug)
+	const hasPngDark = index.pngDarkSlugs.has(slug)
+	if (hasPngLight) {
+		templates.png = `${CDN.png}/light/{slug}.png`
+		templates.png_light = `${CDN.png}/light/{slug}.png`
+	}
+	if (hasPngDark) {
+		templates.png_dark = `${CDN.png}/dark/{slug}.png`
+		if (!hasPngLight) templates.png = `${CDN.png}/dark/{slug}.png`
+	}
+
+	const hasWebpLight = index.webpLightSlugs.has(slug)
+	const hasWebpDark = index.webpDarkSlugs.has(slug)
+	if (hasWebpLight) {
+		templates.webp = `${CDN.webp}/light/{slug}.webp`
+		templates.webp_light = `${CDN.webp}/light/{slug}.webp`
+	}
+	if (hasWebpDark) {
+		templates.webp_dark = `${CDN.webp}/dark/{slug}.webp`
+		if (!hasWebpLight) templates.webp = `${CDN.webp}/dark/{slug}.webp`
+	}
+
+	return templates
+}
+
+function getFormats(slug: string, index: AssetIndex): string[] {
+	const formats = ["svg"]
+	if (index.pngLightSlugs.has(slug) || index.pngDarkSlugs.has(slug)) formats.push("png")
+	if (index.webpLightSlugs.has(slug) || index.webpDarkSlugs.has(slug)) formats.push("webp")
+	return formats
+}
+
+function getVariants(slug: string, index: AssetIndex) {
+	return {
+		light: index.pngLightSlugs.has(slug) || index.webpLightSlugs.has(slug),
+		dark: index.pngDarkSlugs.has(slug) || index.webpDarkSlugs.has(slug),
+	}
+}
+
+function buildAliasMap(slugs: Set<string>): Map<string, string[]> {
+	const groups = new Map<string, string[]>()
+	for (const slug of slugs) {
+		const base = getBaseSlug(slug)
+		if (!groups.has(base)) groups.set(base, [])
+		groups.get(base)!.push(slug)
+	}
+
+	const aliases = new Map<string, string[]>()
+	for (const [base, members] of groups) {
+		const synonyms = SYNONYMS[base] ?? []
+		for (const slug of members) {
+			aliases.set(slug, [...members.filter((m) => m !== slug), ...synonyms])
+		}
+	}
+	return aliases
+}
+
+function toRecord(
+	slug: string,
+	aliases: string[],
+	index: AssetIndex,
+	brandMeta: Map<string, BrandMeta>,
+	slugBrandMap: Map<string, BrandMeta>,
+) {
+	const brand = slugBrandMap.get(slug)
+	const categories = ["ai"]
+	if (brand?.group) categories.push(brand.group.toLowerCase())
+
+	const name = brand?.title ? `${brand.title}${slug.endsWith("-color") ? " Color" : slug.endsWith("-text") ? " Text" : slug.endsWith("-avatar") ? " Avatar" : slug.endsWith("-combine") ? " Combine" : slug !== brand.title.toLowerCase().replace(/\s+/g, "-") ? ` (${slugToName(slug)})` : ""}` : slugToName(slug)
+
+	return {
+		source: SOURCE,
+		slug,
+		name: name.length > 128 ? slugToName(slug) : name,
+		aliases,
+		categories,
+		formats: getFormats(slug, index),
+		variants: getVariants(slug, index),
+		url_templates: buildUrlTemplates(slug, index),
+		license: LICENSE,
+		attribution: ATTRIBUTION,
+		source_url: SOURCE_URL,
+		updated_at_source: null,
+	}
+}
+
+async function fetchTree(): Promise<GitHubTreeResponse> {
 	const treeUrl = "https://api.github.com/repos/lobehub/lobe-icons/git/trees/master?recursive=1"
 	const headers: Record<string, string> = {
 		Accept: "application/vnd.github.v3+json",
@@ -79,11 +271,10 @@ async function fetchSlugsFromGitHub(): Promise<string[]> {
 	if (data.truncated) {
 		console.warn("Warning: GitHub tree response was truncated, some icons may be missing")
 	}
-
-	return extractSlugsFromTree(data.tree)
+	return data
 }
 
-function readLocalManifest(): string[] | null {
+function readLocalTree(): GitHubTreeEntry[] | null {
 	const filePath = path.join(process.cwd(), LOCAL_MANIFEST)
 	if (!fs.existsSync(filePath)) return null
 
@@ -91,51 +282,14 @@ function readLocalManifest(): string[] | null {
 	const data = JSON.parse(raw)
 
 	if (Array.isArray(data) && data.length > 0 && typeof data[0] === "object" && "name" in data[0]) {
-		return extractSlugsFromContents(data as GitHubContentsEntry[])
+		return null
 	}
 
 	if (typeof data === "object" && !Array.isArray(data) && "tree" in data) {
-		return extractSlugsFromTree((data as GitHubTreeResponse).tree)
+		return (data as GitHubTreeResponse).tree
 	}
 
 	return null
-}
-
-function buildAliasMap(slugs: string[]): Map<string, string[]> {
-	const groups = new Map<string, string[]>()
-	for (const slug of slugs) {
-		const base = getBaseSlug(slug)
-		if (!groups.has(base)) groups.set(base, [])
-		groups.get(base)!.push(slug)
-	}
-
-	const aliases = new Map<string, string[]>()
-	for (const [_base, members] of groups) {
-		for (const slug of members) {
-			aliases.set(
-				slug,
-				members.filter((m) => m !== slug),
-			)
-		}
-	}
-	return aliases
-}
-
-function toRecord(slug: string, aliases: string[]) {
-	return {
-		source: SOURCE,
-		slug,
-		name: slugToName(slug),
-		aliases,
-		categories: ["ai"],
-		formats: ["svg"],
-		variants: { light: false, dark: false },
-		url_templates: buildUrlTemplates(),
-		license: LICENSE,
-		attribution: ATTRIBUTION,
-		source_url: SOURCE_URL,
-		updated_at_source: null,
-	}
 }
 
 async function main() {
@@ -149,15 +303,27 @@ async function main() {
 	const pb = new PocketBase(pbUrl)
 	await pb.collection("_superusers").authWithPassword(adminEmail, adminPassword)
 
-	let slugs = readLocalManifest()
-	if (!slugs) {
+	let tree = readLocalTree()
+	if (!tree) {
 		console.log("No local manifest found, fetching from GitHub API...")
-		slugs = await fetchSlugsFromGitHub()
+		const treeResponse = await fetchTree()
+		tree = treeResponse.tree
 	}
 
-	console.log(`Found ${slugs.length} LobeHub icons`)
+	const index = indexTree(tree)
+	console.log(`Found: ${index.svgSlugs.size} SVGs, ${index.pngLightSlugs.size} PNG light, ${index.pngDarkSlugs.size} PNG dark, ${index.webpLightSlugs.size} WebP light, ${index.webpDarkSlugs.size} WebP dark`)
 
-	const aliasMap = buildAliasMap(slugs)
+	const headers: Record<string, string> = {}
+	if (process.env.GH_TOKEN || process.env.GITHUB_TOKEN) {
+		headers.Authorization = `Bearer ${process.env.GH_TOKEN || process.env.GITHUB_TOKEN}`
+	}
+
+	console.log("Fetching brand metadata from src/*/index.md...")
+	const brandMeta = await fetchBrandMetadata(tree, headers)
+	console.log(`Parsed metadata for ${brandMeta.size} brands`)
+
+	const slugBrandMap = buildSlugToBrand(index.svgSlugs, brandMeta)
+	const aliasMap = buildAliasMap(index.svgSlugs)
 
 	const existingRecords = await pb.collection("external_icons").getFullList({
 		filter: pb.filter("source = {:source}", { source: SOURCE }),
@@ -169,8 +335,8 @@ async function main() {
 	let created = 0
 	let updated = 0
 
-	for (const slug of slugs) {
-		const record = toRecord(slug, aliasMap.get(slug) ?? [])
+	for (const slug of index.svgSlugs) {
+		const record = toRecord(slug, aliasMap.get(slug) ?? [], index, brandMeta, slugBrandMap)
 		const existingId = existingBySlug.get(slug)
 
 		if (existingId) {
