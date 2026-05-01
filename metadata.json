@@ -43219,5 +43219,21 @@
                 "login": "alkanlab"
             }
         }
+    },
+    "wolframalpha": {
+        "base": "svg",
+        "aliases": [
+            "wolfram|alpha"
+        ],
+        "categories": [
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:22.853Z",
+            "author": {
+                "id": 40307321,
+                "login": "sixsixfive"
+            }
+        }
     }
 }
