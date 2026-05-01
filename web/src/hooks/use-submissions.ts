@@ -49,9 +49,9 @@ export function useApproveSubmission() {
 				},
 			)
 		},
-		onSuccess: () => {
+		onSuccess: async () => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			revalidateAllSubmissions()
+			await revalidateAllSubmissions()
 			toast.success("Submission approved")
 		},
 		onError: (error: any) => {
@@ -70,7 +70,7 @@ export function useBulkApproveSubmissions() {
 
 	return useMutation({
 		mutationFn: async ({ submissionIds, adminComment }: { submissionIds: string[]; adminComment?: string }) => {
-			const results = await Promise.all(
+			const results = await Promise.allSettled(
 				submissionIds.map((submissionId) =>
 					pb.collection("submissions").update(
 						submissionId,
@@ -83,12 +83,21 @@ export function useBulkApproveSubmissions() {
 					),
 				),
 			)
-			return results
+			const fulfilled = results.filter((r) => r.status === "fulfilled")
+			const rejected = results.filter((r) => r.status === "rejected")
+			if (rejected.length > 0 && fulfilled.length === 0) {
+				throw new Error(`All ${rejected.length} approvals failed`)
+			}
+			return { fulfilled: fulfilled.length, rejected: rejected.length, total: results.length }
 		},
-		onSuccess: (_data, variables) => {
+		onSuccess: async (data) => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			revalidateAllSubmissions()
-			toast.success(`${variables.submissionIds.length} submission${variables.submissionIds.length > 1 ? "s" : ""} approved`)
+			await revalidateAllSubmissions()
+			if (data.rejected > 0) {
+				toast.warning(`${data.fulfilled} of ${data.total} submissions approved, ${data.rejected} failed`)
+			} else {
+				toast.success(`${data.total} submission${data.total > 1 ? "s" : ""} approved`)
+			}
 		},
 		onError: (error: any) => {
 			console.error("Error bulk approving submissions:", error)
@@ -119,9 +128,9 @@ export function useRejectSubmission() {
 				},
 			)
 		},
-		onSuccess: () => {
+		onSuccess: async () => {
 			queryClient.invalidateQueries({ queryKey: submissionKeys.lists() })
-			revalidateAllSubmissions()
+			await revalidateAllSubmissions()
 			toast.success("Submission rejected")
 		},
 		onError: (error: any) => {
