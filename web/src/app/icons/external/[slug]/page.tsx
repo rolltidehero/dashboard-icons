@@ -37,10 +37,10 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 	const imageType = previewUrl.endsWith(".svg") ? "image/svg+xml" : previewUrl.endsWith(".webp") ? "image/webp" : "image/png"
 
 	return {
-		title: `${formattedName} Icon (${sourceConfig.label})`,
-		description: `Download the ${formattedName} icon from ${sourceConfig.label} via Dashboard Icons. Licensed under ${sourceConfig.license}.`,
+		title: `${formattedName} Icon & Logo (${sourceConfig.label})`,
+		description: `Download the ${formattedName} icon and logo from ${sourceConfig.label} via Dashboard Icons. Licensed under ${sourceConfig.license}.`,
 		assets: icon.external.formats.map((format) => resolveExternalIconUrl(icon.external, format)),
-		keywords: [`${formattedName} icon`, `${slug} icon`, `${sourceConfig.label} icons`, "dashboard icon", "icon download"],
+		keywords: [`${formattedName} icon`, `${formattedName} logo`, `${slug} icon`, `${slug} logo`, `${sourceConfig.label} icons`, "dashboard icon", "logo download", "icon download"],
 		icons: {
 			icon: previewUrl,
 		},
@@ -57,8 +57,8 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 			},
 		},
 		openGraph: {
-			title: `${formattedName} Icon (${sourceConfig.label})`,
-			description: `Download the ${formattedName} icon from ${sourceConfig.label}. Licensed under ${sourceConfig.license}.`,
+			title: `${formattedName} Icon & Logo (${sourceConfig.label})`,
+			description: `Download the ${formattedName} icon and logo from ${sourceConfig.label}. Licensed under ${sourceConfig.license}.`,
 			type: "website",
 			url: pageUrl,
 			siteName: "Dashboard Icons",
@@ -75,8 +75,8 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 		},
 		twitter: {
 			card: "summary_large_image",
-			title: `${formattedName} Icon (${sourceConfig.label})`,
-			description: `Download the ${formattedName} icon from ${sourceConfig.label} via Dashboard Icons.`,
+			title: `${formattedName} Icon & Logo (${sourceConfig.label})`,
+			description: `Download the ${formattedName} icon and logo from ${sourceConfig.label} via Dashboard Icons.`,
 			images: [previewUrl],
 		},
 		alternates: {
