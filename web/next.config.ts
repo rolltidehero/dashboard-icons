@@ -13,6 +13,13 @@ const nextConfig: NextConfig = {
 				pathname: "/gh/selfhst/icons/**",
 				search: "",
 			},
+			{
+				protocol: "https",
+				hostname: "cdn.jsdelivr.net",
+				port: "",
+				pathname: "/npm/@lobehub/icons-static-svg@latest/**",
+				search: "",
+			},
 		],
 	},
 	output: "standalone",

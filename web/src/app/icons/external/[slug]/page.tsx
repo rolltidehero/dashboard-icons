@@ -12,9 +12,14 @@ export const revalidate = false
 
 export async function generateStaticParams() {
 	const icons = await getExternalIcons()
-	return icons.map((icon) => ({
-		slug: icon.slug,
-	}))
+	const seen = new Set<string>()
+	return icons
+		.filter((icon) => {
+			if (seen.has(icon.slug)) return false
+			seen.add(icon.slug)
+			return true
+		})
+		.map((icon) => ({ slug: icon.slug }))
 }
 
 type Props = {
