@@ -42694,5 +42694,22 @@
                 "login": "mains-hum"
             }
         }
+    },
+    "angel-studios": {
+        "base": "svg",
+        "aliases": [
+            "Angel"
+        ],
+        "categories": [
+            "entertainment",
+            "media"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:35.852Z",
+            "author": {
+                "id": 25753452,
+                "login": "stake25"
+            }
+        }
     }
 }
