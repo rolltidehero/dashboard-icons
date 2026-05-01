@@ -43493,5 +43493,23 @@
             "light": "vim-light",
             "dark": "vim-dark"
         }
+    },
+    "stripe": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "finance"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:07.775Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "stripe-light",
+            "dark": "stripe-dark"
+        }
     }
 }
