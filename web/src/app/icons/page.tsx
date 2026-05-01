@@ -2,10 +2,11 @@ import type { Metadata } from "next"
 import { IconSearch } from "@/components/icon-search"
 import { BASE_URL } from "@/constants"
 import { getIconsArray } from "@/lib/api"
+import { getExternalIcons } from "@/lib/external-icons"
 
 export async function generateMetadata(): Promise<Metadata> {
-	const icons = await getIconsArray()
-	const totalIcons = icons.length
+	const [nativeIcons, externalIcons] = await Promise.all([getIconsArray(), getExternalIcons()])
+	const totalIcons = nativeIcons.length + externalIcons.length
 
 	return {
 		title: "Browse Icons | Free Dashboard Icons",
@@ -38,15 +39,19 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export const dynamic = "force-static"
+export const revalidate = 21600
 
 export default async function IconsPage() {
-	const icons = await getIconsArray()
+	const [nativeIcons, externalIcons] = await Promise.all([getIconsArray(), getExternalIcons()])
+	const icons = [...nativeIcons, ...externalIcons]
 	return (
 		<div className="isolate overflow-hidden p-2 mx-auto max-w-7xl">
 			<div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
 				<div>
 					<h1 className="text-3xl font-bold">Browse icons</h1>
-					<p className="text-muted-foreground mb-1">Search through our collection of {icons.length} beautiful icons.</p>
+					<p className="text-muted-foreground mb-1">
+						Search through {icons.length} icons from Dashboard Icons and selfh.st. {nativeIcons.length} are native Dashboard Icons.
+					</p>
 				</div>
 			</div>
 			<IconSearch icons={icons} />

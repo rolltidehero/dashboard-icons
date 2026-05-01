@@ -1,6 +1,6 @@
 import { METADATA_URL } from "@/constants"
 import { ApiError } from "@/lib/errors"
-import type { AuthorData, IconFile, IconWithName } from "@/types/icons"
+import type { AuthorData, IconFile, IconWithName, NativeIconRecord } from "@/types/icons"
 
 /**
  * Fetches all icon data from the metadata.json file
@@ -40,13 +40,15 @@ export const getIconNames = async (): Promise<string[]> => {
 /**
  * Converts icon data to an array format for easier rendering
  */
-export async function getIconsArray(): Promise<IconWithName[]> {
+export async function getIconsArray(): Promise<NativeIconRecord[]> {
 	try {
 		const iconsData = await getAllIcons()
 
 		return Object.entries(iconsData)
 			.map(([name, data]) => ({
 				name,
+				slug: name,
+				source: "native" as const,
 				data,
 			}))
 			.sort((a, b) => a.name.localeCompare(b.name))

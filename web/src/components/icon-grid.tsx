@@ -1,10 +1,10 @@
 import { useWindowVirtualizer } from "@tanstack/react-virtual"
 import { useEffect, useMemo, useRef, useState } from "react"
-import type { Icon } from "@/types/icons"
+import type { IconWithName } from "@/types/icons"
 import { IconCard } from "./icon-card"
 
 interface IconsGridProps {
-	filteredIcons: { name: string; data: Icon }[]
+	filteredIcons: IconWithName[]
 	matchedAliases: Record<string, string>
 }
 
@@ -21,8 +21,8 @@ export const GRID_CLASSES = "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:g
 export function IconsGrid({ filteredIcons, matchedAliases }: IconsGridProps) {
 	return (
 		<div className={`${GRID_CLASSES} mt-2`}>
-			{filteredIcons.slice(0, 120).map(({ name, data }) => (
-				<IconCard key={name} name={name} data={data} matchedAlias={matchedAliases[name]} />
+			{filteredIcons.slice(0, 120).map((icon) => (
+				<IconCard key={`${icon.source || "native"}-${icon.slug || icon.name}`} icon={icon} matchedAlias={matchedAliases[icon.name]} />
 			))}
 		</div>
 	)
@@ -88,8 +88,12 @@ export function VirtualizedIconsGrid({ filteredIcons, matchedAliases }: IconsGri
 							}}
 							className={GRID_CLASSES}
 						>
-							{rowIcons.map(({ name, data }) => (
-								<IconCard key={name} name={name} data={data} matchedAlias={matchedAliases[name]} />
+							{rowIcons.map((icon) => (
+								<IconCard
+									key={`${icon.source || "native"}-${icon.slug || icon.name}`}
+									icon={icon}
+									matchedAlias={matchedAliases[icon.name]}
+								/>
 							))}
 						</div>
 					)
