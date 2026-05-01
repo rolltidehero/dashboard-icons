@@ -43155,5 +43155,19 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "qobuz": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "entertainment"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:10.988Z",
+            "author": {
+                "id": 97809825,
+                "login": "thomaswilliams123"
+            }
+        }
     }
 }
