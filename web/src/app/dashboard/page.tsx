@@ -10,7 +10,6 @@ import {
 	MessageSquare,
 	RefreshCw,
 	Rocket,
-	XCircle,
 } from "lucide-react"
 import * as React from "react"
 import { LoginModalContent } from "@/components/login-modal"
@@ -51,29 +50,12 @@ import {
 } from "@/hooks/use-submissions"
 import type { Submission } from "@/lib/pb"
 
-function StatCard({ label, value, icon: Icon, variant }: {
-	label: string
-	value: number
-	icon: React.ElementType
-	variant: "warning" | "success" | "destructive" | "info"
-}) {
-	const variantClasses = {
-		warning: "text-yellow-600 dark:text-yellow-400",
-		success: "text-green-600 dark:text-green-400",
-		destructive: "text-red-600 dark:text-red-400",
-		info: "text-blue-600 dark:text-blue-400",
-	}
-
+function StatInline({ label, value }: { label: string; value: number }) {
+	if (value === 0) return null
 	return (
-		<div className="flex items-center gap-3 min-w-0">
-			<div className={`shrink-0 ${variantClasses[variant]}`}>
-				<Icon className="h-4 w-4" />
-			</div>
-			<div className="min-w-0">
-				<p className="text-2xl font-semibold tabular-nums leading-none">{value}</p>
-				<p className="text-xs text-muted-foreground mt-0.5">{label}</p>
-			</div>
-		</div>
+		<span className="text-sm text-muted-foreground">
+			<span className="font-medium tabular-nums text-foreground">{value}</span> {label}
+		</span>
 	)
 }
 
@@ -155,6 +137,7 @@ export default function DashboardPage() {
 	const [rejectingSubmissionId, setRejectingSubmissionId] = React.useState<string | null>(null)
 	const [adminComment, setAdminComment] = React.useState("")
 	const [activeTab, setActiveTab] = React.useState("review")
+	const [selectedUserSubmission, setSelectedUserSubmission] = React.useState<Submission | null>(null)
 
 	const isLoading = authLoading || submissionsLoading
 	const isAuthenticated = auth?.isAuthenticated ?? false
@@ -269,7 +252,7 @@ export default function DashboardPage() {
 	if (!authLoading && !isAuthenticated) {
 		return (
 			<div className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8 flex justify-center">
-				<Card className="bg-background/50 border shadow-lg w-full max-w-md">
+				<Card className="border w-full max-w-md">
 					<CardContent className="pt-6 sm:pt-8 pb-6 px-4 sm:px-6">
 						<LoginModalContent
 							autoFocus={false}
@@ -289,19 +272,15 @@ export default function DashboardPage() {
 			<div className="container mx-auto pt-6 sm:pt-12 pb-14 px-4 sm:px-6 lg:px-8">
 				<div className="space-y-6">
 					<div className="space-y-2">
-						<Skeleton className="h-8 w-48 sm:w-64" />
-						<Skeleton className="h-4 w-full max-w-96" />
+						<Skeleton className="h-7 w-48 sm:w-56" />
+						<Skeleton className="h-4 w-full max-w-80" />
 					</div>
-					<div className="flex gap-6">
-						<Skeleton className="h-12 w-24" />
-						<Skeleton className="h-12 w-24" />
-						<Skeleton className="h-12 w-24" />
-					</div>
+					<Skeleton className="h-9 w-72" />
 					<Skeleton className="h-10 w-full" />
 					<div className="space-y-2">
-						<Skeleton className="h-16 w-full" />
-						<Skeleton className="h-16 w-full" />
-						<Skeleton className="h-16 w-full" />
+						<Skeleton className="h-14 w-full" />
+						<Skeleton className="h-14 w-full" />
+						<Skeleton className="h-14 w-full" />
 					</div>
 				</div>
 			</div>
@@ -354,13 +333,13 @@ export default function DashboardPage() {
 							</Button>
 						</div>
 
-						{/* Stats row */}
+						{/* Inline summary */}
 						{stats.total > 0 && (
-							<div className="flex flex-wrap gap-6 sm:gap-8">
-								<StatCard label="Pending review" value={stats.pending} icon={Clock} variant="warning" />
-								<StatCard label="Ready for CI" value={stats.approved} icon={CheckCircle2} variant="info" />
-								<StatCard label="Live" value={stats.added} icon={Rocket} variant="success" />
-								<StatCard label="Rejected" value={stats.rejected} icon={XCircle} variant="destructive" />
+							<div className="flex flex-wrap items-center gap-x-4 gap-y-1">
+								<StatInline label="pending" value={stats.pending} />
+								<StatInline label="ready for CI" value={stats.approved} />
+								<StatInline label="live" value={stats.added} />
+								<StatInline label="rejected" value={stats.rejected} />
 							</div>
 						)}
 
@@ -532,18 +511,60 @@ export default function DashboardPage() {
 						</Button>
 					</div>
 
-					{/* User's own submissions - card view for better readability */}
+					{/* User's own submissions */}
 					{userSubmissions.length > 0 ? (
 						<div className="space-y-2">
 							{userSubmissions.map((submission) => (
 								<UserSubmissionCard
 									key={submission.id}
 									submission={submission}
-									onExpand={() => {}}
+									onExpand={setSelectedUserSubmission}
 								/>
 							))}
 						</div>
 					) : null}
+
+					{/* Submission detail drawer */}
+					<Drawer open={!!selectedUserSubmission} onOpenChange={(open) => !open && setSelectedUserSubmission(null)}>
+						<DrawerContent className="max-h-[85vh]">
+							<DrawerHeader className="text-left">
+								<DrawerTitle className="capitalize">{selectedUserSubmission?.name}</DrawerTitle>
+								<DrawerDescription>
+									{selectedUserSubmission?.status === "pending" && "Waiting for admin review."}
+									{selectedUserSubmission?.status === "approved" && "Approved and queued for deployment."}
+									{selectedUserSubmission?.status === "rejected" && "Not accepted. See admin feedback below."}
+									{selectedUserSubmission?.status === "added_to_collection" && "Live in the collection."}
+								</DrawerDescription>
+							</DrawerHeader>
+							{selectedUserSubmission && (
+								<div className="overflow-y-auto px-4 pb-6 space-y-4">
+									{selectedUserSubmission.assets.length > 0 && (
+										<div className="flex gap-2 overflow-x-auto pb-2">
+											{selectedUserSubmission.assets.map((asset, i) => (
+												<div key={i} className="w-20 h-20 rounded border flex items-center justify-center bg-muted/30 p-2 shrink-0">
+													<img
+														src={`${process.env.NEXT_PUBLIC_POCKETBASE_URL || "http://127.0.0.1:8090"}/api/files/submissions/${selectedUserSubmission.id}/${asset}?thumb=200x200`}
+														alt={`${selectedUserSubmission.name} asset ${i + 1}`}
+														className="w-full h-full object-contain"
+													/>
+												</div>
+											))}
+										</div>
+									)}
+									{selectedUserSubmission.admin_comment?.trim() && (
+										<div className="rounded-lg border p-3 space-y-1">
+											<p className="text-xs font-medium text-muted-foreground">Admin feedback</p>
+											<p className="text-sm">{selectedUserSubmission.admin_comment}</p>
+										</div>
+									)}
+									<div className="text-xs text-muted-foreground space-y-1">
+										<p>Submitted {new Date(selectedUserSubmission.created).toLocaleDateString()}</p>
+										<p>Last updated {new Date(selectedUserSubmission.updated).toLocaleDateString()}</p>
+									</div>
+								</div>
+							)}
+						</DrawerContent>
+					</Drawer>
 
 					{/* Full submissions table (shows all community submissions for visibility) */}
 					<div className="space-y-3">
