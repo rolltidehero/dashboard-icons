@@ -43249,5 +43249,21 @@
                 "login": "sixsixfive"
             }
         }
+    },
+    "doozle": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "utility",
+            "tools",
+            "monitoring"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:28:28.374Z",
+            "author": {
+                "id": 1685289,
+                "login": "OberstK"
+            }
+        }
     }
 }
