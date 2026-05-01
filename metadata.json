@@ -42782,5 +42782,21 @@
                 "login": "astradti"
             }
         }
+    },
+    "railway": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "network",
+            "automation",
+            "cloud"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T15:26:55.493Z",
+            "author": {
+                "id": 41553131,
+                "login": "RoyalKiwi"
+            }
+        }
     }
 }
