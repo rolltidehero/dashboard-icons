@@ -62,9 +62,9 @@ export function IconCard({ icon, matchedAlias }: { icon: IconWithName; matchedAl
 	return (
 		<MagicCard className="group/card rounded-md shadow-md">
 			{sourceConfig && (
-				<div className="absolute inset-x-0 bottom-0 z-10 flex items-center justify-center gap-1 px-2 py-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 bg-muted/80 backdrop-blur-sm rounded-b-md">
+				<div className="absolute left-0 -top-7 z-10 flex items-center gap-1.5 px-2 py-1 opacity-0 group-hover/card:opacity-100 transition-opacity duration-200 bg-muted/90 backdrop-blur-sm rounded-md shadow-sm whitespace-nowrap">
 					<Image src={sourceConfig.icon} alt="" width={14} height={14} className="shrink-0" unoptimized />
-					<span className="text-[10px] text-muted-foreground truncate">Icon from {sourceConfig.label}</span>
+					<span className="text-[10px] text-muted-foreground">from {sourceConfig.label}</span>
 				</div>
 			)}
 			<Link prefetch={false} href={getLinkHref(kind, name)} className="group flex flex-col items-center p-3 sm:p-4 cursor-pointer">
