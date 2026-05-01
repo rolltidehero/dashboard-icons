@@ -43332,5 +43332,24 @@
             "light": "baidu-light",
             "dark": "baidu-dark"
         }
+    },
+    "qemu": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [
+            "tools",
+            "utility"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:51:44.142Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "qemu-light",
+            "dark": "qemu-dark"
+        }
     }
 }
