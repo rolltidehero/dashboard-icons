@@ -43472,5 +43472,26 @@
             "light": "wechat-light",
             "dark": "wechat-dark"
         }
+    },
+    "vim": {
+        "base": "svg",
+        "aliases": [
+            "vi"
+        ],
+        "categories": [
+            "development",
+            "tools"
+        ],
+        "update": {
+            "timestamp": "2026-05-01T19:52:04.800Z",
+            "author": {
+                "id": "65iz5jsxx5jc2yw",
+                "name": "browser-agent-robot"
+            }
+        },
+        "colors": {
+            "light": "vim-light",
+            "dark": "vim-dark"
+        }
     }
 }
