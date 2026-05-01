@@ -1,21 +1,26 @@
 // biome-ignore-all lint: reason: I don't want to fix this
+"use client"
+
 import { useEffect, useRef } from "react"
+
+const isDev = process.env.NODE_ENV === "development"
+
 export function Carbon() {
-	if (process.env.NODE_ENV === "development") {
-		return null
-	}
+	const ref = useRef<HTMLDivElement>(null)
 
 	useEffect(() => {
+		if (isDev) return
+		const el = ref.current
+		if (!el) return
 		const serve = "CW7IKKQM"
 		const placement = "dashboardiconscom"
-		ref.current.innerHTML = ""
+		el.innerHTML = ""
 		const s = document.createElement("script")
 		s.id = "_carbonads_js"
-		s.src = `//cdn.carbonads.com/carbon.js?serve=${serve}&placement=${placement}`
-		ref.current.appendChild(s)
+		s.async = true
+		s.src = `https://cdn.carbonads.com/carbon.js?serve=${serve}&placement=${placement}`
+		el.appendChild(s)
 	}, [])
-
-	const ref = useRef<HTMLDivElement>(null!)
 
 	return (
 		<>
@@ -79,7 +84,17 @@ export function Carbon() {
 				`}
 			</style>
 			<div className="m-4">
-				<div ref={ref} className="carbon-outer" />
+				{isDev ? (
+					<div
+						className="rounded-md border border-dashed border-border bg-muted/40 px-3 py-6 text-center text-[11px] leading-snug text-muted-foreground"
+						data-carbon-placeholder
+					>
+						Carbon ad (shown on production only — localhost is usually not filled by
+						Carbon)
+					</div>
+				) : (
+					<div ref={ref} className="carbon-outer" />
+				)}
 			</div>
 		</>
 	)

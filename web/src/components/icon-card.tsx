@@ -3,6 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { useTheme } from "next-themes"
+import { useEffect, useState } from "react"
 import { MagicCard } from "@/components/magicui/magic-card"
 import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { getExternalIconThemedPreviewUrl } from "@/lib/external-icon-urls"
@@ -33,8 +34,10 @@ function getLinkHref(kind: IconKind, name: string): string {
 }
 
 function useThemedImageUrl(icon: IconWithName, kind: IconKind): string {
+	const [mounted, setMounted] = useState(false)
+	useEffect(() => setMounted(true), [])
 	const { resolvedTheme } = useTheme()
-	const theme = resolvedTheme === "dark" ? "dark" : "light"
+	const theme = mounted && resolvedTheme === "dark" ? "dark" : "light"
 	const { name, data: iconData } = icon
 
 	if (kind.type === "external" && icon.external) {
