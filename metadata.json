@@ -43059,5 +43059,17 @@
         "colors": {
             "dark": "gnustep-dark"
         }
+    },
+    "barco": {
+        "base": "svg",
+        "aliases": [],
+        "categories": [],
+        "update": {
+            "timestamp": "2026-05-01T15:27:52.216Z",
+            "author": {
+                "id": 163436602,
+                "login": "agoettl"
+            }
+        }
     }
 }
