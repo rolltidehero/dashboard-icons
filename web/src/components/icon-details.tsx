@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import { ArrowRight, Check, ExternalLink, FileType, Github, Moon, Palette, PaletteIcon, Sun, Type } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import posthog from "posthog-js"
 import type React from "react"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { toast } from "sonner"
@@ -291,6 +292,11 @@ export function IconDetails({
 		try {
 			await navigator.clipboard.writeText(url)
 			setCopiedUrlKey(variantKey)
+			posthog.capture("icon_url_copied", {
+				icon_name: icon,
+				variant: variantKey,
+				is_external: isExternalIcon,
+			})
 			setTimeout(() => {
 				setCopiedUrlKey(null)
 			}, 2000)
@@ -347,6 +353,12 @@ export function IconDetails({
 					launchConfetti()
 				}
 
+				posthog.capture("icon_image_copied", {
+					icon_name: icon,
+					format: "svg",
+					variant: variantKey,
+					is_external: isExternalIcon,
+				})
 				toast.dismiss()
 				toast.success("SVG Markup Copied", {
 					description: "The SVG code has been copied to your clipboard.",
@@ -376,6 +388,12 @@ export function IconDetails({
 					launchConfetti()
 				}
 
+				posthog.capture("icon_image_copied", {
+					icon_name: icon,
+					format,
+					variant: variantKey,
+					is_external: isExternalIcon,
+				})
 				toast.dismiss()
 				toast.success("Image copied", {
 					description: `The ${format.toUpperCase()} image has been copied to your clipboard.`,
@@ -411,7 +429,6 @@ export function IconDetails({
 			const blobUrl = URL.createObjectURL(blob)
 			const link = document.createElement("a")
 			link.href = blobUrl
-			// Sanitize filename
 			const sanitizedFilename = filename
 				.replace(/[^a-z0-9.-]/gi, "-")
 				.replace(/-+/g, "-")
@@ -421,6 +438,13 @@ export function IconDetails({
 			link.click()
 			document.body.removeChild(link)
 			setTimeout(() => URL.revokeObjectURL(blobUrl), 100)
+
+			const format = filename.split(".").pop() || "unknown"
+			posthog.capture("icon_downloaded", {
+				icon_name: icon,
+				format,
+				is_external: isExternalIcon,
+			})
 
 			toast.dismiss()
 			toast.success("Download started", {
