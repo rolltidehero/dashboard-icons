@@ -9,7 +9,7 @@ export const revalidate = 21600
 
 // Helper function to format dates as YYYY-MM-DD
 const formatDate = (date: Date): string => {
-	if (Number.isNaN(date.getTime())) return new Date().toISOString().split("T")[0]
+	if (Number.isNaN(date.getTime())) return "2024-01-01"
 	return date.toISOString().split("T")[0]
 }
 

@@ -6,7 +6,7 @@ export let loggerProvider: LoggerProvider | null = null
 
 function getPostHogClient(): PostHog | null {
 	const key = process.env.NEXT_PUBLIC_POSTHOG_KEY
-	if (!key) return null
+	if (!key || process.env.NEXT_PUBLIC_DISABLE_POSTHOG === "true") return null
 	if (!posthogClient) {
 		posthogClient = new PostHog(key, {
 			host: "https://eu.i.posthog.com",
@@ -18,7 +18,11 @@ function getPostHogClient(): PostHog | null {
 }
 
 export async function register() {
-	if (process.env.NEXT_RUNTIME === "nodejs" && process.env.NEXT_PUBLIC_POSTHOG_KEY) {
+	if (
+		process.env.NEXT_RUNTIME === "nodejs" &&
+		process.env.NEXT_PUBLIC_POSTHOG_KEY &&
+		process.env.NEXT_PUBLIC_DISABLE_POSTHOG !== "true"
+	) {
 		const { BatchLogRecordProcessor: Processor, LoggerProvider: Provider } = await import(
 			"@opentelemetry/sdk-logs"
 		)
@@ -71,5 +75,5 @@ export async function onRequestError(
 			digest: error.digest,
 		},
 	})
-	await posthog.flush()
+	posthog.flush().catch(() => {})
 }
