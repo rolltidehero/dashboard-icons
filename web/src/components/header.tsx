@@ -15,6 +15,7 @@ import { resetPostHogIdentity } from "@/lib/posthog-utils"
 import type { IconWithName } from "@/types/icons"
 
 const CommandMenu = dynamic(() => import("./command-menu").then((mod) => mod.CommandMenu), { ssr: false })
+
 import { HeaderNav } from "./header-nav"
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar"
 import { Button } from "./ui/button"

@@ -89,8 +89,7 @@ export function Carbon() {
 						className="rounded-md border border-dashed border-border bg-muted/40 px-3 py-6 text-center text-[11px] leading-snug text-muted-foreground"
 						data-carbon-placeholder
 					>
-						Carbon ad (shown on production only — localhost is usually not filled by
-						Carbon)
+						Carbon ad (shown on production only — localhost is usually not filled by Carbon)
 					</div>
 				) : (
 					<div ref={ref} className="carbon-outer" />
