@@ -74,7 +74,7 @@ function SubmissionStatusBadge({ status }: { status: Submission["status"] }) {
 		rejected: { label: "Rejected", className: "bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20" },
 		added_to_collection: { label: "Live", className: "bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20" },
 	}
-	const { label, className } = config[status]
+	const { label, className } = config[status] ?? { label: status, className: "bg-gray-500/10 text-gray-500 border-gray-500/20" }
 	return (
 		<Badge variant="outline" className={`text-xs ${className}`}>
 			{label}

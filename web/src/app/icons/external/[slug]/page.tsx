@@ -36,6 +36,9 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 	}
 
 	const sourceConfig = EXTERNAL_SOURCES[icon.external.source as ExternalSourceId]
+	if (!sourceConfig) {
+		notFound()
+	}
 	const formattedName = icon.external.name
 	const pageUrl = `${WEB_URL}/icons/external/${slug}`
 	const previewUrl = getExternalIconPreviewUrl(icon.external)
@@ -108,6 +111,9 @@ export default async function ExternalIconPage({ params }: { params: Promise<{ s
 	}
 
 	const sourceConfig = EXTERNAL_SOURCES[icon.external.source as ExternalSourceId]
+	if (!sourceConfig) {
+		notFound()
+	}
 	const previewUrl = getExternalIconPreviewUrl(icon.external)
 
 	const authorData: AuthorData = {
