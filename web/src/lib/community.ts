@@ -140,13 +140,7 @@ async function fetchCommunitySubmissionByName(name: string): Promise<IconWithNam
 		const pb = createServerPB()
 
 		const record = await pb.collection("community_gallery").getFirstListItem<CommunityGallery>(`name="${name}"`)
-		console.log("[Community] Record author fields:", {
-			name,
-			created_by: record.created_by,
-			created_by_github_id: record.created_by_github_id,
-		})
 		const transformed = transformGalleryToIcon(record)
-		console.log(`[Community] Fetched ${name}, colors:`, transformed.data.colors)
 		return transformed
 	} catch (error) {
 		console.error(`Error fetching community submission ${name}:`, error)

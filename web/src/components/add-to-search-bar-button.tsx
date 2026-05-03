@@ -72,9 +72,7 @@ export function AddToSearchBarButton({ size = "default", className }: { size?: "
 			<DialogTrigger asChild>
 				<Button variant="outline" size={size} className={cn("shadow-sm cursor-pointer", className)}>
 					<Search className="h-4 w-4" />
-					<span className="hidden sm:inline text-foreground transition-all duration-300 group-hover:scale-105">
-						Search from browser
-					</span>
+					<span className="hidden sm:inline text-foreground transition-all duration-300 group-hover:scale-105">Search from browser</span>
 					<span className="sm:hidden">Browser search</span>
 				</Button>
 			</DialogTrigger>

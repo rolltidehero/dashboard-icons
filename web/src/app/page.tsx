@@ -4,12 +4,16 @@ import { REPO_NAME, WEB_URL } from "@/constants"
 import { getRecentlyAddedIcons, getTotalIcons } from "@/lib/api"
 
 async function getGitHubStars() {
-	const response = await fetch(`https://api.github.com/repos/${REPO_NAME}`, {
-		next: { revalidate: 3600 },
-	})
-	const data = await response.json()
-	console.log(`GitHub stars: ${data.stargazers_count}`)
-	return data.stargazers_count
+	try {
+		const response = await fetch(`https://api.github.com/repos/${REPO_NAME}`, {
+			next: { revalidate: 3600 },
+		})
+		if (!response.ok) return 0
+		const data = await response.json()
+		return data.stargazers_count ?? 0
+	} catch {
+		return 0
+	}
 }
 
 export default async function Home() {
