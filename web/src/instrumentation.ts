@@ -49,6 +49,20 @@ export async function register() {
 	}
 }
 
+function extractDistinctId(headers: Record<string, string>): string | undefined {
+	const cookie = headers.cookie
+	if (!cookie) return undefined
+	const cookieString = Array.isArray(cookie) ? cookie.join("; ") : cookie
+	const match = cookieString.match(/ph_phc_.*?_posthog=([^;]+)/)
+	if (!match?.[1]) return undefined
+	try {
+		const data = JSON.parse(decodeURIComponent(match[1]))
+		return data.distinct_id
+	} catch {
+		return undefined
+	}
+}
+
 export async function onRequestError(
 	error: Error & { digest?: string },
 	request: { path: string; method: string; headers: Record<string, string> },
@@ -59,13 +73,10 @@ export async function onRequestError(
 	const posthog = getPostHogClient()
 	if (!posthog) return
 
-	posthog.capture({
-		distinctId: "server",
-		event: "$exception",
+	const distinctId = extractDistinctId(request.headers)
+
+	posthog.captureException(error, distinctId, {
 		properties: {
-			$exception_message: error.message,
-			$exception_type: error.name,
-			$exception_stack_trace_raw: error.stack,
 			path: request.path,
 			method: request.method,
 			routerKind: context.routerKind,

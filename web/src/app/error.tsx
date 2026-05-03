@@ -2,6 +2,7 @@
 
 import { AlertTriangle, ArrowLeft, RefreshCcw } from "lucide-react"
 import { useRouter } from "next/navigation"
+import posthog from "posthog-js"
 import { useEffect } from "react"
 import { Button } from "@/components/ui/button"
 
@@ -9,8 +10,7 @@ export default function ErrorPage({ error, reset }: { error: Error & { digest?: 
 	const router = useRouter()
 
 	useEffect(() => {
-		// Log the error to an error reporting service
-		console.error("Application error:", error)
+		posthog.captureException(error)
 	}, [error])
 
 	const handleGoBack = () => {
