@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { pb } from "@/lib/pb"
+import { submitOrReplaceRejected } from "@/lib/submit-or-replace"
 import { formatIconName } from "@/lib/utils"
 import { MagicCard } from "./magicui/magic-card"
 import { Badge } from "./ui/badge"
@@ -338,7 +339,7 @@ export function EditableIconDetails({ onSubmit, initialData }: EditableIconDetai
 				extras: extras,
 			}
 
-			await pb.collection("submissions").create(submissionData)
+			await submitOrReplaceRejected(submissionData)
 
 			// Revalidate Next.js cache for community pages
 			await revalidateAllSubmissions()

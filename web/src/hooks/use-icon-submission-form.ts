@@ -8,6 +8,7 @@ import { toast } from "sonner"
 import { revalidateAllSubmissions } from "@/app/actions/submissions"
 import type { MultiSelectOption } from "@/components/ui/multi-select"
 import { pb } from "@/lib/pb"
+import { submitOrReplaceRejected } from "@/lib/submit-or-replace"
 
 export interface VariantConfig {
 	id: string
@@ -169,7 +170,7 @@ export function useIconSubmissionForm() {
 					extras: extras,
 				}
 
-				const record = await pb.collection("submissions").create(submissionData)
+				const record = await submitOrReplaceRejected(submissionData)
 
 				if (record.assets && record.assets.length > 0) {
 					const updatedExtras = JSON.parse(JSON.stringify(extras))
