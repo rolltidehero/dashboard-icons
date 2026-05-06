@@ -334,8 +334,8 @@ export function EditableIconDetails({ onSubmit, initialData }: EditableIconDetai
 			const submissionData = {
 				name: iconName,
 				assets: assetFiles,
-				created_by: pb.authStore.record?.id,
-				status: "pending",
+				created_by: pb.authStore.record?.id ?? "",
+				status: "pending" as const,
 				extras: extras,
 			}
 

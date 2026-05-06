@@ -164,8 +164,8 @@ export function useIconSubmissionForm() {
 				const submissionData = {
 					name: value.iconName,
 					assets: assetFiles,
-					created_by: (pb.authStore.record as any)?.id ?? pb.authStore.record?.id,
-					status: "pending",
+					created_by: (pb.authStore.record as any)?.id ?? pb.authStore.record?.id ?? "",
+					status: "pending" as const,
 					description: value.description,
 					extras: extras,
 				}
