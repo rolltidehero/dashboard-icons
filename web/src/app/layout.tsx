@@ -78,7 +78,7 @@ export async function generateMetadata(): Promise<Metadata> {
 		},
 		applicationName: "Dashboard Icons",
 		alternates: {
-			canonical: "/",
+			canonical: WEB_URL,
 		},
 
 		appleWebApp: {
@@ -107,7 +107,33 @@ export async function generateMetadata(): Promise<Metadata> {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
 	return (
 		<html lang="en" suppressHydrationWarning>
+			<head>
+				<link rel="preconnect" href="https://cdn.jsdelivr.net" />
+				<link rel="preconnect" href="https://raw.githubusercontent.com" />
+				<link rel="preconnect" href="https://api.github.com" />
+				{process.env.NEXT_PUBLIC_POSTHOG_HOST && <link rel="preconnect" href={process.env.NEXT_PUBLIC_POSTHOG_HOST} />}
+			</head>
 			<body className={`${inter.variable} antialiased bg-background flex flex-col min-h-screen`}>
+				<script
+					type="application/ld+json"
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: JSON-LD structured data
+					dangerouslySetInnerHTML={{
+						__html: JSON.stringify({
+							"@context": "https://schema.org",
+							"@type": "WebSite",
+							name: "Dashboard Icons",
+							url: WEB_URL,
+							potentialAction: {
+								"@type": "SearchAction",
+								target: {
+									"@type": "EntryPoint",
+									urlTemplate: `${WEB_URL}/icons?search={search_term_string}`,
+								},
+								"query-input": "required name=search_term_string",
+							},
+						}),
+					}}
+				/>
 				<Providers>
 					<PostHogProvider>
 						<ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
