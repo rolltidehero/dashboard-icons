@@ -1,6 +1,8 @@
 import type { Metadata, ResolvingMetadata } from "next"
+import Link from "next/link"
 import { notFound, permanentRedirect } from "next/navigation"
 import { IconDetails } from "@/components/icon-details"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { BASE_URL, WEB_URL } from "@/constants"
 import { computeRelatedIcons, getAllIcons, getAuthorData } from "@/lib/api"
 import { getCommunityGalleryRecord, getCommunitySubmissionByName, getCommunitySubmissions } from "@/lib/community"
@@ -263,6 +265,8 @@ export default async function CommunityIconPage({ params }: { params: Promise<{ 
 						contentUrl: mainIconUrl,
 						license: "https://creativecommons.org/licenses/by/4.0/",
 						acquireLicensePage: `${WEB_URL}/license`,
+						creditText: `Icon by ${authorData.name || authorData.login}`,
+						copyrightNotice: "© Homarr Labs",
 						creator: {
 							"@type": "Person",
 							name: authorData.name || authorData.login,
@@ -285,6 +289,25 @@ export default async function CommunityIconPage({ params }: { params: Promise<{ 
 					}).replace(/</g, "\\u003c"),
 				}}
 			/>
+			<Breadcrumb>
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink asChild>
+							<Link href="/">Home</Link>
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbLink asChild>
+							<Link href="/community">Community Icons</Link>
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage>{formattedName}</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
 			<IconDetails
 				icon={icon}
 				iconData={iconDataForDisplay as any}

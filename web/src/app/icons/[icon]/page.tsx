@@ -1,6 +1,8 @@
 import type { Metadata, ResolvingMetadata } from "next"
+import Link from "next/link"
 import { notFound } from "next/navigation"
 import { IconDetails } from "@/components/icon-details"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { BASE_URL, WEB_URL } from "@/constants"
 import { computeRelatedIcons, getAllIcons, getAuthorData } from "@/lib/api"
 
@@ -20,7 +22,7 @@ type Props = {
 	searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
-export async function generateMetadata({ params, searchParams }: Props, _parent: ResolvingMetadata): Promise<Metadata> {
+export async function generateMetadata({ params }: Props, _parent: ResolvingMetadata): Promise<Metadata> {
 	const { icon } = await params
 	const iconsData = await getAllIcons()
 	if (!iconsData[icon]) {
@@ -83,25 +85,18 @@ export async function generateMetadata({ params, searchParams }: Props, _parent:
 			locale: "en_US",
 			images: [
 				{
+					url: `${WEB_URL}/og/${icon}`,
+					width: 1200,
+					height: 630,
+					alt: `${formattedIconName} icon & logo for dashboards`,
+					type: "image/png",
+				},
+				{
 					url: `${BASE_URL}/png/${icon}.png`,
 					width: 512,
 					height: 512,
 					alt: `${formattedIconName} icon`,
 					type: "image/png",
-				},
-				{
-					url: `${BASE_URL}/webp/${icon}.webp`,
-					width: 512,
-					height: 512,
-					alt: `${formattedIconName} icon`,
-					type: "image/webp",
-				},
-				{
-					url: `${BASE_URL}/svg/${icon}.svg`,
-					width: 512,
-					height: 512,
-					alt: `${formattedIconName} icon`,
-					type: "image/svg+xml",
 				},
 			],
 		},
@@ -109,7 +104,7 @@ export async function generateMetadata({ params, searchParams }: Props, _parent:
 			card: "summary_large_image",
 			title: `${formattedIconName} Icon & Logo`,
 			description: `Download the ${formattedIconName} icon and logo in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons and logos for services, applications and tools, designed specifically for dashboards and app directories.`,
-			images: [`${BASE_URL}/png/${icon}.png`],
+			images: [`${WEB_URL}/og/${icon}`],
 		},
 		alternates: {
 			canonical: `${WEB_URL}/icons/${icon}`,
@@ -153,6 +148,8 @@ export default async function IconPage({ params }: { params: Promise<{ icon: str
 						contentUrl: `${BASE_URL}/png/${icon}.png`,
 						license: "https://creativecommons.org/licenses/by/4.0/",
 						acquireLicensePage: `${WEB_URL}/license`,
+						creditText: `Icon by ${authorData.name || authorData.login}`,
+						copyrightNotice: "© Homarr Labs",
 						creator: {
 							"@type": "Person",
 							name: authorData.name || authorData.login,
@@ -175,6 +172,25 @@ export default async function IconPage({ params }: { params: Promise<{ icon: str
 					}).replace(/</g, "\\u003c"),
 				}}
 			/>
+			<Breadcrumb>
+				<BreadcrumbList>
+					<BreadcrumbItem>
+						<BreadcrumbLink asChild>
+							<Link href="/">Home</Link>
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbLink asChild>
+							<Link href="/icons">Browse Icons</Link>
+						</BreadcrumbLink>
+					</BreadcrumbItem>
+					<BreadcrumbSeparator />
+					<BreadcrumbItem>
+						<BreadcrumbPage>{formattedName}</BreadcrumbPage>
+					</BreadcrumbItem>
+				</BreadcrumbList>
+			</Breadcrumb>
 			<IconDetails
 				icon={icon}
 				iconData={originalIconData}

@@ -1,5 +1,5 @@
-import { PostHog } from "posthog-node"
 import type { LoggerProvider } from "@opentelemetry/sdk-logs"
+import { PostHog } from "posthog-node"
 
 let posthogClient: PostHog | null = null
 export let loggerProvider: LoggerProvider | null = null
@@ -18,14 +18,8 @@ function getPostHogClient(): PostHog | null {
 }
 
 export async function register() {
-	if (
-		process.env.NEXT_RUNTIME === "nodejs" &&
-		process.env.NEXT_PUBLIC_POSTHOG_KEY &&
-		process.env.NEXT_PUBLIC_DISABLE_POSTHOG !== "true"
-	) {
-		const { BatchLogRecordProcessor: Processor, LoggerProvider: Provider } = await import(
-			"@opentelemetry/sdk-logs"
-		)
+	if (process.env.NEXT_RUNTIME === "nodejs" && process.env.NEXT_PUBLIC_POSTHOG_KEY && process.env.NEXT_PUBLIC_DISABLE_POSTHOG !== "true") {
+		const { BatchLogRecordProcessor: Processor, LoggerProvider: Provider } = await import("@opentelemetry/sdk-logs")
 		const { OTLPLogExporter } = await import("@opentelemetry/exporter-logs-otlp-http")
 		const { logs } = await import("@opentelemetry/api-logs")
 		const { resourceFromAttributes } = await import("@opentelemetry/resources")
