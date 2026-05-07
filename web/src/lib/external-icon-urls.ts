@@ -1,15 +1,31 @@
-import { EXTERNAL_SOURCES } from "@/constants"
+import { EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import type { ExternalIcon } from "@/types/icons"
+
+const FALLBACK_URL_BUILDERS: Partial<Record<ExternalSourceId, (cdnBase: string, slug: string, format: string, variant?: string) => string>> = {
+	selfhst: (cdnBase, slug, format, variant) => {
+		const suffix = variant ? `-${variant}` : ""
+		return `${cdnBase}/${format}/${slug}${suffix}.${format}`
+	},
+}
+
+export function canResolveExternalIconUrl(icon: Pick<ExternalIcon, "source" | "url_templates">, key: string): boolean {
+	const templates = icon.url_templates ?? {}
+	return !!templates[key] || !!FALLBACK_URL_BUILDERS[icon.source]
+}
 
 export function resolveExternalIconUrl(icon: Pick<ExternalIcon, "source" | "slug" | "url_templates">, key: string): string {
 	const templates = icon.url_templates ?? {}
 	const template = templates[key]
 	if (template) return template.replace("{slug}", icon.slug)
 
-	const [format] = key.split("_")
+	const parts = key.split("_")
+	const format = parts[0]
+	const variant = parts[1]
 	const sourceConfig = EXTERNAL_SOURCES[icon.source]
-	const cdnBase = sourceConfig?.cdnBase ?? ""
-	return `${cdnBase}/${format}/${icon.slug}.${format}`
+	const buildUrl = FALLBACK_URL_BUILDERS[icon.source]
+	if (buildUrl) return buildUrl(sourceConfig?.cdnBase ?? "", icon.slug, format, variant)
+
+	return `${sourceConfig?.cdnBase ?? ""}/${format}/${icon.slug}.${format}`
 }
 
 export function getExternalIconPreviewUrl(icon: ExternalIcon): string {
@@ -22,7 +38,8 @@ export function getExternalIconThemedPreviewUrl(icon: ExternalIcon, theme: "ligh
 	const variants = icon.variants ?? {}
 	if (variants.light && variants.dark) {
 		const format = (icon.formats ?? []).includes("png") ? "png" : (icon.formats ?? []).includes("webp") ? "webp" : null
-		if (format) return resolveExternalIconUrl(icon, `${format}_${theme}`)
+		const key = format ? `${format}_${theme}` : null
+		if (key && canResolveExternalIconUrl(icon, key)) return resolveExternalIconUrl(icon, key)
 	}
 	return getExternalIconPreviewUrl(icon)
 }

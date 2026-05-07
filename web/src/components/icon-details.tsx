@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { BASE_URL, EXTERNAL_SOURCES, type ExternalSourceId, REPO_PATH } from "@/constants"
-import { getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
+import { canResolveExternalIconUrl, getExternalIconPreviewUrl, resolveExternalIconUrl } from "@/lib/external-icon-urls"
 import { isClipboardAvailable } from "@/lib/svg-color-utils"
 import { formatIconName } from "@/lib/utils"
 import type { AuthorData, ExternalIcon, Icon } from "@/types/icons"
@@ -465,9 +465,9 @@ export function IconDetails({
 		let githubUrl: string
 
 		if (isExternalIcon && externalIcon) {
-			const tpl = externalIcon.url_templates ?? {}
 			const key = theme ? `${format}_${theme}` : format
-			if (!tpl[key]) return null
+			const hasVariant = theme ? externalIcon.variants?.[theme] : externalIcon.formats?.includes(format)
+			if (!hasVariant || !canResolveExternalIconUrl(externalIcon, key)) return null
 			imageUrl = resolveExternalIconUrl(externalIcon, key)
 			githubUrl = ""
 		} else if (isCommunityIcon && mainIconUrl) {
@@ -589,11 +589,10 @@ export function IconDetails({
 			if (externalIcon.formats.includes("svg")) {
 				variants.push({ value: "base", label: "Base Icon", iconName: externalIcon.slug })
 			}
-			const tpl = externalIcon.url_templates ?? {}
-			if (tpl.svg_light) {
+			if (externalIcon.variants?.light && canResolveExternalIconUrl(externalIcon, "svg_light")) {
 				variants.push({ value: "light", label: "Light Variant", iconName: `${externalIcon.slug}-light` })
 			}
-			if (tpl.svg_dark) {
+			if (externalIcon.variants?.dark && canResolveExternalIconUrl(externalIcon, "svg_dark")) {
 				variants.push({ value: "dark", label: "Dark Variant", iconName: `${externalIcon.slug}-dark` })
 			}
 			return variants
@@ -721,10 +720,11 @@ export function IconDetails({
 
 		if (isExternalIcon && externalIcon) {
 			if (!externalIcon.formats.includes("svg")) return null
-			const tpl = externalIcon.url_templates ?? {}
 			if (variant === "base") return resolveExternalIconUrl(externalIcon, "svg")
-			if (variant === "light") return tpl.svg_light ? resolveExternalIconUrl(externalIcon, "svg_light") : null
-			if (variant === "dark") return tpl.svg_dark ? resolveExternalIconUrl(externalIcon, "svg_dark") : null
+			if (variant === "light" && externalIcon.variants?.light && canResolveExternalIconUrl(externalIcon, "svg_light"))
+				return resolveExternalIconUrl(externalIcon, "svg_light")
+			if (variant === "dark" && externalIcon.variants?.dark && canResolveExternalIconUrl(externalIcon, "svg_dark"))
+				return resolveExternalIconUrl(externalIcon, "svg_dark")
 			return null
 		}
 
