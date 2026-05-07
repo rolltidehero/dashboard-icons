@@ -1,20 +1,73 @@
 import { ImageResponse } from "next/og"
-import { BASE_URL, DASHBOARD_ICONS_ICON } from "@/constants"
+import { EXTERNAL_SOURCES, type ExternalSourceId } from "@/constants"
 import { getTotalIcons } from "@/lib/api"
+import { getExternalIconBySlug } from "@/lib/external-icons"
 
 export const contentType = "image/png"
 export const size = { width: 1200, height: 630 }
 
-export async function GET(_req: Request, { params }: { params: Promise<{ icon: string }> }) {
-	const { icon } = await params
+export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
+	const { slug } = await params
+	const icon = await getExternalIconBySlug(slug)
+
+	if (!icon) {
+		return new ImageResponse(
+			<div
+				style={{
+					display: "flex",
+					width: "100%",
+					height: "100%",
+					alignItems: "center",
+					justifyContent: "center",
+					backgroundColor: "white",
+					fontSize: 48,
+					fontWeight: 600,
+					color: "#64748b",
+				}}
+			>
+				Icon not found
+			</div>,
+			{ ...size },
+		)
+	}
+
+	const sourceConfig = EXTERNAL_SOURCES[icon.external.source as ExternalSourceId]
+	if (!sourceConfig) {
+		return new ImageResponse(
+			<div
+				style={{
+					display: "flex",
+					width: "100%",
+					height: "100%",
+					alignItems: "center",
+					justifyContent: "center",
+					backgroundColor: "white",
+					fontSize: 48,
+					fontWeight: 600,
+					color: "#64748b",
+				}}
+			>
+				Source not found
+			</div>,
+			{ ...size },
+		)
+	}
+
 	const { totalIcons } = await getTotalIcons()
+	const formattedName = icon.external.name
 
-	const formattedName = icon
-		.split("-")
-		.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-		.join(" ")
-
-	const iconUrl = `${BASE_URL}/png/${icon}.png`
+	// Build the icon URL: prefer the first available format
+	const formats = icon.external.formats || []
+	let previewUrl = ""
+	if (formats.length > 0) {
+		const urlTemplates = icon.external.url_templates as Record<string, string> | undefined
+		const fmt = formats.includes("svg") ? "svg" : formats.includes("png") ? "png" : formats[0]
+		if (urlTemplates?.[fmt]) {
+			previewUrl = urlTemplates[fmt].replace("{slug}", slug)
+		} else {
+			previewUrl = `${sourceConfig.cdnBase}/${fmt}/${slug}.${fmt}`
+		}
+	}
 
 	return new ImageResponse(
 		<div
@@ -94,17 +147,37 @@ export async function GET(_req: Request, { params }: { params: Promise<{ icon: s
 							background: "linear-gradient(145deg, #ffffff 0%, #f8fafc 100%)",
 						}}
 					/>
-					{/* biome-ignore lint/performance/noImgElement: ImageResponse uses Satori which requires native HTML img elements */}
-					<img
-						src={iconUrl}
-						alt={formattedName}
-						width={260}
-						height={260}
-						style={{
-							objectFit: "contain",
-							position: "relative",
-						}}
-					/>
+					{previewUrl ? (
+						// biome-ignore lint/performance/noImgElement: ImageResponse uses Satori which requires native HTML img elements
+						<img
+							src={previewUrl}
+							alt={formattedName}
+							width={260}
+							height={260}
+							style={{
+								objectFit: "contain",
+								position: "relative",
+							}}
+						/>
+					) : (
+						<div
+							style={{
+								display: "flex",
+								alignItems: "center",
+								justifyContent: "center",
+								width: 260,
+								height: 260,
+								backgroundColor: "#f1f5f9",
+								color: "#475569",
+								border: "2px solid #e2e8f0",
+								borderRadius: 12,
+								fontSize: 18,
+								fontWeight: 600,
+							}}
+						>
+							{formattedName}
+						</div>
+					)}
 				</div>
 
 				{/* Text content */}
@@ -144,7 +217,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ icon: s
 						Part of {totalIcons} icons & logos available on DashboardIcons.com
 					</div>
 					<div style={{ display: "flex", gap: 12, marginTop: 8 }}>
-						{["SVG", "PNG", "WEBP"].map((format) => (
+						{formats.slice(0, 4).map((format) => (
 							<div
 								key={format}
 								style={{
@@ -159,6 +232,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ icon: s
 									fontSize: 18,
 									fontWeight: 600,
 									boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)",
+									textTransform: "uppercase",
 								}}
 							>
 								{format}
@@ -193,9 +267,10 @@ export async function GET(_req: Request, { params }: { params: Promise<{ icon: s
 						gap: 10,
 					}}
 				>
+					<span>from</span>
 					{/* biome-ignore lint/performance/noImgElement: ImageResponse uses Satori which requires native HTML img elements */}
-					<img src={DASHBOARD_ICONS_ICON} alt="dashboardicons.com" width={32} height={32} style={{ marginRight: 2 }} />
-					dashboardicons.com
+					<img src={sourceConfig.icon} alt={sourceConfig.label} width={32} height={32} style={{ marginRight: 2 }} />
+					<span>{sourceConfig.label} via dashboardicons.com</span>
 				</div>
 			</div>
 		</div>,
