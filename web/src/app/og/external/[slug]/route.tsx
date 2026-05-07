@@ -7,7 +7,8 @@ export const contentType = "image/png"
 export const size = { width: 1200, height: 630 }
 
 export async function GET(_req: Request, { params }: { params: Promise<{ slug: string }> }) {
-	const { slug } = await params
+	const { slug: rawSlug } = await params
+	const slug = rawSlug.replace(/\.png$/, "")
 	const icon = await getExternalIconBySlug(slug)
 
 	if (!icon) {
@@ -277,8 +278,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ slug: s
 		{
 			...size,
 			headers: {
-				"Cache-Control": "public, max-age=31536000, immutable",
-				"CDN-Cache-Control": "public, max-age=31536000, immutable",
+				"Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
+				"CDN-Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
 			},
 		},
 	)

@@ -111,7 +111,18 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 				<link rel="preconnect" href="https://cdn.jsdelivr.net" />
 				<link rel="preconnect" href="https://raw.githubusercontent.com" />
 				<link rel="preconnect" href="https://api.github.com" />
-				{process.env.NEXT_PUBLIC_POSTHOG_HOST && <link rel="preconnect" href={process.env.NEXT_PUBLIC_POSTHOG_HOST} />}
+				{process.env.NEXT_PUBLIC_POSTHOG_HOST && (
+					<link
+						rel="preconnect"
+						href={(() => {
+							try {
+								return new URL(process.env.NEXT_PUBLIC_POSTHOG_HOST).origin
+							} catch {
+								return process.env.NEXT_PUBLIC_POSTHOG_HOST
+							}
+						})()}
+					/>
+				)}
 			</head>
 			<body className={`${inter.variable} antialiased bg-background flex flex-col min-h-screen`}>
 				<script
@@ -131,7 +142,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 								},
 								"query-input": "required name=search_term_string",
 							},
-						}),
+						}).replace(/</g, "\\u003c"),
 					}}
 				/>
 				<Providers>

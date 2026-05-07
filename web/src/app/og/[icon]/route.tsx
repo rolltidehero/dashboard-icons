@@ -1,12 +1,20 @@
+import { notFound } from "next/navigation"
 import { ImageResponse } from "next/og"
 import { BASE_URL, DASHBOARD_ICONS_ICON } from "@/constants"
-import { getTotalIcons } from "@/lib/api"
+import { getAllIcons, getTotalIcons } from "@/lib/api"
 
 export const contentType = "image/png"
 export const size = { width: 1200, height: 630 }
 
 export async function GET(_req: Request, { params }: { params: Promise<{ icon: string }> }) {
-	const { icon } = await params
+	const { icon: rawIcon } = await params
+	const icon = rawIcon.replace(/\.png$/, "")
+
+	const iconsData = await getAllIcons()
+	if (!iconsData[icon]) {
+		notFound()
+	}
+
 	const { totalIcons } = await getTotalIcons()
 
 	const formattedName = icon
@@ -202,8 +210,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ icon: s
 		{
 			...size,
 			headers: {
-				"Cache-Control": "public, max-age=31536000, immutable",
-				"CDN-Cache-Control": "public, max-age=31536000, immutable",
+				"Cache-Control": "public, s-maxage=86400, stale-while-revalidate=604800",
+				"CDN-Cache-Control": "public, max-age=86400, stale-while-revalidate=604800",
 			},
 		},
 	)

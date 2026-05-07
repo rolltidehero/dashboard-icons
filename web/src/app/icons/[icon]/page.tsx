@@ -85,7 +85,7 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 			locale: "en_US",
 			images: [
 				{
-					url: `${WEB_URL}/og/${icon}.png`,
+					url: `${WEB_URL}/og/${icon}`,
 					width: 1200,
 					height: 630,
 					alt: `${formattedIconName} icon & logo for dashboards`,
@@ -104,7 +104,7 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 			card: "summary_large_image",
 			title: `${formattedIconName} Icon & Logo`,
 			description: `Download the ${formattedIconName} icon and logo in SVG, PNG, and WEBP formats for FREE. Part of a collection of ${totalIcons} curated icons and logos for services, applications and tools, designed specifically for dashboards and app directories.`,
-			images: [`${WEB_URL}/og/${icon}.png`],
+			images: [`${WEB_URL}/og/${icon}`],
 		},
 		alternates: {
 			canonical: `${WEB_URL}/icons/${icon}`,

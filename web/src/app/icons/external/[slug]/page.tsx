@@ -82,7 +82,7 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 			locale: "en_US",
 			images: [
 				{
-					url: `${WEB_URL}/og/external/${slug}.png`,
+					url: `${WEB_URL}/og/external/${slug}`,
 					width: 1200,
 					height: 630,
 					alt: `${formattedName} icon & logo from ${sourceConfig.label}`,
@@ -101,7 +101,7 @@ export async function generateMetadata({ params }: Props, _parent: ResolvingMeta
 			card: "summary_large_image",
 			title: `${formattedName} Icon & Logo (${sourceConfig.label})`,
 			description: `Download the ${formattedName} icon and logo from ${sourceConfig.label} via Dashboard Icons.`,
-			images: [`${WEB_URL}/og/external/${slug}.png`],
+			images: [`${WEB_URL}/og/external/${slug}`],
 		},
 		alternates: {
 			canonical: pageUrl,
